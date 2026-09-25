@@ -1,0 +1,13 @@
+{
+  "name": "my-smart-plug-prototype",
+  "version": "1.0.0",
+  "description": "High-fidelity mobile smart-home prototype for My Smart Plug",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -l 3000 .",
+    "dev": "npx serve -l 3000 ."
+  },
+  "keywords": ["smart-home", "prototype", "iot", "mobile-ui"],
+  "author": "Google DeepMind",
+  "license": "MIT"
+}

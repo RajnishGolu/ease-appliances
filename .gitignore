@@ -1,0 +1,14 @@
+# PlatformIO & Build artifacts
+.pio/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local runtime files
+esp32_ip.txt
+.DS_Store
+
+# Logs
+*.log

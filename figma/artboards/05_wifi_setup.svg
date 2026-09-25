@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#94A3B8" text-anchor="middle" letter-spacing="1">STEP 3 OF 3</text>
+
+  <!-- Titles -->
+  <g id="Titles" transform="translate(24, 120)">
+    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">Connect to Wi-Fi</text>
+    <text x="0" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B">Choose your home Wi-Fi network.</text>
+  </g>
+
+  <!-- Network Section Header -->
+  <g transform="translate(24, 210)">
+    <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#64748B" letter-spacing="0.5">AVAILABLE NETWORKS</text>
+    <!-- Refresh Button -->
+    <g transform="translate(230, 2)" cursor="pointer">
+      <path d="M90 6A6 6 0 1 0 96 12" fill="none" stroke="#6366F1" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="84" y="11" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#6366F1" text-anchor="end">Refresh networks</text>
+    </g>
+  </g>
+
+  <!-- Wi-Fi Network Rows -->
+  <g id="Network_List" transform="translate(24, 236)">
+    
+    <!-- Row 1: Home Wi-Fi (Selected) -->
+    <g id="Wifi_Home_Selected" filter="url(#cardShadow)">
+      <rect width="342" height="60" rx="18" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.8" />
+      <g transform="translate(18, 20)" fill="#4F46E5">
+        <path d="M10 2C6 2 2.3 3.6 0 6.2L10 17L20 6.2C17.7 3.6 14 2 10 2Z"/>
+      </g>
+      <text x="50" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#1E1B4B">Home Wi-Fi</text>
+      <!-- Lock -->
+      <g transform="translate(270, 22)" stroke="#94A3B8" fill="none" stroke-width="1.5">
+        <rect x="0" y="6" width="12" height="10" rx="2" />
+        <path d="M2.5 6V3.5A3.5 3.5 0 0 1 9.5 3.5V6" />
+      </g>
+      <!-- Selected Check -->
+      <circle cx="312" cy="30" r="10" fill="#6366F1" />
+      <path d="M309 30L311.5 32.5L315.5 28.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Row 2: Rajnish Home -->
+    <g id="Wifi_Rajnish" transform="translate(0, 70)">
+      <rect width="342" height="56" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <g transform="translate(18, 18)" fill="#94A3B8">
+        <path d="M10 2C6 2 2.3 3.6 0 6.2L10 17L20 6.2C17.7 3.6 14 2 10 2Z"/>
+      </g>
+      <text x="50" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#334155">Rajnish Home</text>
+      <!-- Lock -->
+      <g transform="translate(306, 20)" stroke="#94A3B8" fill="none" stroke-width="1.5">
+        <rect x="0" y="6" width="12" height="10" rx="2" />
+        <path d="M2.5 6V3.5A3.5 3.5 0 0 1 9.5 3.5V6" />
+      </g>
+    </g>
+
+    <!-- Row 3: Office Wi-Fi -->
+    <g id="Wifi_Office" transform="translate(0, 136)">
+      <rect width="342" height="56" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <g transform="translate(18, 18)" fill="#94A3B8">
+        <path d="M10 4C7 4 4.2 5.2 2 7.2L10 16L18 7.2C15.8 5.2 13 4 10 4Z"/>
+      </g>
+      <text x="50" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#334155">Office Wi-Fi</text>
+      <!-- Lock -->
+      <g transform="translate(306, 20)" stroke="#94A3B8" fill="none" stroke-width="1.5">
+        <rect x="0" y="6" width="12" height="10" rx="2" />
+        <path d="M2.5 6V3.5A3.5 3.5 0 0 1 9.5 3.5V6" />
+      </g>
+    </g>
+
+    <!-- Row 4: Other Network -->
+    <g id="Wifi_Other" transform="translate(0, 202)">
+      <rect width="342" height="56" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <text x="50" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#64748B">Other Network...</text>
+      <path d="M312 24L317 29L312 34" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+  </g>
+
+  <!-- Wi-Fi Password Field & Checkbox -->
+  <g id="Password_Group" transform="translate(24, 520)">
+    <rect width="342" height="114" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#cardShadow)" />
+    <text x="18" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#334155">Wi-Fi Password</text>
+    
+    <!-- Input Field -->
+    <rect x="18" y="34" width="306" height="42" rx="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <text x="32" y="60" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" fill="#0F172A">••••••••••••</text>
+    
+    <!-- Eye Icon -->
+    <g transform="translate(290, 44)" stroke="#94A3B8" stroke-width="1.6" fill="none">
+      <path d="M1 9C3 4.5 7.5 1.5 12 1.5C16.5 1.5 21 4.5 23 9C21 13.5 16.5 16.5 12 16.5C7.5 16.5 3 13.5 1 9Z"/>
+      <circle cx="12" cy="9" r="3.5"/>
+    </g>
+
+    <!-- Remember Checkbox -->
+    <g transform="translate(18, 88)">
+      <rect width="16" height="16" rx="4" fill="#6366F1" />
+      <path d="M4 8L7 11L12 5" stroke="#FFFFFF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="26" y="13" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#475569">Remember this network</text>
+    </g>
+  </g>
+
+  <!-- Connect Button -->
+  <g id="Btn_Connect_Smart_Plug" transform="translate(24, 740)" filter="url(#btnShadow)" cursor="pointer">
+    <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+    <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Connect Smart Plug</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+</svg>

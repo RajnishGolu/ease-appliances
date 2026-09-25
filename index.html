@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Ease Appliances - Smart Plug</title>
+  
+  <!-- PWA Manifest & Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#6366F1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Ease Appliances">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon-512.svg">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+
+  <!-- Firebase SDK for Realtime Database -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#EEF2FF',
+              100: '#E0E7FF',
+              200: '#C7D2FE',
+              300: '#A5B4FC',
+              400: '#818CF8',
+              500: '#6366F1',
+              600: '#4F46E5',
+              700: '#4338CA',
+            },
+            surface: '#F8FAFC',
+            card: '#FFFFFF',
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Inter', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+            'spin-slow': 'spin 3s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0F172A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    #phone-shell {
+      width: 390px;
+      height: 844px;
+      position: relative;
+      background: #F8FAFC;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 10px #1E293B, 0 0 0 12px #334155;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 0;
+        background-color: #F8FAFC;
+      }
+      #phone-shell {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    .view-screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #F8FAFC;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+      padding-top: 48px;
+      padding-bottom: 24px;
+    }
+
+    .view-screen.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+      z-index: 10;
+    }
+
+    .view-screen::-webkit-scrollbar {
+      display: none;
+    }
+    .view-screen {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .radar-circle-1 { animation: radar 3s ease-out infinite; }
+    .radar-circle-2 { animation: radar 3s ease-out infinite 0.9s; }
+    .radar-circle-3 { animation: radar 3s ease-out infinite 1.8s; }
+
+    @keyframes radar {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(2.2);
+        opacity: 0;
+      }
+    }
+
+    .dynamic-island {
+      width: 110px;
+      height: 28px;
+      background: #000000;
+      border-radius: 20px;
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+    }
+    .island-camera {
+      width: 10px;
+      height: 10px;
+      background: #111827;
+      border-radius: 50%;
+      border: 1px solid #1f2937;
+    }
+
+    #feedback-toast {
+      transform: translate(-50%, -100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      pointer-events: none;
+    }
+    #feedback-toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE DEVICE FRAME (390 x 844 px) -->
+  <div id="phone-shell">
+
+    <!-- Status Bar & Dynamic Island -->
+    <div class="absolute top-0 left-0 z-50 w-full h-11 pt-2.5 px-6 flex items-center justify-between pointer-events-none text-xs font-semibold tracking-tight text-slate-800">
+      <span id="current-time">9:41</span>
+      <div class="dynamic-island pointer-events-auto cursor-pointer" onclick="handlePwaInstallClick()" title="Install PWA">
+        <div id="island-install-badge" class="hidden text-[9px] font-bold text-emerald-400 mr-2 flex items-center">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-ping"></span>INSTALL
+        </div>
+        <div class="island-camera"></div>
+      </div>
+      <div class="flex items-center space-x-1.5 text-slate-800 pointer-events-auto">
+        <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-bold hover:bg-indigo-700 transition-all mr-1 shadow-sm">
+          + Install
+        </button>
+        <!-- Bluetooth Icon Status -->
+        <span id="header-ble-indicator" class="text-slate-400 transition-colors" title="Bluetooth Status">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
+          </svg>
+        </span>
+        <!-- Wi-Fi -->
+        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+          <path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.78 0 7.22 1.46 9.8 3.86L12 19.34 2.2 11.36C4.78 8.96 8.22 7.5 12 7.5z"/>
+        </svg>
+        <!-- Battery -->
+        <div class="w-5 h-2.5 border border-slate-700 rounded-sm p-0.5 flex items-center">
+          <div class="w-full h-full bg-slate-800 rounded-2xs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="feedback-toast" class="absolute top-12 left-1/2 z-50 opacity-0 bg-slate-900/95 text-white px-4 py-2.5 rounded-full text-xs font-medium shadow-xl flex items-center space-x-2 backdrop-blur-md border border-white/10">
+      <svg class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+      <span id="toast-message">Action successful</span>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 1. HOME SCREEN (DIRECT LANDING - NO SPLASH) -->
+    <!-- ============================================================== -->
+    <div id="view-home" class="view-screen active px-5 pb-8">
+      <!-- Top Bar -->
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold" id="home-greeting">Good afternoon</span>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Ease Appliances</h1>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="scanAndConnectBle()" title="Scan for Ease Appliances BLE" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Connection Banner -->
+      <div id="home-connection-banner" class="flex items-center justify-between px-4 py-2.5 bg-amber-50/80 border border-amber-200/60 rounded-2xl mb-5 transition-colors">
+        <div class="flex items-center space-x-2">
+          <span id="home-banner-dot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span id="home-banner-text" class="text-xs font-semibold text-amber-800">No Device Connected</span>
+        </div>
+        <span id="home-banner-badge" class="text-[11px] font-semibold text-amber-700 bg-white px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs">BLE Standby</span>
+      </div>
+
+      <!-- STATE A: NO DEVICE CONNECTED (Scan & Connect Hub) -->
+      <div id="view-no-device-card" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200/80 rounded-3xl shadow-sm text-center">
+        <!-- Glowing BLE Icon -->
+        <div class="relative w-20 h-20 rounded-3xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mb-5 text-indigo-600 shadow-inner">
+          <svg class="w-10 h-10 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
+          </svg>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-600"></span>
+          </span>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-900">Connect Ease Appliances</h3>
+        <p class="text-xs text-slate-500 mt-1.5 mb-6 max-w-xs leading-relaxed">
+          Scan for your ESP32 device over Bluetooth Low Energy (BLE) to configure its Wi-Fi connection.
+        </p>
+
+        <!-- Primary Action Button: Web Bluetooth Scan -->
+        <button onclick="scanAndConnectBle()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
+          <span>Scan for 'Ease Appliances'</span>
+        </button>
+
+        <button onclick="simulateBleConnected()" class="w-full mt-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors text-xs text-center">
+          ⚡ Demo Mode: Simulate ESP32 Connected
+        </button>
+      </div>
+
+      <!-- STATE B: CONNECTED DEVICE CARD (Revealed only upon connection) -->
+      <div id="view-connected-device-card" class="hidden space-y-4">
+        <div class="bg-white border-2 border-indigo-500/30 rounded-3xl p-5 shadow-md transition-all">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-3.5 cursor-pointer flex-1" onclick="navigateTo('device-control')">
+              <div id="home-plug-icon-box" class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 id="connected-esp32-name" class="text-base font-bold text-slate-900 hover:text-indigo-600 transition-colors">Ease Appliances</h3>
+                <div class="flex items-center space-x-2 mt-0.5">
+                  <span id="connected-status-pill" class="inline-flex items-center text-xs font-semibold text-emerald-600">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+                    Online
+                  </span>
+                  <span class="text-slate-300">•</span>
+                  <span id="connected-wifi-badge" class="inline-flex items-center text-[11px] text-slate-500">
+                    <svg class="w-3 h-3 mr-1 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+                    <span id="connected-esp32-wifi-label">JARVISTECH</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Power Toggle -->
+            <button onclick="togglePlugPower(event)" id="home-quick-toggle" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-indigo-600">
+              <span class="sr-only">Toggle power</span>
+              <span id="home-toggle-thumb" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-6 flex items-center justify-center text-[10px] font-bold text-indigo-600">
+                ON
+              </span>
+            </button>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center text-slate-400">
+              <span id="home-device-watts" class="font-semibold text-slate-700 mr-2">45 W</span>
+              <span class="mr-1">•</span>
+              <span id="esp32-ip-display" class="text-slate-600 font-mono text-[11px]">IP: 192.168.0.183</span>
+            </span>
+            <div class="flex items-center space-x-2">
+              <button onclick="navigateTo('wifi-setup')" id="home-card-wifi-btn" class="text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors">
+                Change Wi-Fi
+              </button>
+              <button onclick="navigateTo('device-control')" class="text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-xl transition-colors flex items-center">
+                Control
+                <svg class="w-3.5 h-3.5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button onclick="scanAndConnectBle()" class="flex-1 py-2 text-xs text-indigo-600 hover:text-indigo-700 font-medium transition-colors text-center border border-indigo-100 rounded-2xl bg-indigo-50/50 flex items-center justify-center space-x-1">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
+            <span id="ble-sync-text">Sync via BLE</span>
+          </button>
+          <button onclick="unpairDevice()" class="py-2 px-3 text-xs text-rose-500 hover:text-rose-600 font-medium transition-colors text-center border border-rose-100 rounded-2xl bg-rose-50/40">
+            Unpair
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 2. REAL WI-FI PROVISIONING SCREEN (SYSTEM DETECTED NETWORKS) -->
+    <!-- ============================================================== -->
+    <div id="view-wifi-setup" class="view-screen px-6 pb-8 justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <button onclick="navigateTo('home')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          </button>
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Wi-Fi Settings</span>
+          <div class="w-9"></div>
+        </div>
+
+        <h1 id="wifi-setup-title" class="text-2xl font-bold text-slate-900">Available Wi-Fi</h1>
+        <p id="wifi-setup-desc" class="text-sm text-slate-500 mt-1">Tap your network to connect Ease Appliances:</p>
+
+        <!-- Dynamic Banner if already connected -->
+        <div id="wifi-already-connected-banner" class="hidden my-3 p-3 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div>
+              <p class="text-xs font-bold text-emerald-800">Currently Connected</p>
+              <p id="wifi-already-connected-text" class="text-[11px] text-emerald-600 font-mono">JARVISTECH (192.168.0.183)</p>
+            </div>
+          </div>
+          <button onclick="navigateTo('home')" class="text-xs font-semibold text-emerald-700 bg-white border border-emerald-200 px-2.5 py-1 rounded-xl hover:bg-emerald-50 shadow-2xs">
+            Done
+          </button>
+        </div>
+
+        <!-- Dynamic Real Wi-Fi Network List Header -->
+        <div class="mt-4 flex items-center justify-between px-1">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Networks on your System</span>
+          <button onclick="loadRealWifiNetworks(true)" class="text-xs font-medium text-indigo-600 hover:text-indigo-700 flex items-center">
+            <svg id="wifi-refresh-icon" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <span id="wifi-scan-btn-text">Rescan</span>
+          </button>
+        </div>
+
+        <!-- REAL WI-FI NETWORK CONTAINER -->
+        <div id="real-wifi-list-container" class="mt-2 space-y-2 max-h-56 overflow-y-auto pr-1">
+          <div class="py-8 text-center text-xs text-slate-400 flex items-center justify-center space-x-2">
+            <svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+            <span>Scanning networks on your machine...</span>
+          </div>
+        </div>
+
+        <!-- Password input block -->
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              Password for <span id="selected-wifi-title" class="text-indigo-600 font-bold">Selected Network</span>
+            </label>
+            <span class="text-[10px] text-slate-400 font-mono">WPA2 / WPA3</span>
+          </div>
+          <div class="relative">
+            <input id="wifi-password-input" type="password" placeholder="Enter network password" class="w-full px-4 py-3.5 pr-12 rounded-2xl bg-white border border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 text-sm font-medium text-slate-800 outline-none transition-all">
+            <button onclick="togglePasswordVisibility()" type="button" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+              <svg id="pwd-eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+          <p id="wifi-validation-error" class="hidden text-xs text-rose-500 font-medium mt-1.5">Please enter the Wi-Fi password.</p>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="pt-4 space-y-2">
+        <button id="wifi-connect-submit-btn" onclick="provisionWifiToEsp32()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+          <span id="wifi-connect-btn-label">Connect Ease Appliances to Wi-Fi</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 3. PROVISIONING PROGRESS SCREEN -->
+    <!-- ============================================================== -->
+    <div id="view-setting-up" class="view-screen px-6 pb-8 justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-9"></div>
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Wi-Fi Handshake</span>
+          <div class="w-9"></div>
+        </div>
+
+        <h1 class="text-2xl font-bold text-slate-900">Connecting to Wi-Fi</h1>
+        <p class="text-sm text-slate-500 mt-2">Sending credentials to Ease Appliances over BLE...</p>
+
+        <!-- Progress Spinner -->
+        <div class="my-8 flex justify-center">
+          <div class="relative w-28 h-28 flex items-center justify-center">
+            <svg class="w-full h-full animate-spin-slow" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" stroke="#E0E7FF" stroke-width="8" fill="none"/>
+              <circle cx="50" cy="50" r="42" stroke="#4F46E5" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="190" stroke-linecap="round" fill="none"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center text-indigo-600">
+              <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-Stage Stepper -->
+        <div class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <span class="text-sm font-semibold text-slate-800">BLE Connected to Ease Appliances</span>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <span class="text-sm font-semibold text-slate-800">Wi-Fi Credentials Transmitted</span>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <div id="step-connecting-indicator" class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center animate-pulse">
+              <span class="w-2 h-2 rounded-full bg-white"></span>
+            </div>
+            <span id="step-connecting-text" class="text-sm font-semibold text-indigo-700">ESP32 Connecting to Wi-Fi</span>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <div id="step-ready-indicator" class="w-6 h-6 rounded-full border-2 border-slate-300 flex items-center justify-center text-slate-300">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>
+            </div>
+            <span id="step-ready-text" class="text-sm font-medium text-slate-400">Verifying IP Address</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 flex items-center justify-between text-xs text-slate-400">
+        <span>Provisioning in progress...</span>
+        <button onclick="navigateTo('wifi-setup')" class="text-slate-500 hover:text-indigo-600 font-medium">Cancel</button>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 4. READY SUCCESS SCREEN -->
+    <!-- ============================================================== -->
+    <div id="view-ready" class="view-screen px-6 pb-8 justify-between bg-gradient-to-b from-emerald-50/40 via-white to-white">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-9"></div>
+          <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Connected</span>
+          <div class="w-9"></div>
+        </div>
+
+        <div class="flex flex-col items-center text-center mt-6">
+          <div class="w-24 h-24 rounded-3xl bg-emerald-500 text-white flex items-center justify-center shadow-xl shadow-emerald-500/30 mb-6 transform hover:scale-105 transition-transform">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+          <h1 class="text-2xl font-bold text-slate-900">Ease Appliances is Online!</h1>
+          <p class="text-sm text-slate-500 mt-2 max-w-xs">Your ESP32 smart plug is connected to your Wi-Fi network.</p>
+        </div>
+
+        <div class="mt-8 bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              </div>
+              <div>
+                <span class="text-xs text-slate-400 font-medium">Device</span>
+                <h3 class="text-base font-bold text-slate-900">Ease Appliances</h3>
+                <p id="ready-plug-network" class="text-[11px] text-slate-400">Wi-Fi: Connected</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+              Online
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-3 pt-6">
+        <button onclick="navigateTo('device-control')" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+          <span>Start Controlling</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+        <button onclick="navigateTo('home')" class="w-full py-2.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors text-center">
+          Return to Home
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 5. DEVICE CONTROL SCREEN -->
+    <!-- ============================================================== -->
+    <div id="view-device-control" class="view-screen px-6 pb-8 justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <button onclick="navigateTo('home')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          </button>
+          <div class="text-center">
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">Ease Appliances</h1>
+            <span id="control-header-status-pill" class="inline-flex items-center text-[11px] text-emerald-600 font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>
+              Online • BLE + Wi-Fi
+            </span>
+          </div>
+          <button onclick="navigateTo('device-settings')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </button>
+        </div>
+
+        <!-- Offline Warning Banner (Displayed when ESP32 is powered off / unreachable) -->
+        <div id="control-offline-banner" class="mt-3 mb-1 px-3.5 py-2.5 bg-rose-50 border border-rose-200/90 rounded-2xl flex items-center justify-between shadow-2xs hidden">
+          <div class="flex items-center space-x-2.5">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
+            </span>
+            <div>
+              <p class="text-xs font-bold text-rose-950">Device Powered Off / Offline</p>
+              <p class="text-[11px] text-rose-700">Check power connection to ESP32</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-bold text-rose-700 bg-white border border-rose-200 px-2 py-0.5 rounded-full">Offline</span>
+        </div>
+
+        <!-- Hardware Test Pin Active Banner -->
+        <div class="mt-3 mb-1 px-3.5 py-2 bg-blue-50 border border-blue-200/90 rounded-2xl flex items-center justify-between shadow-2xs">
+          <div class="flex items-center space-x-2.5">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600"></span>
+            </span>
+            <div>
+              <p class="text-xs font-bold text-blue-950">Hardware Test Active</p>
+              <p class="text-[11px] text-blue-700">Controlling Onboard Blue LED on <span class="font-bold">GPIO 2</span></p>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono font-bold bg-white text-blue-800 border border-blue-200 px-2 py-0.5 rounded-full shadow-2xs">GPIO 2</span>
+        </div>
+
+        <!-- 190px Circular Power Toggle -->
+        <div class="mt-6 flex flex-col items-center">
+          <button onclick="toggleMainPower()" id="main-power-btn" class="relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 transform active:scale-95 shadow-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 shadow-indigo-500/40 text-white">
+            <div id="main-power-glow" class="absolute -inset-2 rounded-full bg-indigo-500/20 blur-lg transition-opacity duration-300 opacity-100"></div>
+
+            <svg class="w-16 h-16 mb-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 2v10M18.36 6.64a9 9 0 11-12.73 0"></path>
+            </svg>
+            <span id="main-power-state-label" class="text-2xl font-black tracking-wider">ON</span>
+            <span id="main-power-state-sub" class="text-xs text-indigo-100 font-medium mt-0.5">GPIO 2 (Blue LED) Active</span>
+          </button>
+
+          <p class="text-xs text-slate-400 mt-4">Tap power button to toggle LED & relay</p>
+        </div>
+
+        <!-- Power Analytics Counters (Persistent on ESP32 flash) -->
+        <div class="mt-5">
+          <div class="flex items-center justify-between mb-2 px-1">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Power Analytics</span>
+            <button onclick="resetStatsCounters()" class="text-[11px] font-semibold text-rose-500 hover:text-rose-600 transition-colors">Reset Counters</button>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+              <span class="text-[10px] uppercase font-bold text-emerald-600 flex items-center justify-center space-x-1">
+                <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                <span>ONs</span>
+              </span>
+              <div id="stat-on-count" class="text-lg font-black text-slate-900 mt-0.5">0</div>
+            </div>
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+              <span class="text-[10px] uppercase font-bold text-slate-500 flex items-center justify-center space-x-1">
+                <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                <span>OFFs</span>
+              </span>
+              <div id="stat-off-count" class="text-lg font-black text-slate-900 mt-0.5">0</div>
+            </div>
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+              <span class="text-[10px] uppercase font-bold text-indigo-600 flex items-center justify-center space-x-1">
+                <svg class="w-3 h-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span>Total</span>
+              </span>
+              <div id="stat-total-toggles" class="text-lg font-black text-slate-900 mt-0.5">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Firebase Cloud Control Banner (Only shown when NOT configured) -->
+        <div id="tile-firebase-setup" class="mt-3.5 bg-gradient-to-tr from-amber-500 to-amber-600 rounded-3xl p-3.5 text-white shadow-md shadow-amber-500/20">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-2xl bg-white/20 flex items-center justify-center text-white">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.09 16.92L6.85 4.07a.9.9 0 0 1 1.62-.31l3.5 6.37-7.88 6.79zm15.82-3.87L18.4 5.92a.9.9 0 0 0-1.63-.12l-2.42 4.49 5.56 2.76zM13.2 9.47L10.3 4.18a.9.9 0 0 0-1.6 0L2.1 18.05l9.96 5.58a.9.9 0 0 0 .88 0l8.96-5.02-8.7-9.14z"/></svg>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold leading-tight">Firebase Cloud RTDB</h4>
+                <p id="firebase-cloud-status" class="text-[10px] text-amber-100">Control from Phone / Anywhere</p>
+              </div>
+            </div>
+            <button onclick="openFirebaseModal()" class="px-3 py-1 bg-white text-amber-700 hover:bg-amber-50 rounded-xl text-xs font-bold shadow-xs transition-colors">
+              Cloud Setup
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Activity History Log -->
+        <div class="mt-3.5 bg-white border border-slate-200/80 rounded-3xl p-4 shadow-2xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Live Activity Record</span>
+            <span id="log-count-badge" class="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">0 events</span>
+          </div>
+          <div id="activity-log-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+            <div class="text-xs text-slate-400 text-center py-2">No power events recorded yet</div>
+          </div>
+        </div>
+
+        <!-- Telemetry Cards -->
+        <div class="mt-3.5 grid grid-cols-3 gap-2">
+          <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Power</span>
+            <div id="control-watts-val" class="text-xs font-bold text-indigo-600 mt-1">45 W</div>
+          </div>
+          <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Wi-Fi</span>
+            <div class="text-xs font-bold text-slate-800 mt-1 flex items-center justify-center">
+              <svg class="w-3 h-3 text-indigo-600 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+              <span id="control-wifi-short">Wi-Fi</span>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+            <span class="text-[10px] uppercase font-bold text-slate-400">BLE Link</span>
+            <div id="control-ble-status" class="text-xs font-bold text-emerald-600 mt-1">Active</div>
+          </div>
+        </div>
+
+        <div class="mt-3 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
+          <button onclick="navigateTo('wifi-setup')" class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-slate-50 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+              </div>
+              <span class="text-xs font-semibold text-slate-800">Change Wi-Fi</span>
+            </div>
+            <span id="control-network-label" class="text-xs text-slate-400 font-medium truncate max-w-[120px]">JARVISTECH</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-3 flex justify-between items-center text-xs text-slate-400">
+        <button onclick="disconnectBle()" class="text-rose-500 hover:text-rose-600 font-medium">Disconnect BLE</button>
+        <button onclick="navigateTo('home')" class="font-medium text-indigo-600 hover:underline">Done</button>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 6. DEVICE SETTINGS SCREEN -->
+    <!-- ============================================================== -->
+    <div id="view-device-settings" class="view-screen px-6 pb-8 justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <button onclick="navigateTo('home')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          </button>
+          <h1 class="text-lg font-bold text-slate-900">Ease Appliances Details</h1>
+          <div class="w-9"></div>
+        </div>
+
+        <div class="mt-4 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
+          <div class="px-4 py-3.5 flex items-center justify-between">
+            <span class="text-sm font-medium text-slate-700">Device Name</span>
+            <span class="text-sm font-semibold text-slate-900">Ease Appliances</span>
+          </div>
+
+          <div class="px-4 py-3.5 flex items-center justify-between">
+            <span class="text-sm font-medium text-slate-700">Chipset</span>
+            <span class="text-sm font-semibold text-slate-900">ESP32-D0WD-V3</span>
+          </div>
+
+          <div class="px-4 py-3.5 flex items-center justify-between">
+            <span class="text-sm font-medium text-slate-700">Firmware</span>
+            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">v1.0.0 (Custom BLE)</span>
+          </div>
+
+          <div class="px-4 py-3.5 flex items-center justify-between">
+            <span class="text-sm font-medium text-slate-700">Relay Control Pin</span>
+            <span id="settings-gpio-pin" class="text-xs font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">GPIO 2 (Onboard Blue LED)</span>
+          </div>
+
+          <div class="px-4 py-3.5 flex items-center justify-between">
+            <div>
+              <span class="text-sm font-medium text-slate-700 block">Cloud RTDB</span>
+              <span id="settings-firebase-url" class="text-[11px] text-slate-400 font-mono truncate max-w-[170px] block">Not configured</span>
+            </div>
+            <button onclick="openFirebaseModal()" class="text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-xl transition-colors">
+              Configure
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <button onclick="navigateTo('home')" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-semibold transition-colors">
+          Back to Home
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 7. FIREBASE CLOUD SETUP MODAL / SHEET -->
+    <!-- ============================================================== -->
+    <div id="modal-firebase" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs hidden transition-opacity">
+      <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto transform transition-transform scale-100">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.09 16.92L6.85 4.07a.9.9 0 0 1 1.62-.31l3.5 6.37-7.88 6.79zm15.82-3.87L18.4 5.92a.9.9 0 0 0-1.63-.12l-2.42 4.49 5.56 2.76zM13.2 9.47L10.3 4.18a.9.9 0 0 0-1.6 0L2.1 18.05l9.96 5.58a.9.9 0 0 0 .88 0l8.96-5.02-8.7-9.14z"/></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 leading-tight">Firebase Realtime Database</h3>
+              <p class="text-[10px] text-slate-400">Control & sync from phone anywhere</p>
+            </div>
+          </div>
+          <button onclick="closeFirebaseModal()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- 5-Step Instructions Accordion -->
+        <div class="mt-3.5 bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3 text-xs text-amber-900">
+          <p class="font-bold text-[11px] uppercase tracking-wider text-amber-800 flex items-center justify-between">
+            <span>5-Step Setup Guide</span>
+            <span class="text-[10px] font-normal text-amber-600">Free Tier</span>
+          </p>
+          <ol class="mt-2 space-y-1.5 text-[11px] leading-relaxed text-slate-700 list-decimal list-inside pl-0.5">
+            <li>Go to <a href="https://console.firebase.google.com" target="_blank" class="font-bold text-indigo-600 underline">console.firebase.google.com</a> & create a project.</li>
+            <li>Click <b>Build</b> &gt; <b>Realtime Database</b> &gt; <b>Create Database</b>.</li>
+            <li>Choose <b>Start in test mode</b> (allows read & write).</li>
+            <li>Copy your Database URL (e.g. <span class="font-mono text-[10px] text-slate-600 bg-white px-1 py-0.5 rounded">https://xxx-rtdb.firebaseio.com</span>).</li>
+            <li>Paste it below and tap <b>Save & Sync with ESP32</b>.</li>
+          </ol>
+        </div>
+
+        <!-- Form Inputs -->
+        <div class="mt-4 space-y-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Database URL <span class="text-rose-500">*</span>
+            </label>
+            <input id="firebase-url-input" type="url" placeholder="https://your-project-default-rtdb.firebaseio.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100 text-xs font-medium text-slate-800 outline-none transition-all font-mono">
+            <p class="text-[10px] text-slate-400 mt-1">Found in Firebase Console &gt; Realtime Database</p>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Database Secret / Auth Token <span class="text-slate-400 font-normal">(Optional for test mode)</span>
+            </label>
+            <input id="firebase-auth-input" type="password" placeholder="Leave empty if test mode enabled" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100 text-xs font-medium text-slate-800 outline-none transition-all font-mono">
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-5 space-y-2">
+          <button id="save-firebase-btn" onclick="saveFirebaseConfig()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-500/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span id="save-firebase-btn-text">Save & Sync with ESP32</span>
+          </button>
+          <div class="flex items-center justify-between pt-1">
+            <button onclick="testFirebaseDirectWrite()" class="text-[11px] font-semibold text-indigo-600 hover:underline">
+              Test Cloud Ping
+            </button>
+            <button onclick="clearFirebaseConfig()" class="text-[11px] font-semibold text-rose-500 hover:underline">
+              Clear Cloud Config
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM iOS HOME BAR INDICATOR -->
+    <div class="absolute bottom-1 left-0 w-full h-5 flex items-center justify-center pointer-events-none z-50">
+      <div class="w-32 h-1 bg-slate-300 rounded-full"></div>
+    </div>
+
+  </div>
+
+  <!-- JAVASCRIPT: WEB BLUETOOTH GATT + REAL WI-FI SCANNING -->
+  <script>
+    // Audio synthesizer for tactile switch click
+    const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+    function playTactileClick(isTurnOn) {
+      if (!audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if (isTurnOn) {
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(540, now + 0.04);
+        } else {
+          osc.frequency.setValueAtTime(480, now);
+          osc.frequency.exponentialRampToValueAtTime(240, now + 0.04);
+        }
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } catch (e) {}
+    }
+
+    // BLE UUID constants matching ESP32 firmware
+    const SERVICE_UUID        = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+    const CHAR_WIFI_PROV_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+    const CHAR_STATUS_UUID    = "beb5483f-36e1-4688-b7f5-ea07361b26a8";
+    const CHAR_RELAY_UUID     = "beb54840-36e1-4688-b7f5-ea07361b26a8";
+
+    // Application state (with persistent storage restoration)
+    const savedIp = localStorage.getItem('ease_ip') || "";
+    const savedWifi = localStorage.getItem('ease_wifi') || "";
+    const savedPower = localStorage.getItem('ease_power');
+
+    const appState = {
+      isBleConnected: false,
+      isDeviceOnline: !!savedIp,
+      bleDeviceName: localStorage.getItem('ease_name') || "Ease Appliances",
+      assignedIp: savedIp,
+      isPowerOn: savedPower === 'false' ? false : true,
+      selectedWifi: savedWifi,
+      realNetworks: [],
+      currentView: "home",
+      onCount: parseInt(localStorage.getItem('ease_on_count') || '0', 10),
+      offCount: parseInt(localStorage.getItem('ease_off_count') || '0', 10),
+      totalToggles: parseInt(localStorage.getItem('ease_total_toggles') || '0', 10),
+      firebaseHost: localStorage.getItem('ease_firebase_url') || "",
+      firebaseConfigured: !!(localStorage.getItem('ease_firebase_url')),
+      activityLogs: JSON.parse(localStorage.getItem('ease_activity_logs') || '[]')
+    };
+
+    // Firebase RTDB Client Handles
+    let firebaseApp = null;
+    let firebaseDb = null;
+    let isFirebaseInited = false;
+
+    // Bluetooth GATT handles
+    let bleDevice = null;
+    let bleServer = null;
+    let provChar = null;
+    let statusChar = null;
+    let relayChar = null;
+
+    // Navigation controller
+    function navigateTo(viewId) {
+      if (viewId === 'control') viewId = 'device-control';
+      const screens = document.querySelectorAll('.view-screen');
+      screens.forEach(s => s.classList.remove('active'));
+
+      let target = document.getElementById('view-' + viewId);
+      if (!target && viewId === 'device-control') target = document.getElementById('view-control');
+
+      if (target) {
+        target.classList.add('active');
+        appState.currentView = viewId;
+        target.scrollTop = 0;
+      } else {
+        console.warn("View not found:", viewId);
+        const home = document.getElementById('view-home');
+        if (home) home.classList.add('active');
+      }
+
+      if (viewId === 'wifi-setup') {
+        loadRealWifiNetworks(false);
+        updateWifiSetupView();
+      }
+      syncUI();
+    }
+
+    function updateWifiSetupView() {
+      const banner = document.getElementById('wifi-already-connected-banner');
+      const bannerText = document.getElementById('wifi-already-connected-text');
+      const title = document.getElementById('wifi-setup-title');
+      const desc = document.getElementById('wifi-setup-desc');
+      const submitBtnLabel = document.getElementById('wifi-connect-btn-label');
+
+      if (appState.assignedIp) {
+        if (banner) banner.classList.remove('hidden');
+        if (bannerText) bannerText.innerText = `${appState.selectedWifi || 'Wi-Fi'} (${appState.assignedIp})`;
+        if (title) title.innerText = "Change Wi-Fi";
+        if (desc) desc.innerText = `Currently connected to ${appState.selectedWifi || 'your network'}. Select a new network below to switch:`;
+        if (submitBtnLabel) submitBtnLabel.innerText = "Update Wi-Fi Network";
+      } else {
+        if (banner) banner.classList.add('hidden');
+        if (title) title.innerText = "Available Wi-Fi";
+        if (desc) desc.innerText = "Tap your network to connect Ease Appliances:";
+        if (submitBtnLabel) submitBtnLabel.innerText = "Connect Ease Appliances to Wi-Fi";
+      }
+    }
+
+    // Toast
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById('feedback-toast');
+      const text = document.getElementById('toast-message');
+      text.innerText = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2300);
+    }
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      const el = document.getElementById('current-time');
+      if (el) el.innerText = `${hours}:${minutes}`;
+
+      const greetingEl = document.getElementById('home-greeting');
+      if (greetingEl) {
+        if (hours < 12) greetingEl.innerText = "Good morning";
+        else if (hours < 18) greetingEl.innerText = "Good afternoon";
+        else greetingEl.innerText = "Good evening";
+      }
+    }
+
+    // UI Synchronizer
+    function syncUI() {
+      const { isBleConnected, isDeviceOnline, bleDeviceName, isPowerOn, selectedWifi, assignedIp } = appState;
+      const isOnline = isBleConnected || isDeviceOnline;
+      const hasConfiguredDevice = !!(assignedIp || bleDeviceName);
+
+      const noDeviceCard = document.getElementById('view-no-device-card');
+      const connectedCard = document.getElementById('view-connected-device-card');
+      const banner = document.getElementById('home-connection-banner');
+      const bannerDot = document.getElementById('home-banner-dot');
+      const bannerText = document.getElementById('home-banner-text');
+      const bannerBadge = document.getElementById('home-banner-badge');
+      const bleHeader = document.getElementById('header-ble-indicator');
+
+      if (!hasConfiguredDevice) {
+        // No device ever paired
+        if (noDeviceCard) noDeviceCard.classList.remove('hidden');
+        if (connectedCard) connectedCard.classList.add('hidden');
+        if (banner) {
+          banner.className = "flex items-center justify-between px-4 py-2.5 bg-amber-50/80 border border-amber-200/60 rounded-2xl mb-5 transition-colors";
+          bannerDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+          bannerText.className = "text-xs font-semibold text-amber-800";
+          bannerText.innerText = "No Device Connected";
+          bannerBadge.className = "text-[11px] font-semibold text-amber-700 bg-white px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs";
+          bannerBadge.innerText = "BLE Standby";
+        }
+        if (bleHeader) bleHeader.className = "text-slate-400";
+      } else if (!isOnline) {
+        // Device was paired, BUT currently powered off / offline
+        if (noDeviceCard) noDeviceCard.classList.add('hidden');
+        if (connectedCard) connectedCard.classList.remove('hidden');
+        if (banner) {
+          banner.className = "flex items-center justify-between px-4 py-2.5 bg-rose-50/90 border border-rose-200/80 rounded-2xl mb-5 transition-colors";
+          bannerDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-pulse";
+          bannerText.className = "text-xs font-semibold text-rose-800";
+          bannerText.innerText = "Ease Appliances Offline (Powered Off)";
+          bannerBadge.className = "text-[11px] font-semibold text-rose-700 bg-white px-2.5 py-0.5 rounded-full border border-rose-200 shadow-2xs";
+          bannerBadge.innerText = "Check Power";
+        }
+        if (bleHeader) bleHeader.className = "text-slate-400";
+
+        const nameEl = document.getElementById('connected-esp32-name');
+        if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
+
+        const wifiEl = document.getElementById('connected-esp32-wifi-label');
+        if (wifiEl) wifiEl.innerText = selectedWifi ? `${selectedWifi} (Unreachable)` : "Offline";
+
+        const statusPill = document.getElementById('connected-status-pill');
+        if (statusPill) {
+          statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span> Offline (No Power)';
+          statusPill.className = "inline-flex items-center text-xs font-semibold text-rose-600";
+        }
+
+        const wattsEl = document.getElementById('home-device-watts');
+        if (wattsEl) wattsEl.innerText = '0 W';
+
+        const ipEl = document.getElementById('esp32-ip-display');
+        if (ipEl) ipEl.innerText = assignedIp ? `IP: ${assignedIp} (Offline)` : 'Offline';
+
+        const homeToggle = document.getElementById('home-quick-toggle');
+        const homeThumb = document.getElementById('home-toggle-thumb');
+        const homeIconBox = document.getElementById('home-plug-icon-box');
+
+        if (homeToggle && homeThumb && homeIconBox) {
+          homeToggle.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-not-allowed rounded-full border-2 border-transparent bg-slate-200 opacity-60";
+          homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 translate-x-0 flex items-center justify-center text-[9px] font-bold text-slate-400";
+          homeThumb.innerText = "OFF";
+          homeIconBox.className = "w-12 h-12 rounded-2xl bg-slate-300 text-white flex items-center justify-center transition-colors";
+        }
+      } else {
+        // Device is ONLINE
+        if (noDeviceCard) noDeviceCard.classList.add('hidden');
+        if (connectedCard) connectedCard.classList.remove('hidden');
+        if (banner) {
+          banner.className = "flex items-center justify-between px-4 py-2.5 bg-emerald-50/80 border border-emerald-200/60 rounded-2xl mb-5 transition-colors";
+          bannerDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+          bannerText.className = "text-xs font-semibold text-emerald-800";
+          bannerText.innerText = "Ease Appliances Online";
+          bannerBadge.className = "text-[11px] font-semibold text-emerald-700 bg-white px-2.5 py-0.5 rounded-full border border-emerald-200 shadow-2xs";
+          bannerBadge.innerText = selectedWifi ? selectedWifi : (assignedIp ? "Wi-Fi Online" : "Ready");
+        }
+        if (bleHeader) bleHeader.className = isBleConnected ? "text-indigo-600" : "text-slate-400";
+
+        const nameEl = document.getElementById('connected-esp32-name');
+        if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
+
+        const wifiEl = document.getElementById('connected-esp32-wifi-label');
+        if (wifiEl) wifiEl.innerText = selectedWifi || (assignedIp ? "Connected" : "Not Configured");
+
+        const statusPill = document.getElementById('connected-status-pill');
+        if (statusPill) {
+          statusPill.className = "inline-flex items-center text-xs font-semibold text-emerald-600";
+          if (isBleConnected && assignedIp) {
+            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> BLE & Wi-Fi';
+          } else if (isBleConnected) {
+            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-1.5 animate-pulse"></span> BLE Connected';
+          } else {
+            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Wi-Fi Online';
+          }
+        }
+
+        const wattsEl = document.getElementById('home-device-watts');
+        if (wattsEl) wattsEl.innerText = isPowerOn ? '45 W' : '0 W';
+
+        const ipEl = document.getElementById('esp32-ip-display');
+        if (ipEl) {
+          ipEl.innerText = assignedIp ? `IP: ${assignedIp}` : 'IP: Pending Wi-Fi';
+        }
+
+        const homeWifiBtn = document.getElementById('home-card-wifi-btn');
+        if (homeWifiBtn) {
+          if (assignedIp) {
+            homeWifiBtn.innerText = "Change Wi-Fi";
+            homeWifiBtn.className = "text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors";
+          } else {
+            homeWifiBtn.innerText = "Connect Wi-Fi";
+            homeWifiBtn.className = "text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-xl transition-colors";
+          }
+        }
+
+        const homeToggle = document.getElementById('home-quick-toggle');
+        const homeThumb = document.getElementById('home-toggle-thumb');
+        const homeIconBox = document.getElementById('home-plug-icon-box');
+
+        if (homeToggle && homeThumb && homeIconBox) {
+          if (isPowerOn) {
+            homeToggle.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-indigo-600";
+            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-6 flex items-center justify-center text-[10px] font-bold text-indigo-600";
+            homeThumb.innerText = "ON";
+            homeIconBox.className = "w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 transition-colors";
+          } else {
+            homeToggle.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300";
+            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500";
+            homeThumb.innerText = "OFF";
+            homeIconBox.className = "w-12 h-12 rounded-2xl bg-slate-200 text-slate-500 flex items-center justify-center transition-colors";
+          }
+        }
+      }
+
+      // Control Screen elements
+      const mainBtn = document.getElementById('main-power-btn');
+      const stateLabel = document.getElementById('main-power-state-label');
+      const stateSub = document.getElementById('main-power-state-sub');
+      const glow = document.getElementById('main-power-glow');
+      const controlWatts = document.getElementById('control-watts-val');
+      const controlWifiLabel = document.getElementById('control-network-label');
+      const controlWifiShort = document.getElementById('control-wifi-short');
+      const controlOfflineBanner = document.getElementById('control-offline-banner');
+      const controlHeaderPill = document.getElementById('control-header-status-pill');
+      const controlBleStatus = document.getElementById('control-ble-status');
+
+      if (controlOfflineBanner) {
+        if (!isOnline && hasConfiguredDevice) {
+          controlOfflineBanner.classList.remove('hidden');
+        } else {
+          controlOfflineBanner.classList.add('hidden');
+        }
+      }
+
+      if (controlHeaderPill) {
+        if (isOnline) {
+          controlHeaderPill.className = "inline-flex items-center text-[11px] text-emerald-600 font-medium";
+          controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span> Online';
+        } else {
+          controlHeaderPill.className = "inline-flex items-center text-[11px] text-rose-500 font-medium";
+          controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1"></span> Offline (No Power)';
+        }
+      }
+
+      if (!isOnline && hasConfiguredDevice) {
+        if (controlWatts) controlWatts.innerText = '0 W';
+        if (controlWifiLabel) controlWifiLabel.innerText = selectedWifi ? `${selectedWifi} (Offline)` : 'Offline';
+        if (controlWifiShort) controlWifiShort.innerText = 'Offline';
+        if (controlBleStatus) {
+          controlBleStatus.innerText = 'Offline';
+          controlBleStatus.className = 'text-xs font-bold text-slate-400 mt-1';
+        }
+
+        if (mainBtn && stateLabel && stateSub && glow) {
+          mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-md bg-slate-100 text-slate-400 border-2 border-dashed border-slate-300 opacity-80 cursor-not-allowed";
+          stateLabel.innerText = "OFFLINE";
+          stateSub.innerText = "Device Powered Off";
+          glow.className = "hidden";
+        }
+      } else {
+        if (controlWatts) controlWatts.innerText = isPowerOn ? '45 W' : '0 W';
+        if (controlWifiLabel) controlWifiLabel.innerText = selectedWifi || (assignedIp ? `Online (${assignedIp})` : 'Pending Wi-Fi');
+        if (controlWifiShort) controlWifiShort.innerText = selectedWifi ? selectedWifi.substring(0, 10) : (assignedIp ? 'Online' : 'None');
+        if (controlBleStatus) {
+          controlBleStatus.innerText = isBleConnected ? 'Active' : 'Standby';
+          controlBleStatus.className = isBleConnected ? 'text-xs font-bold text-emerald-600 mt-1' : 'text-xs font-bold text-slate-400 mt-1';
+        }
+
+        if (mainBtn && stateLabel && stateSub && glow) {
+          if (isPowerOn) {
+            mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 transform active:scale-95 shadow-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 shadow-indigo-500/40 text-white cursor-pointer";
+            stateLabel.innerText = "ON";
+            stateSub.innerText = "Relay Active (GPIO 2)";
+            glow.className = "absolute -inset-2 rounded-full bg-indigo-500/20 blur-lg transition-opacity duration-300 opacity-100";
+          } else {
+            mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 transform active:scale-95 shadow-lg bg-slate-200 text-slate-500 border border-slate-300 cursor-pointer";
+            stateLabel.innerText = "OFF";
+            stateSub.innerText = "Relay Inactive (GPIO 2)";
+            glow.className = "absolute -inset-2 rounded-full bg-transparent blur-none transition-opacity duration-300 opacity-0";
+          }
+        }
+      }
+
+      // Cloud Setup Tile Visibility: Hide if already setup, show ONLY if not setup
+      const isCloudConfigured = !!(appState.firebaseConfigured || localStorage.getItem('ease_firebase_url') || appState.firebaseHost);
+      const cloudTile = document.getElementById('tile-firebase-setup');
+      if (cloudTile) {
+        if (isCloudConfigured) {
+          cloudTile.classList.add('hidden');
+        } else {
+          cloudTile.classList.remove('hidden');
+        }
+      }
+
+      // Settings screen Cloud RTDB indicator
+      const settingsFbEl = document.getElementById('settings-firebase-url');
+      if (settingsFbEl) {
+        const url = appState.firebaseHost || localStorage.getItem('ease_firebase_url') || "";
+        if (url) {
+          settingsFbEl.innerText = url.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+          settingsFbEl.className = "text-[11px] text-emerald-600 font-mono truncate max-w-[170px] block";
+        } else {
+          settingsFbEl.innerText = "Not configured";
+          settingsFbEl.className = "text-[11px] text-slate-400 font-mono truncate max-w-[170px] block";
+        }
+      }
+    }
+
+    // Power Toggling Logic (Sends BLE, LAN HTTP, & Firebase RTDB)
+    async function setPowerState(isOn) {
+      if (!appState.isBleConnected && !appState.isDeviceOnline) {
+        showToast("⚠️ Device is powered off / offline");
+        return;
+      }
+
+      appState.isPowerOn = isOn;
+      localStorage.setItem('ease_power', isOn);
+      playTactileClick(isOn);
+      syncUI();
+
+      // Record activity locally
+      addActivityLog(isOn ? 'Power turned ON (GPIO 2 Active)' : 'Power turned OFF (GPIO 2 Inactive)', isOn ? 'on' : 'off', 'App UI');
+
+      // 1. Send via Firebase RTDB if configured
+      if (firebaseDb) {
+        try {
+          firebaseDb.ref('ease_relay').set(isOn ? "ON" : "OFF");
+          firebaseDb.ref('ease_history').push({
+            action: isOn ? "ON" : "OFF",
+            source: "App UI",
+            timestamp: Date.now()
+          });
+        } catch (e) {
+          console.warn("Firebase relay write error:", e);
+        }
+      }
+
+      // 2. Send via BLE if connected
+      if (relayChar) {
+        try {
+          const encoder = new TextEncoder();
+          await relayChar.writeValue(encoder.encode(isOn ? "ON" : "OFF"));
+        } catch (e) {
+          console.warn("BLE relay write error:", e);
+        }
+      }
+
+      // 3. Send via LAN proxy to ESP32
+      const ip = appState.assignedIp || "192.168.0.183";
+      fetch(`/api/esp32/relay?ip=${encodeURIComponent(ip)}&state=${isOn ? 'on' : 'off'}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data && typeof data.onCount === 'number') {
+            updateStatsFromData(data);
+          }
+        })
+        .catch(() => {});
+
+      showToast(`Relay turned ${isOn ? 'ON' : 'OFF'}`);
+    }
+
+    function toggleMainPower() {
+      const isOnline = appState.isBleConnected || appState.isDeviceOnline;
+      if (!isOnline) {
+        showToast("⚠️ Ease Appliances is powered off / offline");
+        return;
+      }
+      setPowerState(!appState.isPowerOn);
+    }
+
+    function togglePlugPower(e) {
+      e.stopPropagation();
+      const isOnline = appState.isBleConnected || appState.isDeviceOnline;
+      if (!isOnline) {
+        showToast("⚠️ Ease Appliances is powered off / offline");
+        return;
+      }
+      setPowerState(!appState.isPowerOn);
+    }
+
+    // ==============================================================
+    // REAL WEB BLUETOOTH SCAN & CONNECT TO "EASE APPLIANCES"
+    // ==============================================================
+    async function scanAndConnectBle() {
+      if (!navigator.bluetooth) {
+        showToast("Web Bluetooth not supported in this browser. Use Chrome on Mac/Android!");
+        simulateBleConnected();
+        return;
+      }
+
+      try {
+        showToast("Scanning for 'Ease Appliances'...");
+
+        bleDevice = await navigator.bluetooth.requestDevice({
+          filters: [
+            { services: [SERVICE_UUID] },
+            { name: "Ease Appliances" },
+            { namePrefix: "Ease" }
+          ],
+          optionalServices: [SERVICE_UUID]
+        });
+
+        showToast(`Connecting to ${bleDevice.name}...`);
+        bleDevice.addEventListener('gattserverdisconnected', onGattDisconnected);
+
+        bleServer = await bleDevice.gatt.connect();
+        const service = await bleServer.getPrimaryService(SERVICE_UUID);
+
+        // Retrieve characteristics
+        provChar = await service.getCharacteristic(CHAR_WIFI_PROV_UUID);
+        statusChar = await service.getCharacteristic(CHAR_STATUS_UUID);
+        relayChar = await service.getCharacteristic(CHAR_RELAY_UUID);
+
+        // Start notifications on status characteristic
+        await statusChar.startNotifications();
+        statusChar.addEventListener('characteristicvaluechanged', onStatusNotification);
+
+        appState.isBleConnected = true;
+        appState.bleDeviceName = bleDevice.name || "Ease Appliances";
+        localStorage.setItem('ease_name', appState.bleDeviceName);
+
+        // Read initial status directly from characteristic
+        let initialStatus = "";
+        try {
+          const rawStatus = await statusChar.readValue();
+          initialStatus = new TextDecoder('utf-8').decode(rawStatus);
+          console.log("[ESP32 Initial Status]", initialStatus);
+        } catch (e) {
+          console.warn("Could not read status char:", e);
+        }
+
+        // Read initial relay state
+        try {
+          const rawRelay = await relayChar.readValue();
+          const rStr = new TextDecoder().decode(rawRelay).toUpperCase();
+          appState.isPowerOn = (rStr === "ON" || rStr === "1" || rStr === "TRUE");
+          localStorage.setItem('ease_power', appState.isPowerOn);
+        } catch (e) {
+          console.warn("Could not read relay char:", e);
+        }
+
+        // Check if device is ALREADY connected to Wi-Fi
+        if (initialStatus.startsWith("CONNECTED:")) {
+          const parts = initialStatus.split(":");
+          const ip = parts[1];
+          const ssid = parts.length > 2 ? parts[2] : "";
+          if (ip) {
+            appState.assignedIp = ip;
+            localStorage.setItem('ease_ip', ip);
+          }
+          if (ssid) {
+            appState.selectedWifi = ssid;
+            localStorage.setItem('ease_wifi', ssid);
+          }
+          appState.isDeviceOnline = true;
+          showToast(`Ease Appliances Connected! (IP: ${appState.assignedIp})`);
+          syncUI();
+          // DO NOT navigate to wifi-setup! Device is already connected.
+          return;
+        }
+
+        // If NOT yet connected to Wi-Fi, open Wi-Fi setup
+        syncUI();
+        showToast("Connected to BLE! Configure Wi-Fi...");
+        setTimeout(() => {
+          navigateTo('wifi-setup');
+        }, 500);
+
+      } catch (err) {
+        console.warn("BLE Connection cancelled or failed:", err);
+        if (err.name !== 'NotFoundError') {
+          showToast("Bluetooth error: " + err.message);
+        }
+      }
+    }
+
+    function onStatusNotification(event) {
+      const decoder = new TextDecoder('utf-8');
+      const statusValue = decoder.decode(event.target.value);
+      console.log("[ESP32 Status Notification]", statusValue);
+
+      if (statusValue.startsWith("CONNECTED:")) {
+        const parts = statusValue.split(":");
+        const ip = parts[1];
+        const ssid = parts.length > 2 ? parts[2] : appState.selectedWifi;
+        appState.assignedIp = ip;
+        if (ssid) appState.selectedWifi = ssid;
+        appState.isDeviceOnline = true;
+        localStorage.setItem('ease_ip', ip);
+        if (ssid) localStorage.setItem('ease_wifi', ssid);
+
+        showToast(`Ease Appliances Online! IP: ${ip}`);
+        const readyNet = document.getElementById('ready-plug-network');
+        if (readyNet) readyNet.innerText = `Wi-Fi: ${appState.selectedWifi} (IP: ${ip})`;
+        syncUI();
+        if (appState.currentView === 'setting-up') {
+          navigateTo('ready');
+        }
+      } else if (statusValue === "CONNECTING") {
+        showToast("ESP32 connecting to router...");
+      } else if (statusValue === "CONNECT_FAILED") {
+        showToast("Wi-Fi connection failed on ESP32");
+        navigateTo('wifi-setup');
+      }
+    }
+
+    function onGattDisconnected() {
+      appState.isBleConnected = false;
+      showToast("Ease Appliances BLE Disconnected");
+      syncUI();
+    }
+
+    function disconnectBle() {
+      if (bleDevice && bleDevice.gatt.connected) {
+        bleDevice.gatt.disconnect();
+      }
+      appState.isBleConnected = false;
+      showToast("Disconnected from Ease Appliances");
+      syncUI();
+    }
+
+    function unpairDevice() {
+      if (confirm("Disconnect and forget Ease Appliances?")) {
+        disconnectBle();
+        localStorage.removeItem('ease_ip');
+        localStorage.removeItem('ease_wifi');
+        localStorage.removeItem('ease_power');
+        appState.assignedIp = "";
+        appState.selectedWifi = "";
+        appState.isDeviceOnline = false;
+        appState.isBleConnected = false;
+        syncUI();
+        showToast("Device forgotten");
+      }
+    }
+
+    function simulateBleConnected() {
+      appState.isBleConnected = true;
+      appState.bleDeviceName = "Ease Appliances (Simulated)";
+      showToast("Ease Appliances Connected!");
+      syncUI();
+      setTimeout(() => {
+        navigateTo('wifi-setup');
+      }, 500);
+    }
+
+    // ==============================================================
+    // LIVE ACTIVITY LOG & POWER ANALYTICS
+    // ==============================================================
+    function addActivityLog(message, actionType = 'info', source = 'App') {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const entry = {
+        id: Date.now() + Math.random(),
+        time: timeStr,
+        message: message,
+        type: actionType,
+        source: source
+      };
+      if (!appState.activityLogs) appState.activityLogs = [];
+      appState.activityLogs.unshift(entry);
+      if (appState.activityLogs.length > 40) {
+        appState.activityLogs.pop();
+      }
+      try {
+        localStorage.setItem('ease_activity_logs', JSON.stringify(appState.activityLogs));
+      } catch (e) {}
+      renderActivityLogs();
+    }
+
+    function renderActivityLogs() {
+      const listEl = document.getElementById('activity-log-list');
+      const badgeEl = document.getElementById('log-count-badge');
+      if (!listEl) return;
+      const logs = appState.activityLogs || [];
+      if (badgeEl) badgeEl.innerText = `${logs.length} events`;
+
+      if (logs.length === 0) {
+        listEl.innerHTML = '<div class="text-xs text-slate-400 text-center py-2">No power events recorded yet</div>';
+        return;
+      }
+
+      let html = '';
+      logs.slice(0, 15).forEach(log => {
+        let tagColor = 'bg-slate-100 text-slate-600 border border-slate-200';
+        let dotColor = 'bg-slate-400';
+        if (log.type === 'on') {
+          tagColor = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+          dotColor = 'bg-emerald-500';
+        } else if (log.type === 'off') {
+          tagColor = 'bg-slate-100 text-slate-600 border border-slate-200';
+          dotColor = 'bg-slate-400';
+        } else if (log.type === 'reset') {
+          tagColor = 'bg-rose-50 text-rose-700 border border-rose-200';
+          dotColor = 'bg-rose-500';
+        } else if (log.type === 'config' || log.type === 'sync') {
+          tagColor = 'bg-amber-50 text-amber-700 border border-amber-200';
+          dotColor = 'bg-amber-500';
+        }
+
+        html += `
+          <div class="flex items-center justify-between text-[11px] py-1 border-b border-slate-100 last:border-b-0">
+            <div class="flex items-center space-x-2 truncate pr-2">
+              <span class="w-1.5 h-1.5 rounded-full ${dotColor} flex-shrink-0"></span>
+              <span class="font-medium text-slate-700 truncate">${escapeHtml(log.message)}</span>
+            </div>
+            <div class="flex items-center space-x-1.5 flex-shrink-0">
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${tagColor}">${escapeHtml(log.source || 'App')}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${escapeHtml(log.time)}</span>
+            </div>
+          </div>
+        `;
+      });
+      listEl.innerHTML = html;
+    }
+
+    function updateStatsFromData(data) {
+      if (!data) return;
+      if (typeof data.onCount === 'number') {
+        appState.onCount = data.onCount;
+        localStorage.setItem('ease_on_count', data.onCount);
+        const el = document.getElementById('stat-on-count');
+        if (el) el.innerText = data.onCount;
+      }
+      if (typeof data.offCount === 'number') {
+        appState.offCount = data.offCount;
+        localStorage.setItem('ease_off_count', data.offCount);
+        const el = document.getElementById('stat-off-count');
+        if (el) el.innerText = data.offCount;
+      }
+      if (typeof data.totalToggles === 'number') {
+        appState.totalToggles = data.totalToggles;
+        localStorage.setItem('ease_total_toggles', data.totalToggles);
+        const el = document.getElementById('stat-total-toggles');
+        if (el) el.innerText = data.totalToggles;
+      }
+    }
+
+    async function resetStatsCounters() {
+      if (!confirm("Reset power ON/OFF counters to 0?")) return;
+      try {
+        const ip = appState.assignedIp || "192.168.0.183";
+        await fetch(`/api/esp32/stats-reset?ip=${encodeURIComponent(ip)}`);
+
+        if (firebaseDb) {
+          try {
+            firebaseDb.ref('ease_stats').set({
+              onCount: 0,
+              offCount: 0,
+              totalToggles: 0,
+              lastReset: Date.now()
+            });
+          } catch (e) {}
+        }
+
+        appState.onCount = 0;
+        appState.offCount = 0;
+        appState.totalToggles = 0;
+        localStorage.setItem('ease_on_count', '0');
+        localStorage.setItem('ease_off_count', '0');
+        localStorage.setItem('ease_total_toggles', '0');
+
+        const onEl = document.getElementById('stat-on-count');
+        const offEl = document.getElementById('stat-off-count');
+        const totEl = document.getElementById('stat-total-toggles');
+        if (onEl) onEl.innerText = '0';
+        if (offEl) offEl.innerText = '0';
+        if (totEl) totEl.innerText = '0';
+
+        addActivityLog("Power counters reset to 0", "reset", "User");
+        showToast("Power analytics counters reset to 0");
+      } catch (e) {
+        showToast("Error resetting stats: " + e.message);
+      }
+    }
+
+    // ==============================================================
+    // FIREBASE REALTIME DATABASE CONTROLLER
+    // ==============================================================
+    function openFirebaseModal() {
+      const modal = document.getElementById('modal-firebase');
+      if (modal) {
+        const urlInput = document.getElementById('firebase-url-input');
+        const authInput = document.getElementById('firebase-auth-input');
+        if (urlInput) urlInput.value = localStorage.getItem('ease_firebase_url') || "";
+        if (authInput) authInput.value = localStorage.getItem('ease_firebase_auth') || "";
+        modal.classList.remove('hidden');
+      }
+    }
+
+    function closeFirebaseModal() {
+      const modal = document.getElementById('modal-firebase');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function saveFirebaseConfig() {
+      const urlInput = document.getElementById('firebase-url-input');
+      const authInput = document.getElementById('firebase-auth-input');
+      const btnText = document.getElementById('save-firebase-btn-text');
+      let rawUrl = (urlInput ? urlInput.value.trim() : '');
+      let auth = (authInput ? authInput.value.trim() : '');
+
+      if (!rawUrl) {
+        showToast("Please enter a Firebase Database URL");
+        return;
+      }
+
+      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+        rawUrl = 'https://' + rawUrl;
+      }
+
+      // Host for ESP32 HTTP requests
+      let host = rawUrl.replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
+
+      if (btnText) btnText.innerText = "Syncing with ESP32...";
+
+      try {
+        localStorage.setItem('ease_firebase_url', rawUrl);
+        localStorage.setItem('ease_firebase_auth', auth);
+
+        initFirebaseClient(rawUrl, auth);
+
+        const ip = appState.assignedIp || "192.168.0.183";
+        const resp = await fetch(`/api/esp32/firebase-config?ip=${encodeURIComponent(ip)}&host=${encodeURIComponent(host)}&auth=${encodeURIComponent(auth)}`);
+        const result = await resp.json();
+
+        if (result.success) {
+          appState.firebaseConfigured = true;
+          appState.firebaseHost = rawUrl;
+          showToast("Firebase RTDB synced to ESP32!");
+          addActivityLog(`Firebase configured (${host})`, 'config', 'Cloud Setup');
+          const cloudStatusEl = document.getElementById('firebase-cloud-status');
+          if (cloudStatusEl) cloudStatusEl.innerText = `Connected • Syncing (${host})`;
+        } else {
+          appState.firebaseConfigured = true;
+          appState.firebaseHost = rawUrl;
+          showToast("Saved in Web App! ESP32 sync pending");
+        }
+        syncUI();
+        closeFirebaseModal();
+      } catch (err) {
+        console.warn("Firebase config error:", err);
+        appState.firebaseConfigured = true;
+        appState.firebaseHost = rawUrl;
+        syncUI();
+        showToast("Saved in Web App! (ESP32 will sync on next poll)");
+        closeFirebaseModal();
+      } finally {
+        if (btnText) btnText.innerText = "Save & Sync with ESP32";
+      }
+    }
+
+    async function clearFirebaseConfig() {
+      if (!confirm("Clear Firebase configuration?")) return;
+      localStorage.removeItem('ease_firebase_url');
+      localStorage.removeItem('ease_firebase_auth');
+      const urlInput = document.getElementById('firebase-url-input');
+      const authInput = document.getElementById('firebase-auth-input');
+      if (urlInput) urlInput.value = "";
+      if (authInput) authInput.value = "";
+
+      appState.firebaseConfigured = false;
+      appState.firebaseHost = "";
+
+      const ip = appState.assignedIp || "192.168.0.183";
+      try {
+        await fetch(`/api/esp32/firebase-config?ip=${encodeURIComponent(ip)}&clear=1`);
+      } catch (e) {}
+
+      isFirebaseInited = false;
+      firebaseDb = null;
+      const cloudStatusEl = document.getElementById('firebase-cloud-status');
+      if (cloudStatusEl) cloudStatusEl.innerText = "Control from Phone / Anywhere";
+      addActivityLog("Firebase cloud configuration cleared", 'config', 'User');
+      syncUI();
+      closeFirebaseModal();
+      showToast("Firebase configuration cleared");
+    }
+
+    async function testFirebaseDirectWrite() {
+      const urlInput = document.getElementById('firebase-url-input');
+      const authInput = document.getElementById('firebase-auth-input');
+      let rawUrl = (urlInput ? urlInput.value.trim() : '') || localStorage.getItem('ease_firebase_url');
+      let auth = (authInput ? authInput.value.trim() : '') || localStorage.getItem('ease_firebase_auth');
+
+      if (!rawUrl) {
+        showToast("Enter Database URL first");
+        return;
+      }
+      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+        rawUrl = 'https://' + rawUrl;
+      }
+
+      try {
+        initFirebaseClient(rawUrl, auth);
+        if (!firebaseDb) throw new Error("Firebase DB initialization failed");
+
+        await firebaseDb.ref('ease_ping').set({
+          timestamp: Date.now(),
+          iso: new Date().toISOString(),
+          client: "Ease Appliances App"
+        });
+
+        showToast("Cloud Ping Successful! (Read/Write OK)");
+        addActivityLog("Firebase Cloud ping test successful", 'sync', 'Firebase RTDB');
+      } catch (e) {
+        showToast("Cloud write test failed: " + e.message);
+      }
+    }
+
+    function initFirebaseClient(rawUrl, auth) {
+      if (!rawUrl || typeof firebase === 'undefined') return;
+      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+        rawUrl = 'https://' + rawUrl;
+      }
+      try {
+        if (firebase.apps.length > 0) {
+          firebaseApp = firebase.app();
+        } else {
+          firebaseApp = firebase.initializeApp({
+            databaseURL: rawUrl
+          });
+        }
+        firebaseDb = firebase.database();
+        isFirebaseInited = true;
+
+        // Listen for relay state changes from phone/cloud
+        firebaseDb.ref('ease_relay').on('value', (snapshot) => {
+          const val = snapshot.val();
+          if (val !== null && val !== undefined) {
+            const boolVal = (val === true || val === 'ON' || val === 'on' || val === 1 || val === '1');
+            if (appState.isPowerOn !== boolVal) {
+              appState.isPowerOn = boolVal;
+              localStorage.setItem('ease_power', boolVal);
+              playTactileClick(boolVal);
+              syncUI();
+              addActivityLog(`Cloud changed Power to ${boolVal ? 'ON' : 'OFF'} (GPIO 2)`, boolVal ? 'on' : 'off', 'Firebase RTDB');
+            }
+          }
+        });
+
+        // Listen for stats
+        firebaseDb.ref('ease_stats').on('value', (snapshot) => {
+          const stats = snapshot.val();
+          if (stats) {
+            updateStatsFromData(stats);
+          }
+        });
+
+        const cloudStatusEl = document.getElementById('firebase-cloud-status');
+        if (cloudStatusEl) cloudStatusEl.innerText = "Cloud Active • Realtime Sync";
+        console.log("[Firebase] Connected to RTDB:", rawUrl);
+      } catch (e) {
+        console.warn("[Firebase] Init error:", e);
+      }
+    }
+
+    let failedPollCount = 0;
+
+    function handleDeviceOffline() {
+      failedPollCount++;
+      // After 2 consecutive failures (~6-8s without heartbeat), declare device offline
+      if (failedPollCount >= 2) {
+        if (appState.isDeviceOnline) {
+          appState.isDeviceOnline = false;
+          addActivityLog("Ease Appliances lost power / offline", "off", "Heartbeat");
+          showToast("Ease Appliances offline (Power lost)");
+          syncUI();
+        }
+      }
+    }
+
+    // Periodic check to verify ESP32 is online on LAN
+    async function checkDeviceStatusOnline() {
+      const ip = appState.assignedIp || "192.168.0.183";
+      try {
+        const res = await fetch(`/api/esp32/status?ip=${encodeURIComponent(ip)}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.ip && !data.error && data.online !== false) {
+            failedPollCount = 0;
+            const wasOffline = !appState.isDeviceOnline;
+            appState.isDeviceOnline = true;
+            if (wasOffline) {
+              addActivityLog("Ease Appliances powered ON & reconnected", "sync", "Heartbeat");
+              showToast("Ease Appliances reconnected!");
+            }
+            appState.assignedIp = data.ip;
+            if (data.ssid) appState.selectedWifi = data.ssid;
+            if (typeof data.relay === 'boolean') {
+              if (appState.isPowerOn !== data.relay) {
+                appState.isPowerOn = data.relay;
+                addActivityLog(`Power status changed to ${data.relay ? 'ON' : 'OFF'} (GPIO 2)`, data.relay ? 'on' : 'off', 'ESP32 Status');
+              }
+            }
+
+            updateStatsFromData(data);
+
+            if (typeof data.firebaseConfigured === 'boolean') {
+              appState.firebaseConfigured = data.firebaseConfigured;
+              if (data.firebaseHost) {
+                appState.firebaseHost = data.firebaseHost;
+                if (!localStorage.getItem('ease_firebase_url')) {
+                  localStorage.setItem('ease_firebase_url', data.firebaseHost);
+                }
+                if (!isFirebaseInited) {
+                  initFirebaseClient(data.firebaseHost, localStorage.getItem('ease_firebase_auth'));
+                }
+              }
+            }
+
+            const cloudStatusEl = document.getElementById('firebase-cloud-status');
+            if (cloudStatusEl) {
+              if (data.firebaseConfigured) {
+                cloudStatusEl.innerText = `Connected • Syncing (${data.firebaseHost})`;
+              } else if (isFirebaseInited) {
+                cloudStatusEl.innerText = "Browser Active • ESP32 Pending";
+              }
+            }
+
+            const testPinEl = document.getElementById('settings-gpio-pin');
+            if (testPinEl && data.gpio) {
+              testPinEl.innerText = `GPIO ${data.gpio} (Testing Pin)`;
+            }
+
+            localStorage.setItem('ease_ip', data.ip);
+            if (data.ssid) localStorage.setItem('ease_wifi', data.ssid);
+            localStorage.setItem('ease_power', appState.isPowerOn);
+
+            syncUI();
+            return;
+          }
+        }
+        handleDeviceOffline();
+      } catch (e) {
+        handleDeviceOffline();
+      }
+    }
+
+    // ==============================================================
+    // REAL WI-FI NETWORKS SCANNER (MAC SYSTEM API)
+    // ==============================================================
+    async function loadRealWifiNetworks(isManualRefresh) {
+      const container = document.getElementById('real-wifi-list-container');
+      const refreshIcon = document.getElementById('wifi-refresh-icon');
+      const refreshText = document.getElementById('wifi-scan-btn-text');
+
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
+      if (refreshText) refreshText.innerText = "Scanning...";
+
+      if (isManualRefresh) showToast("Scanning real Wi-Fi networks on your system...");
+
+      try {
+        const response = await fetch('/api/wifi-networks', { cache: 'no-store' });
+        if (response.ok) {
+          const networks = await response.json();
+          appState.realNetworks = networks;
+          renderRealWifiList(networks);
+          if (isManualRefresh) showToast(`Found ${networks.length} real Wi-Fi networks!`);
+        } else {
+          throw new Error('API response not ok');
+        }
+      } catch (err) {
+        console.warn("Could not fetch /api/wifi-networks, using detected fallback:", err);
+        const fallback = [
+          { ssid: "Home Wi-Fi (Detected)", signal: "Strong", isCurrent: true },
+          { ssid: "JARVISTECH", signal: "Good", isCurrent: false },
+          { ssid: "Rajnish-5G", signal: "Good", isCurrent: false }
+        ];
+        renderRealWifiList(fallback);
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+        if (refreshText) refreshText.innerText = "Rescan";
+      }
+    }
+
+    function renderRealWifiList(networks) {
+      const container = document.getElementById('real-wifi-list-container');
+      if (!container) return;
+
+      if (!networks || networks.length === 0) {
+        container.innerHTML = `
+          <div class="py-6 text-center text-xs text-slate-400">
+            No networks detected. Click Rescan or enter SSID manually.
+          </div>
+        `;
+        return;
+      }
+
+      if (!appState.selectedWifi) {
+        const current = networks.find(n => n.isCurrent) || networks[0];
+        appState.selectedWifi = current.ssid;
+        document.getElementById('selected-wifi-title').innerText = current.ssid;
+      }
+
+      let html = '';
+      networks.forEach((net) => {
+        const isSelected = (net.ssid === appState.selectedWifi);
+        const borderClass = isSelected ? 'border-2 border-indigo-600 bg-indigo-50/70' : 'border border-slate-200 bg-white hover:border-slate-300';
+        const badge = net.isCurrent 
+          ? `<span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Current</span>`
+          : `<span class="text-xs text-slate-400 font-medium">${net.signal}</span>`;
+
+        const checkIcon = isSelected 
+          ? `<div class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center wifi-check">
+               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+             </div>`
+          : `<div class="w-5 h-5 rounded-full border border-slate-300 wifi-check hidden"></div>`;
+
+        html += `
+          <div onclick="selectRealWifi('${escapeHtml(net.ssid)}')" class="wifi-row ${borderClass} rounded-2xl p-3 flex items-center justify-between cursor-pointer transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 ${isSelected ? 'text-indigo-600' : 'text-slate-400'}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+              <span class="text-sm font-semibold text-slate-800 truncate max-w-[170px]">${escapeHtml(net.ssid)}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              ${badge}
+              ${checkIcon}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+        <div onclick="promptManualSsid()" class="border border-dashed border-slate-300 hover:border-indigo-400 rounded-2xl p-2.5 flex items-center justify-center space-x-2 text-xs font-semibold text-slate-600 hover:text-indigo-600 cursor-pointer transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          <span>Other Network (Hidden SSID)</span>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function selectRealWifi(ssid) {
+      appState.selectedWifi = ssid;
+      document.getElementById('selected-wifi-title').innerText = ssid;
+      renderRealWifiList(appState.realNetworks);
+      showToast(`Selected: ${ssid}`);
+      document.getElementById('wifi-password-input').focus();
+    }
+
+    function promptManualSsid() {
+      const custom = prompt("Enter Wi-Fi Network Name (SSID):");
+      if (custom && custom.trim()) {
+        appState.selectedWifi = custom.trim();
+        appState.realNetworks.unshift({ ssid: custom.trim(), signal: "Custom", isCurrent: false });
+        renderRealWifiList(appState.realNetworks);
+        showToast(`Selected: ${custom.trim()}`);
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('wifi-password-input');
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    // ==============================================================
+    // SEND WI-FI CREDENTIALS OVER BLE TO ESP32
+    // ==============================================================
+    async function provisionWifiToEsp32() {
+      const password = document.getElementById('wifi-password-input').value;
+      const err = document.getElementById('wifi-validation-error');
+
+      if (!appState.selectedWifi) {
+        showToast("Please tap a Wi-Fi network first");
+        return;
+      }
+
+      err.classList.add('hidden');
+      navigateTo('setting-up');
+
+      const payload = JSON.stringify({
+        ssid: appState.selectedWifi,
+        password: password
+      });
+
+      // If connected via real Web Bluetooth, send payload directly to ESP32
+      if (provChar) {
+        try {
+          const encoder = new TextEncoder();
+          await provChar.writeValue(encoder.encode(payload));
+          showToast(`Transmitted credentials for ${appState.selectedWifi}`);
+        } catch (e) {
+          console.warn("Could not write Wi-Fi credentials to BLE char:", e);
+        }
+      } else {
+        // Simulated progress
+        setTimeout(() => {
+          document.getElementById('step-connecting-indicator').className = "w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center";
+          document.getElementById('step-connecting-indicator').innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+
+          document.getElementById('step-ready-indicator').className = "w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center";
+          document.getElementById('step-ready-indicator').innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+
+          appState.assignedIp = "192.168.0.105";
+          document.getElementById('ready-plug-network').innerText = `Wi-Fi: ${appState.selectedWifi} (IP: 192.168.0.105)`;
+          syncUI();
+          setTimeout(() => navigateTo('ready'), 800);
+        }, 1600);
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // PWA & Service Worker
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('pwa-install-btn');
+      const badge = document.getElementById('island-install-badge');
+      if (installBtn) installBtn.classList.remove('hidden');
+      if (badge) badge.classList.remove('hidden');
+    });
+
+    function triggerPwaInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+          document.getElementById('pwa-install-btn').classList.add('hidden');
+          document.getElementById('island-install-badge').classList.add('hidden');
+        });
+      } else {
+        showToast("To install: choose 'Add to Home Screen' in browser menu");
+      }
+    }
+
+    function handlePwaInstallClick() {
+      if (deferredPrompt) triggerPwaInstall();
+      else showToast("Ease Appliances PWA Ready");
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=2.1.2')
+          .then((reg) => reg.update())
+          .catch((err) => console.log('SW registration error:', err));
+      });
+    }
+
+    // Startup
+    window.addEventListener('DOMContentLoaded', () => {
+      updateClock();
+      setInterval(updateClock, 30000);
+      renderActivityLogs();
+      const savedFbUrl = localStorage.getItem('ease_firebase_url');
+      if (savedFbUrl) {
+        initFirebaseClient(savedFbUrl, localStorage.getItem('ease_firebase_auth'));
+      }
+      syncUI();
+      loadRealWifiNetworks(false);
+      checkDeviceStatusOnline();
+      setInterval(checkDeviceStatusOnline, 4000);
+    });
+  </script>
+</body>
+</html>

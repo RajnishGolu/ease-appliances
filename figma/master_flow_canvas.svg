@@ -1,0 +1,2217 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2630 3172" width="2630" height="3172">
+  <defs>
+    <filter id="masterCardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#0F172A" flood-opacity="0.1" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.05" />
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#6366F1"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#EF4444"/>
+    </marker>
+  </defs>
+
+  <!-- Master Canvas Background -->
+  <rect width="2630" height="3172" fill="#0F172A" />
+  
+  <!-- Canvas Header -->
+  <g id="Master_Header" transform="translate(100, 60)">
+    <text x="0" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="34" font-weight="900" fill="#FFFFFF" letter-spacing="-0.5">My Smart Plug — Complete Figma Prototype Flow</text>
+    <text x="0" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="500" fill="#94A3B8">High-Fidelity Mobile Design System (390 × 844 px) • 12 Screens • Consumer Terminology • Reusable Components</text>
+  </g>
+
+
+    <!-- Screen: 1. Splash Screen -->
+    <g id="Frame_01_splash_screen" transform="translate(100, 220)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">1. Splash Screen</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Auto-transition or tap</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_0_0)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="390" height="844" fill="url(#splashGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#FFFFFF">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#FFFFFF">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#FFFFFF" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#FFFFFF"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+  <!-- Content -->
+  <g id="Content" transform="translate(0, 0)">
+    <!-- Ambient Glow behind logo -->
+    <circle cx="195" cy="380" r="110" fill="#6366F1" opacity="0.25" filter="url(#powerGlow)" />
+    
+    <!-- Logo Icon -->
+    <g id="App_Logo" transform="translate(135, 320)">
+      <rect width="120" height="120" rx="32" fill="url(#primaryGrad)" filter="url(#btnShadow)" stroke="#818CF8" stroke-width="1.5" />
+      <!-- Power Icon inside Logo -->
+      <path d="M60 36V60M44 45C38 52 38 65 45 74C52 82 68 82 75 74C82 65 82 52 76 45" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+
+    <!-- Typography -->
+    <g id="Typography">
+      <rect x="145" y="240" width="100" height="26" rx="13" fill="#6366F1" opacity="0.2" stroke="#818CF8" stroke-width="1" stroke-opacity="0.4"/>
+      <text x="195" y="257" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#A5B4FC" text-anchor="middle" letter-spacing="1">SMART HOME</text>
+      
+      <text x="195" y="485" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.5">My Smart Plug</text>
+      <text x="195" y="515" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#C7D2FE" text-anchor="middle">Control your home, from anywhere.</text>
+    </g>
+
+    <!-- Loading Indicator -->
+    <g id="Loading_Dots" transform="translate(177, 720)">
+      <circle cx="6" cy="6" r="4" fill="#818CF8" />
+      <circle cx="18" cy="6" r="4" fill="#A5B4FC" opacity="0.8" />
+      <circle cx="30" cy="6" r="4" fill="#C7D2FE" opacity="0.5" />
+    </g>
+    <text x="195" y="754" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="500" fill="#818CF8" text-anchor="middle">Auto-launching Home...</text>
+  </g>
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#FFFFFF" opacity="0.4" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 2. Home / My Devices -->
+    <g id="Frame_02_home_my_devices" transform="translate(610, 220)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">2. Home / My Devices</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Device list & quick switch</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_1_0)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+
+  <!-- Header -->
+  <g id="Header" transform="translate(24, 60)">
+    <text x="0" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#6366F1" letter-spacing="0.8">GOOD EVENING</text>
+    <text x="0" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">My Smart Plugs</text>
+    <!-- Avatar -->
+    <g transform="translate(302, 4)">
+      <circle cx="20" cy="20" r="20" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1.5"/>
+      <text x="20" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#4F46E5" text-anchor="middle">RM</text>
+    </g>
+  </g>
+
+  <!-- Device Card: Living Room -->
+  <g id="Device_Card" transform="translate(24, 136)" filter="url(#cardShadow)">
+    <rect width="342" height="152" rx="24" fill="#FFFFFF" stroke="#F1F5F9" stroke-width="1" />
+    
+    <!-- Plug Icon Thumbnail -->
+    <g transform="translate(20, 20)">
+      <rect width="48" height="48" rx="16" fill="#EEF2FF" />
+      <path d="M24 14V22M17 22V26C17 29.866 20.134 33 24 33C27.866 33 31 29.866 31 26V22M20 14V22M28 14V22M24 33V37" stroke="#4F46E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Plug Info -->
+    <g transform="translate(80, 22)">
+      <text x="0" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="17" font-weight="700" fill="#0F172A">Living Room</text>
+      <!-- Status Badge -->
+      <g transform="translate(0, 26)">
+        <rect width="84" height="22" rx="11" fill="#ECFDF5" />
+        <circle cx="10" cy="11" r="3.5" fill="#10B981" />
+        <text x="18" y="15" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#059669">Connected</text>
+      </g>
+      <!-- Wi-Fi Icon -->
+      <g transform="translate(94, 28)" fill="#94A3B8">
+        <path d="M6 2C3.6 2 1.4 3 0 4.6L6 11L12 4.6C10.6 3 8.4 2 6 2Z"/>
+      </g>
+    </g>
+
+    <!-- Power Toggle Switch -->
+    <g id="Toggle_Switch" transform="translate(262, 28)">
+      <rect width="60" height="34" rx="17" fill="#6366F1" />
+      <circle cx="43" cy="17" r="13" fill="#FFFFFF" filter="url(#cardShadow)" />
+      <!-- Power Icon inside thumb -->
+      <path d="M43 11V16M39.5 13.5C37.5 15.5 37.5 18.5 39.5 20.5C41.5 22.5 44.5 22.5 46.5 20.5C48.5 18.5 48.5 15.5 46.5 13.5" fill="none" stroke="#6366F1" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="104" x2="322" y2="104" stroke="#F1F5F9" stroke-width="1" />
+
+    <!-- Card Footer -->
+    <g transform="translate(20, 118)">
+      <text x="0" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#64748B">Current State: <tspan font-weight="700" fill="#4F46E5">ON</tspan></text>
+      <text x="302" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="end">Updated just now</text>
+    </g>
+  </g>
+
+  <!-- Ambient Card / Quick Tips -->
+  <g id="Tip_Card" transform="translate(24, 308)">
+    <rect width="342" height="88" rx="20" fill="#EEF2FF" stroke="#E0E7FF" stroke-width="1" />
+    <g transform="translate(18, 18)">
+      <rect width="36" height="36" rx="12" fill="#6366F1" />
+      <path d="M18 10V12M18 24V26M26 18H24M12 18H10M23.6 12.4L22.2 13.8M13.8 22.2L12.4 23.6M23.6 23.6L22.2 22.2M13.8 13.8L12.4 12.4M21 18C21 19.657 19.657 21 18 21C16.343 21 15 19.657 15 18C15 16.343 16.343 15 18 15C19.657 15 21 16.343 21 18Z" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(68, 22)">
+      <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#1E1B4B">Tap card to inspect</text>
+      <text x="0" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="400" fill="#4338CA">Open large circular power dial and Wi-Fi options.</text>
+    </g>
+  </g>
+
+  <!-- Add Smart Plug Button -->
+  <g id="Btn_Add_Smart_Plug" transform="translate(24, 740)" filter="url(#btnShadow)" cursor="pointer">
+    <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+    <!-- Plus Icon -->
+    <path d="M152 28H190M171 19V37" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+    <text x="180" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Add Smart Plug</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 3. Add Smart Plug -->
+    <g id="Frame_03_add_smart_plug" transform="translate(1120, 220)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">3. Add Smart Plug</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Setup initiation</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_2_0)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <!-- Header Step -->
+  <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#94A3B8" text-anchor="middle" letter-spacing="1">STEP 1 OF 3</text>
+
+  <!-- Titles -->
+  <g id="Titles" transform="translate(24, 120)">
+    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">Add your Smart Plug</text>
+    <text x="0" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B">Let's connect your Smart Plug to your home Wi-Fi.</text>
+  </g>
+
+  <!-- Illustration of Smart Plug -->
+  <g id="Illustration" transform="translate(95, 230)">
+    <!-- Soft Background Circle -->
+    <circle cx="100" cy="100" r="100" fill="#EEF2FF" />
+    <circle cx="100" cy="100" r="75" fill="#E0E7FF" opacity="0.6" />
+    
+    <!-- Smart Plug Body -->
+    <rect x="45" y="45" width="110" height="110" rx="28" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" filter="url(#cardShadow)" />
+    
+    <!-- Power LED -->
+    <circle cx="100" cy="72" r="4" fill="#6366F1" />
+    
+    <!-- Sockets -->
+    <rect x="76" y="92" width="8" height="18" rx="3" fill="#1E293B" />
+    <rect x="116" y="92" width="8" height="18" rx="3" fill="#1E293B" />
+    <circle cx="100" cy="122" r="5" fill="#94A3B8" />
+
+    <!-- Plus Badge -->
+    <g transform="translate(136, 136)">
+      <circle cx="18" cy="18" r="18" fill="#6366F1" filter="url(#btnShadow)" />
+      <path d="M18 11V25M11 18H25" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+    </g>
+  </g>
+
+  <!-- Guidance Steps -->
+  <g id="Instructions" transform="translate(36, 500)">
+    <g transform="translate(0, 0)">
+      <circle cx="14" cy="14" r="14" fill="#EEF2FF" />
+      <text x="14" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#4F46E5" text-anchor="middle">1</text>
+      <text x="40" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="500" fill="#334155">Plug device into any standard electrical wall socket</text>
+    </g>
+    <g transform="translate(0, 44)">
+      <circle cx="14" cy="14" r="14" fill="#EEF2FF" />
+      <text x="14" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#4F46E5" text-anchor="middle">2</text>
+      <text x="40" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="500" fill="#334155">Verify that the indicator light is slowly blinking</text>
+    </g>
+  </g>
+
+  <!-- Action Buttons -->
+  <g id="Actions" transform="translate(24, 700)">
+    <!-- Primary Button: Start Setup -->
+    <g id="Btn_Start_Setup" filter="url(#btnShadow)" cursor="pointer">
+      <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+      <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Start Setup</text>
+    </g>
+    
+    <!-- Secondary Button: Connect Existing -->
+    <text x="171" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="600" fill="#6366F1" text-anchor="middle" cursor="pointer">Already configured? Connect existing plug</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 4. Finding Smart Plug -->
+    <g id="Frame_04_finding_smart_plug" transform="translate(1630, 220)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">4. Finding Smart Plug</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Radar discovery</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_3_0)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#94A3B8" text-anchor="middle" letter-spacing="1">STEP 2 OF 3</text>
+
+  <!-- Titles -->
+  <g id="Titles" transform="translate(24, 120)">
+    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">Looking for your Smart Plug</text>
+    <text x="0" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B">Make sure your Smart Plug is powered on.</text>
+  </g>
+
+  <!-- Radar Discovery Animation Visual -->
+  <g id="Radar_Animation" transform="translate(195, 360)">
+    <!-- Expanding Waves -->
+    <circle cx="0" cy="0" r="130" fill="none" stroke="#C7D2FE" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" />
+    <circle cx="0" cy="0" r="95" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.6" />
+    <circle cx="0" cy="0" r="65" fill="#EEF2FF" />
+    
+    <!-- Central Searching Plug -->
+    <circle cx="0" cy="0" r="42" fill="url(#primaryGrad)" filter="url(#powerGlow)" />
+    <!-- Plug Vector inside -->
+    <g transform="translate(-16, -16)">
+      <path d="M16 6V12M9 12V16C9 19.866 12.134 23 16 23C19.866 23 23 19.866 23 16V12M12 6V12M20 6V12M16 23V26" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- Searching Status Badge -->
+  <g id="Searching_Status" transform="translate(115, 510)">
+    <rect width="160" height="36" rx="18" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1"/>
+    <circle cx="22" cy="18" r="4" fill="#6366F1" />
+    <text x="34" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#4338CA">Searching nearby...</text>
+  </g>
+
+  <!-- Detected Plug Preview Card -->
+  <g id="Detected_Card" transform="translate(24, 580)" filter="url(#cardShadow)">
+    <rect width="342" height="88" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <g transform="translate(18, 18)">
+      <rect width="52" height="52" rx="16" fill="#ECFDF5" />
+      <path d="M20 27L24 31L32 23" fill="none" stroke="#10B981" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(84, 26)">
+      <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#059669" letter-spacing="0.5">SMART PLUG FOUND</text>
+      <text x="0" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#0F172A">Smart Plug • SP-001</text>
+    </g>
+  </g>
+
+  <!-- Continue Button -->
+  <g id="Btn_Continue" transform="translate(24, 740)" filter="url(#btnShadow)" cursor="pointer">
+    <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+    <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Continue</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 5. Wi-Fi Setup -->
+    <g id="Frame_05_wifi_setup" transform="translate(2140, 220)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">5. Wi-Fi Setup</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Network selection & password</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_4_0)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#94A3B8" text-anchor="middle" letter-spacing="1">STEP 3 OF 3</text>
+
+  <!-- Titles -->
+  <g id="Titles" transform="translate(24, 120)">
+    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">Connect to Wi-Fi</text>
+    <text x="0" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B">Choose your home Wi-Fi network.</text>
+  </g>
+
+  <!-- Network Section Header -->
+  <g transform="translate(24, 210)">
+    <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#64748B" letter-spacing="0.5">AVAILABLE NETWORKS</text>
+    <!-- Refresh Button -->
+    <g transform="translate(230, 2)" cursor="pointer">
+      <path d="M90 6A6 6 0 1 0 96 12" fill="none" stroke="#6366F1" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="84" y="11" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#6366F1" text-anchor="end">Refresh networks</text>
+    </g>
+  </g>
+
+  <!-- Wi-Fi Network Rows -->
+  <g id="Network_List" transform="translate(24, 236)">
+    
+    <!-- Row 1: Home Wi-Fi (Selected) -->
+    <g id="Wifi_Home_Selected" filter="url(#cardShadow)">
+      <rect width="342" height="60" rx="18" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.8" />
+      <g transform="translate(18, 20)" fill="#4F46E5">
+        <path d="M10 2C6 2 2.3 3.6 0 6.2L10 17L20 6.2C17.7 3.6 14 2 10 2Z"/>
+      </g>
+      <text x="50" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#1E1B4B">Home Wi-Fi</text>
+      <!-- Lock -->
+      <g transform="translate(270, 22)" stroke="#94A3B8" fill="none" stroke-width="1.5">
+        <rect x="0" y="6" width="12" height="10" rx="2" />
+        <path d="M2.5 6V3.5A3.5 3.5 0 0 1 9.5 3.5V6" />
+      </g>
+      <!-- Selected Check -->
+      <circle cx="312" cy="30" r="10" fill="#6366F1" />
+      <path d="M309 30L311.5 32.5L315.5 28.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Row 2: Rajnish Home -->
+    <g id="Wifi_Rajnish" transform="translate(0, 70)">
+      <rect width="342" height="56" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <g transform="translate(18, 18)" fill="#94A3B8">
+        <path d="M10 2C6 2 2.3 3.6 0 6.2L10 17L20 6.2C17.7 3.6 14 2 10 2Z"/>
+      </g>
+      <text x="50" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#334155">Rajnish Home</text>
+      <!-- Lock -->
+      <g transform="translate(306, 20)" stroke="#94A3B8" fill="none" stroke-width="1.5">
+        <rect x="0" y="6" width="12" height="10" rx="2" />
+        <path d="M2.5 6V3.5A3.5 3.5 0 0 1 9.5 3.5V6" />
+      </g>
+    </g>
+
+    <!-- Row 3: Office Wi-Fi -->
+    <g id="Wifi_Office" transform="translate(0, 136)">
+      <rect width="342" height="56" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <g transform="translate(18, 18)" fill="#94A3B8">
+        <path d="M10 4C7 4 4.2 5.2 2 7.2L10 16L18 7.2C15.8 5.2 13 4 10 4Z"/>
+      </g>
+      <text x="50" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#334155">Office Wi-Fi</text>
+      <!-- Lock -->
+      <g transform="translate(306, 20)" stroke="#94A3B8" fill="none" stroke-width="1.5">
+        <rect x="0" y="6" width="12" height="10" rx="2" />
+        <path d="M2.5 6V3.5A3.5 3.5 0 0 1 9.5 3.5V6" />
+      </g>
+    </g>
+
+    <!-- Row 4: Other Network -->
+    <g id="Wifi_Other" transform="translate(0, 202)">
+      <rect width="342" height="56" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <text x="50" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#64748B">Other Network...</text>
+      <path d="M312 24L317 29L312 34" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+  </g>
+
+  <!-- Wi-Fi Password Field & Checkbox -->
+  <g id="Password_Group" transform="translate(24, 520)">
+    <rect width="342" height="114" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#cardShadow)" />
+    <text x="18" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#334155">Wi-Fi Password</text>
+    
+    <!-- Input Field -->
+    <rect x="18" y="34" width="306" height="42" rx="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <text x="32" y="60" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" fill="#0F172A">••••••••••••</text>
+    
+    <!-- Eye Icon -->
+    <g transform="translate(290, 44)" stroke="#94A3B8" stroke-width="1.6" fill="none">
+      <path d="M1 9C3 4.5 7.5 1.5 12 1.5C16.5 1.5 21 4.5 23 9C21 13.5 16.5 16.5 12 16.5C7.5 16.5 3 13.5 1 9Z"/>
+      <circle cx="12" cy="9" r="3.5"/>
+    </g>
+
+    <!-- Remember Checkbox -->
+    <g transform="translate(18, 88)">
+      <rect width="16" height="16" rx="4" fill="#6366F1" />
+      <path d="M4 8L7 11L12 5" stroke="#FFFFFF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="26" y="13" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#475569">Remember this network</text>
+    </g>
+  </g>
+
+  <!-- Connect Button -->
+  <g id="Btn_Connect_Smart_Plug" transform="translate(24, 740)" filter="url(#btnShadow)" cursor="pointer">
+    <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+    <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Connect Smart Plug</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 6. Setting Up -->
+    <g id="Frame_06_setting_up_progress" transform="translate(100, 1224)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">6. Setting Up</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">4-stage animated progress</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_0_1)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+
+  <!-- Titles -->
+  <g id="Titles" transform="translate(24, 110)">
+    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">Setting up your Smart Plug</text>
+    <text x="0" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B">This may take a few seconds.</text>
+  </g>
+
+  <!-- Stepper Progress Box -->
+  <g id="Progress_Stepper" transform="translate(24, 210)">
+    
+    <!-- Top Progress Bar -->
+    <rect width="342" height="8" rx="4" fill="#E2E8F0" />
+    <rect width="256" height="8" rx="4" fill="url(#primaryGrad)" />
+
+    <!-- Step 1: Smart Plug Found (Complete) -->
+    <g transform="translate(0, 40)">
+      <circle cx="20" cy="20" r="16" fill="#10B981" />
+      <path d="M15 20L18.5 23.5L25.5 16.5" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="48" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#0F172A">Smart Plug found</text>
+      <text x="342" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#10B981" text-anchor="end">Done</text>
+    </g>
+
+    <!-- Step 2: Wi-Fi Configured (Complete) -->
+    <g transform="translate(0, 100)">
+      <circle cx="20" cy="20" r="16" fill="#10B981" />
+      <path d="M15 20L18.5 23.5L25.5 16.5" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="48" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#0F172A">Wi-Fi configured</text>
+      <text x="342" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#10B981" text-anchor="end">Done</text>
+    </g>
+
+    <!-- Step 3: Connecting to your home network (Active) -->
+    <g transform="translate(0, 160)">
+      <circle cx="20" cy="20" r="16" fill="#6366F1" filter="url(#btnShadow)" />
+      <circle cx="20" cy="20" r="5" fill="#FFFFFF" />
+      <text x="48" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#4F46E5">Connecting to your home network</text>
+      <!-- Spinner -->
+      <g transform="translate(322, 12)">
+        <circle cx="8" cy="8" r="7" fill="none" stroke="#E0E7FF" stroke-width="2"/>
+        <path d="M15 8A7 7 0 0 0 8 1" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- Step 4: Getting ready (Pending) -->
+    <g transform="translate(0, 220)">
+      <circle cx="20" cy="20" r="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5" />
+      <circle cx="20" cy="20" r="4" fill="#94A3B8" />
+      <text x="48" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="600" fill="#94A3B8">Getting ready</text>
+      <text x="342" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="end">Waiting</text>
+    </g>
+  </g>
+
+  <!-- Ambient Illustration in Center -->
+  <g id="Center_Illustration" transform="translate(195, 590)">
+    <circle cx="0" cy="0" r="50" fill="#EEF2FF" />
+    <path d="M-15 -5H15M0 -20V10M-10 10L10 10" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="0" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#64748B" text-anchor="middle">Securing connection with home Wi-Fi...</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 6b. Connection Failed -->
+    <g id="Frame_06b_connection_failed" transform="translate(610, 1224)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">6b. Connection Failed</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Error state & retry</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_1_1)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <!-- Error Icon & Visual -->
+  <g id="Error_Illustration" transform="translate(195, 240)">
+    <circle cx="0" cy="0" r="64" fill="#FEF2F2" stroke="#FEE2E2" stroke-width="2" />
+    <circle cx="0" cy="0" r="44" fill="#EF4444" />
+    <!-- Alert Icon -->
+    <path d="M0 -15V5M0 12V15" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Titles -->
+  <g id="Titles" transform="translate(24, 340)">
+    <text x="171" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" text-anchor="middle" letter-spacing="-0.5">Couldn't connect</text>
+    <text x="171" y="56" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B" text-anchor="middle">Check your Wi-Fi password and try again.</text>
+  </g>
+
+  <!-- Troubleshooting Advice Box -->
+  <g id="Advice_Box" transform="translate(24, 440)">
+    <rect width="342" height="130" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#cardShadow)" />
+    <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#334155">Troubleshooting Checklist:</text>
+    <text x="20" y="56" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#64748B">• Re-enter your Wi-Fi network password</text>
+    <text x="20" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#64748B">• Move your Smart Plug closer to your router</text>
+    <text x="20" y="104" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#64748B">• Ensure the plug's indicator light is blinking</text>
+  </g>
+
+  <!-- Buttons: Try Again & Change Wi-Fi -->
+  <g id="Actions" transform="translate(24, 670)">
+    <!-- Primary Button: Try Again -->
+    <g id="Btn_Try_Again" filter="url(#btnShadow)" cursor="pointer">
+      <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+      <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Try Again</text>
+    </g>
+    <!-- Secondary Button: Change Wi-Fi -->
+    <g id="Btn_Change_Wifi" transform="translate(0, 70)" cursor="pointer">
+      <rect width="342" height="56" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+      <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#475569" text-anchor="middle">Change Wi-Fi</text>
+    </g>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 7. Smart Plug Ready -->
+    <g id="Frame_07_smart_plug_ready" transform="translate(1120, 1224)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">7. Smart Plug Ready</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Activation success</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_2_1)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+
+  <!-- Success Icon with Halo -->
+  <g id="Success_Icon" transform="translate(195, 230)">
+    <circle cx="0" cy="0" r="70" fill="#ECFDF5" />
+    <circle cx="0" cy="0" r="50" fill="#10B981" filter="url(#cardShadow)" />
+    <!-- Checkmark -->
+    <path d="M-15 0L-5 10L15 -10" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Confetti / Sparkle Accents -->
+    <circle cx="-55" cy="-45" r="4" fill="#6366F1" />
+    <circle cx="55" cy="-35" r="5" fill="#F59E0B" />
+    <circle cx="65" cy="35" r="4" fill="#3B82F6" />
+    <circle cx="-60" cy="40" r="3.5" fill="#10B981" />
+  </g>
+
+  <!-- Titles -->
+  <g id="Titles" transform="translate(24, 340)">
+    <text x="171" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="800" fill="#0F172A" text-anchor="middle" letter-spacing="-0.5">You're all set!</text>
+    <text x="171" y="56" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B" text-anchor="middle">Your Smart Plug is connected and ready to use.</text>
+  </g>
+
+  <!-- Device Preview Card -->
+  <g id="Ready_Device_Card" transform="translate(24, 450)" filter="url(#cardShadow)">
+    <rect width="342" height="96" rx="22" fill="#FFFFFF" stroke="#F1F5F9" stroke-width="1" />
+    <g transform="translate(18, 18)">
+      <rect width="60" height="60" rx="18" fill="#EEF2FF" />
+      <path d="M30 20V28M23 28V32C23 35.866 26.134 39 30 39C33.866 39 37 35.866 37 32V28M26 20V28M34 20V28M30 39V43" stroke="#4F46E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(94, 28)">
+      <text x="0" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="17" font-weight="700" fill="#0F172A">Living Room</text>
+      <g transform="translate(0, 24)">
+        <rect width="84" height="20" rx="10" fill="#ECFDF5" />
+        <circle cx="8" cy="10" r="3" fill="#10B981" />
+        <text x="16" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#059669">Connected</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Action Buttons -->
+  <g id="Actions" transform="translate(24, 670)">
+    <!-- Primary Button: Start Using -->
+    <g id="Btn_Start_Using" filter="url(#btnShadow)" cursor="pointer">
+      <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+      <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Start Using</text>
+    </g>
+    <!-- Secondary: Rename Smart Plug -->
+    <text x="195" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="600" fill="#6366F1" text-anchor="middle" cursor="pointer">Rename Smart Plug</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 8. Device Control (ON) -->
+    <g id="Frame_08_device_control_on" transform="translate(1630, 1224)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">8. Device Control (ON)</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Tactile circular dial</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_3_1)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+
+  <!-- Top Navigation -->
+  <g id="Nav_Header">
+    
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="800" fill="#0F172A" text-anchor="middle">Living Room</text>
+    <!-- Settings Button -->
+    <g id="Btn_Settings" transform="translate(326, 54)" cursor="pointer">
+      <circle cx="20" cy="20" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M20 16A4 4 0 1 0 20 24A4 4 0 1 0 20 16ZM20 12V14M20 26V28M12 20H14M26 20H28M14.3 14.3L15.7 15.7M24.3 24.3L25.7 25.7M14.3 25.7L15.7 24.3M24.3 15.7L25.7 14.3" stroke="#475569" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Status Pill -->
+  <g transform="translate(145, 116)">
+    <rect width="100" height="26" rx="13" fill="#ECFDF5" />
+    <circle cx="14" cy="13" r="3.5" fill="#10B981" />
+    <text x="24" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#059669">Connected</text>
+  </g>
+
+  <!-- Large Circular Power Dial (ON State) -->
+  <g id="Power_Dial_ON" transform="translate(195, 340)" cursor="pointer">
+    <!-- Ambient Radial Halo -->
+    <circle cx="0" cy="0" r="130" fill="#6366F1" opacity="0.15" filter="url(#powerGlow)" />
+    <circle cx="0" cy="0" r="105" fill="#6366F1" opacity="0.3" filter="url(#powerGlow)" />
+    
+    <!-- Main Outer Ring -->
+    <circle cx="0" cy="0" r="95" fill="url(#primaryGlowGrad)" stroke="#818CF8" stroke-width="3" filter="url(#powerGlow)" />
+    
+    <!-- Power Icon -->
+    <g transform="translate(-24, -46)">
+      <path d="M24 0V26M10 10C2 19 2 34 11 44C20 54 36 54 45 44C54 34 54 19 46 10" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    
+    <!-- State Labels -->
+    <text x="0" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="24" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">ON</text>
+    <text x="0" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#E0E7FF" text-anchor="middle">Power is on</text>
+  </g>
+
+  <text x="195" y="490" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="middle">Tap to switch power state</text>
+
+  <!-- Info & Quick Actions Section -->
+  <g id="Control_Cards" transform="translate(24, 530)">
+    
+    <!-- Device Info Card -->
+    <g id="Info_Row" filter="url(#cardShadow)">
+      <rect width="342" height="72" rx="20" fill="#FFFFFF" stroke="#F1F5F9" stroke-width="1" />
+      <g transform="translate(18, 16)">
+        <rect width="40" height="40" rx="12" fill="#EEF2FF" />
+        <g transform="translate(10, 10)" fill="#4F46E5">
+          <path d="M10 2C6 2 2.3 3.6 0 6.2L10 17L20 6.2C17.7 3.6 14 2 10 2Z"/>
+        </g>
+      </g>
+      <text x="72" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#0F172A">Wi-Fi Connection</text>
+      <text x="72" y="51" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="400" fill="#64748B">Strong (Home Wi-Fi)</text>
+      <text x="322" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#6366F1" text-anchor="end" cursor="pointer">Change</text>
+    </g>
+
+    <!-- Quick Action Grid -->
+    <g id="Action_Grid" transform="translate(0, 92)">
+      <!-- Rename Tile -->
+      <g id="Tile_Rename" cursor="pointer">
+        <rect width="164" height="60" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+        <path d="M22 30H32M27 22L34 29" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/>
+        <text x="50" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#334155">Rename</text>
+      </g>
+      <!-- Wi-Fi Settings Tile -->
+      <g id="Tile_Wifi_Settings" transform="translate(178, 0)" cursor="pointer">
+        <rect width="164" height="60" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+        <path d="M20 32C24 28 32 28 36 32" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/>
+        <text x="50" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#334155">Wi-Fi</text>
+      </g>
+    </g>
+
+    <!-- Toast Confirmation Example -->
+    <g id="Toast_Pill" transform="translate(71, 180)">
+      <rect width="200" height="38" rx="19" fill="#0F172A" opacity="0.9" />
+      <circle cx="20" cy="19" r="6" fill="#10B981" />
+      <path d="M17 19L19 21L23 17" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <text x="32" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#FFFFFF">Power turned on</text>
+    </g>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 8b. Device Control (OFF) -->
+    <g id="Frame_08b_device_control_off" transform="translate(2140, 1224)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">8b. Device Control (OFF)</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Power off state</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_4_1)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+
+  <!-- Top Navigation -->
+  <g id="Nav_Header">
+    
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="800" fill="#0F172A" text-anchor="middle">Living Room</text>
+    <g id="Btn_Settings" transform="translate(326, 54)" cursor="pointer">
+      <circle cx="20" cy="20" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M20 16A4 4 0 1 0 20 24A4 4 0 1 0 20 16ZM20 12V14M20 26V28M12 20H14M26 20H28M14.3 14.3L15.7 15.7M24.3 24.3L25.7 25.7M14.3 25.7L15.7 24.3M24.3 15.7L25.7 14.3" stroke="#475569" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Status Pill -->
+  <g transform="translate(145, 116)">
+    <rect width="100" height="26" rx="13" fill="#ECFDF5" />
+    <circle cx="14" cy="13" r="3.5" fill="#10B981" />
+    <text x="24" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#059669">Connected</text>
+  </g>
+
+  <!-- Large Circular Power Dial (OFF State) -->
+  <g id="Power_Dial_OFF" transform="translate(195, 340)" cursor="pointer">
+    <!-- Outer Inset Ring -->
+    <circle cx="0" cy="0" r="105" fill="#F1F5F9" />
+    <circle cx="0" cy="0" r="95" fill="url(#offSwitchGrad)" stroke="#CBD5E1" stroke-width="2" filter="url(#cardShadow)" />
+    
+    <!-- Power Icon -->
+    <g transform="translate(-24, -46)">
+      <path d="M24 0V26M10 10C2 19 2 34 11 44C20 54 36 54 45 44C54 34 54 19 46 10" fill="none" stroke="#94A3B8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    
+    <!-- State Labels -->
+    <text x="0" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="24" font-weight="900" fill="#64748B" text-anchor="middle" letter-spacing="1">OFF</text>
+    <text x="0" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="middle">Power is off</text>
+  </g>
+
+  <text x="195" y="490" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="middle">Tap to switch power state</text>
+
+  <!-- Info & Quick Actions Section -->
+  <g id="Control_Cards" transform="translate(24, 530)">
+    
+    <!-- Device Info Card -->
+    <g id="Info_Row" filter="url(#cardShadow)">
+      <rect width="342" height="72" rx="20" fill="#FFFFFF" stroke="#F1F5F9" stroke-width="1" />
+      <g transform="translate(18, 16)">
+        <rect width="40" height="40" rx="12" fill="#F1F5F9" />
+        <g transform="translate(10, 10)" fill="#64748B">
+          <path d="M10 2C6 2 2.3 3.6 0 6.2L10 17L20 6.2C17.7 3.6 14 2 10 2Z"/>
+        </g>
+      </g>
+      <text x="72" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#0F172A">Wi-Fi Connection</text>
+      <text x="72" y="51" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="400" fill="#64748B">Strong (Home Wi-Fi)</text>
+      <text x="322" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#6366F1" text-anchor="end" cursor="pointer">Change</text>
+    </g>
+
+    <!-- Quick Action Grid -->
+    <g id="Action_Grid" transform="translate(0, 92)">
+      <!-- Rename Tile -->
+      <g id="Tile_Rename" cursor="pointer">
+        <rect width="164" height="60" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+        <path d="M22 30H32M27 22L34 29" stroke="#64748B" stroke-width="2" stroke-linecap="round"/>
+        <text x="50" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#334155">Rename</text>
+      </g>
+      <!-- Wi-Fi Settings Tile -->
+      <g id="Tile_Wifi_Settings" transform="translate(178, 0)" cursor="pointer">
+        <rect width="164" height="60" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+        <path d="M20 32C24 28 32 28 36 32" stroke="#64748B" stroke-width="2" stroke-linecap="round"/>
+        <text x="50" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#334155">Wi-Fi</text>
+      </g>
+    </g>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 9. Device Settings -->
+    <g id="Frame_09_device_settings" transform="translate(100, 2228)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">9. Device Settings</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Settings & danger action</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_0_2)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="800" fill="#0F172A" text-anchor="middle">Smart Plug Settings</text>
+
+  <!-- Settings List Group -->
+  <g id="Settings_List" transform="translate(24, 130)" filter="url(#cardShadow)">
+    <rect width="342" height="264" rx="22" fill="#FFFFFF" stroke="#F1F5F9" stroke-width="1" />
+    
+    <!-- Row 1: Smart Plug Name -->
+    <g id="Row_Name" transform="translate(0, 0)" cursor="pointer">
+      <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#94A3B8">SMART PLUG NAME</text>
+      <text x="20" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#0F172A">Living Room</text>
+      <path d="M316 38L322 44L316 50" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+    <line x1="20" y1="66" x2="322" y2="66" stroke="#F1F5F9" stroke-width="1" />
+
+    <!-- Row 2: Wi-Fi -->
+    <g id="Row_Wifi" transform="translate(0, 66)" cursor="pointer">
+      <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#94A3B8">WI-FI</text>
+      <text x="20" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#0F172A">Home Wi-Fi</text>
+      <text x="306" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#6366F1" text-anchor="end">Change</text>
+      <path d="M316 38L322 44L316 50" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+    <line x1="20" y1="132" x2="322" y2="132" stroke="#F1F5F9" stroke-width="1" />
+
+    <!-- Row 3: Connection Status -->
+    <g id="Row_Status" transform="translate(0, 132)">
+      <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#94A3B8">CONNECTION STATUS</text>
+      <text x="20" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#0F172A">Connected</text>
+      <rect x="238" y="32" width="84" height="22" rx="11" fill="#ECFDF5" />
+      <circle cx="248" cy="43" r="3" fill="#10B981" />
+      <text x="256" y="47" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#059669">Strong</text>
+    </g>
+    <line x1="20" y1="198" x2="322" y2="198" stroke="#F1F5F9" stroke-width="1" />
+
+    <!-- Row 4: Firmware -->
+    <g id="Row_Firmware" transform="translate(0, 198)">
+      <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#94A3B8">FIRMWARE</text>
+      <text x="20" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#0F172A">v2.4.1</text>
+      <text x="322" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="end">Up to date</text>
+    </g>
+  </g>
+
+  <!-- Danger Zone Action -->
+  <g id="Btn_Remove_Plug" transform="translate(24, 730)" cursor="pointer">
+    <rect width="342" height="56" rx="20" fill="#FEF2F2" stroke="#FEE2E2" stroke-width="1.5" />
+    <path d="M125 28L127 38H147L149 28M123 24H151M133 24V21H141V24" stroke="#EF4444" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <text x="185" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#EF4444" text-anchor="middle">Remove Smart Plug</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 10. Wi-Fi Settings -->
+    <g id="Frame_10_wifi_settings" transform="translate(610, 2228)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">10. Wi-Fi Settings</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Network reconfiguration</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_1_2)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="800" fill="#0F172A" text-anchor="middle">Wi-Fi</text>
+
+  <!-- Current Network Card -->
+  <g id="Current_Network_Card" transform="translate(24, 130)" filter="url(#cardShadow)">
+    <rect width="342" height="136" rx="22" fill="#FFFFFF" stroke="#F1F5F9" stroke-width="1" />
+    <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="0.5">CURRENT NETWORK</text>
+    
+    <g transform="translate(20, 42)">
+      <rect width="48" height="48" rx="16" fill="#EEF2FF" />
+      <g transform="translate(14, 14)" fill="#4F46E5">
+        <path d="M10 2C6 2 2.3 3.6 0 6.2L10 17L20 6.2C17.7 3.6 14 2 10 2Z"/>
+      </g>
+      <text x="60" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="17" font-weight="800" fill="#0F172A">Home Wi-Fi</text>
+      <!-- Connected badge -->
+      <g transform="translate(60, 30)">
+        <rect width="84" height="20" rx="10" fill="#ECFDF5" />
+        <circle cx="8" cy="10" r="3" fill="#10B981" />
+        <text x="16" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#059669">Connected</text>
+      </g>
+    </g>
+
+    <line x1="20" y1="102" x2="322" y2="102" stroke="#F1F5F9" stroke-width="1" />
+    <text x="20" y="122" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="500" fill="#64748B">Signal strength: <tspan font-weight="700" fill="#0F172A">Strong</tspan></text>
+  </g>
+
+  <!-- Reconfigure Note Box -->
+  <g id="Info_Box" transform="translate(24, 286)">
+    <rect width="342" height="96" rx="20" fill="#EEF2FF" stroke="#E0E7FF" stroke-width="1" />
+    <text x="20" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#1E1B4B">Changing your home router?</text>
+    <text x="20" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="400" fill="#4338CA">Connect your Smart Plug to another Wi-Fi network anytime without losing device settings.</text>
+  </g>
+
+  <!-- Change Wi-Fi Button -->
+  <g id="Btn_Change_Wifi" transform="translate(24, 740)" filter="url(#btnShadow)" cursor="pointer">
+    <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+    <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Change Wi-Fi</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 11. Offline State -->
+    <g id="Frame_11_offline_state" transform="translate(1120, 2228)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">11. Offline State</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Disconnected handling</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_2_2)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+  
+    <!-- Back Button -->
+    <g id="Btn_Back" cursor="pointer">
+      <circle cx="44" cy="74" r="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M47 68L41 74L47 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+
+  <text x="195" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="800" fill="#0F172A" text-anchor="middle">Living Room</text>
+
+  <!-- Warning Banner -->
+  <g id="Offline_Banner" transform="translate(24, 120)">
+    <rect width="342" height="74" rx="20" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1" />
+    <g transform="translate(18, 18)">
+      <rect width="38" height="38" rx="12" fill="#F59E0B" />
+      <path d="M19 12V20M19 24V26" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <text x="68" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="800" fill="#92400E">Smart Plug Offline</text>
+    <text x="68" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="400" fill="#B45309">We can't reach your Smart Plug right now.</text>
+  </g>
+
+  <!-- Disabled Circular Power Dial -->
+  <g id="Disabled_Power_Dial" transform="translate(195, 360)">
+    <circle cx="0" cy="0" r="95" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="2" />
+    <!-- Power Icon with Slash -->
+    <g transform="translate(-24, -46)" opacity="0.4">
+      <path d="M24 0V26M10 10C2 19 2 34 11 44C20 54 36 54 45 44C54 34 54 19 46 10" fill="none" stroke="#94A3B8" stroke-width="5" stroke-linecap="round" />
+    </g>
+    <line x1="-50" y1="-50" x2="50" y2="50" stroke="#EF4444" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    <text x="0" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="20" font-weight="800" fill="#94A3B8" text-anchor="middle">OFFLINE</text>
+    <text x="0" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="500" fill="#CBD5E1" text-anchor="middle">Controls disabled</text>
+  </g>
+
+  <!-- Guidance text -->
+  <text x="195" y="500" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="400" fill="#94A3B8" text-anchor="middle">Make sure the plug is receiving power and within Wi-Fi range.</text>
+
+  <!-- Actions -->
+  <g id="Offline_Actions" transform="translate(24, 670)">
+    <!-- Try Again Button -->
+    <g id="Btn_Try_Again" filter="url(#btnShadow)" cursor="pointer">
+      <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+      <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Try Again</text>
+    </g>
+    <!-- Reconnect Wi-Fi Button -->
+    <g id="Btn_Reconnect_Wifi" transform="translate(0, 70)" cursor="pointer">
+      <rect width="342" height="56" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+      <text x="171" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#475569" text-anchor="middle">Reconnect Wi-Fi</text>
+    </g>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <!-- Screen: 12. Empty Home State -->
+    <g id="Frame_12_empty_home_state" transform="translate(1630, 2228)">
+      <!-- Title Label above screen -->
+      <text x="0" y="-36" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#F8FAFC">12. Empty Home State</text>
+      <text x="0" y="-16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" fill="#818CF8">Zero-device onboarding</text>
+
+      <!-- Frame Shell -->
+      <g filter="url(#masterCardShadow)">
+        <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+        <g clip-path="url(#clip_3_2)">
+          
+  
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="primaryGlowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="splashGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FAFAFA" />
+    </linearGradient>
+    <linearGradient id="offSwitchGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.04" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.02" />
+    </filter>
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366F1" flood-opacity="0.25" />
+    </filter>
+    <filter id="powerGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#6366F1" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGrad)" />
+  
+    <!-- Status Bar -->
+    <g id="Status_Bar">
+      <text x="36" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#0F172A" letter-spacing="-0.3">9:41</text>
+      <!-- Cellular -->
+      <g transform="translate(294, 23)" fill="#0F172A">
+        <rect x="0" y="8" width="3" height="4" rx="0.8"/>
+        <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.8"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
+      </g>
+      <!-- Wi-Fi -->
+      <g transform="translate(318, 23)" fill="#0F172A">
+        <path d="M7.5 2.5C4.5 2.5 1.8 3.8 0 5.8L7.5 14L15 5.8C13.2 3.8 10.5 2.5 7.5 2.5ZM7.5 4.8C9.7 4.8 11.7 5.7 13.1 7.2L7.5 13.3L1.9 7.2C3.3 5.7 5.3 4.8 7.5 4.8Z"/>
+      </g>
+      <!-- Battery -->
+      <g transform="translate(340, 23)">
+        <rect x="0" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="#0F172A" stroke-width="1"/>
+        <rect x="2" y="2.5" width="14" height="7" rx="2" fill="#0F172A"/>
+        <path d="M23 4C23.5 4.5 23.5 7.5 23 8" stroke="#0F172A" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+
+  <!-- Header -->
+  <g id="Header" transform="translate(24, 60)">
+    <text x="0" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#6366F1" letter-spacing="0.8">GOOD EVENING</text>
+    <text x="0" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">My Smart Plugs</text>
+    <g transform="translate(302, 4)">
+      <circle cx="20" cy="20" r="20" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1.5"/>
+      <text x="20" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#4F46E5" text-anchor="middle">RM</text>
+    </g>
+  </g>
+
+  <!-- Empty Illustration -->
+  <g id="Empty_Illustration" transform="translate(195, 330)">
+    <circle cx="0" cy="0" r="80" fill="#EEF2FF" />
+    <circle cx="0" cy="0" r="60" fill="#E0E7FF" opacity="0.6" />
+    <rect x="-35" y="-35" width="70" height="70" rx="20" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#cardShadow)"/>
+    <circle cx="0" cy="-15" r="3" fill="#6366F1" />
+    <rect x="-14" y="-3" width="6" height="12" rx="2" fill="#64748B"/>
+    <rect x="8" y="-3" width="6" height="12" rx="2" fill="#64748B"/>
+    <circle cx="0" cy="18" r="3" fill="#CBD5E1"/>
+  </g>
+
+  <!-- Empty State Titles -->
+  <g id="Empty_Text" transform="translate(24, 450)">
+    <text x="171" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="22" font-weight="800" fill="#0F172A" text-anchor="middle" letter-spacing="-0.5">No Smart Plugs yet</text>
+    <text x="171" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="400" fill="#64748B" text-anchor="middle">Add your first Smart Plug to get started.</text>
+  </g>
+
+  <!-- Add Button -->
+  <g id="Btn_Add_First_Plug" transform="translate(24, 740)" filter="url(#btnShadow)" cursor="pointer">
+    <rect width="342" height="56" rx="20" fill="url(#primaryGrad)" />
+    <path d="M152 28H190M171 19V37" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+    <text x="180" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Add Smart Plug</text>
+  </g>
+
+  
+    <!-- Home Indicator -->
+    <g id="Home_Indicator">
+      <rect x="125" y="828" width="140" height="5" rx="2.5" fill="#94A3B8" opacity="0.5" />
+    </g>
+    
+
+        </g>
+        <!-- Device Frame Border -->
+        <rect width="390" height="844" rx="40" fill="none" stroke="#334155" stroke-width="6" />
+      </g>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 500 620 L 595 620" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="497.5" y="606.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="547.5" y="622.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Auto (2.5s)</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 1010 960 L 1105 960" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="1007.5" y="946.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="1057.5" y="962.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">+ Add Plug</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 1520 940 L 1615 940" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="1517.5" y="926.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="1567.5" y="942.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Start Setup</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 2030 970 L 2125 970" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="2027.5" y="956.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="2077.5" y="972.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Continue</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 2335.0 1074 L 295.0 1184" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="1265.0" y="1115.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="1315.0" y="1131.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Connect Wi-Fi</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 500 1624 L 1105 1624" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="752.5" y="1610.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="802.5" y="1626.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Success Path</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 500 1724 L 595 1724" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowRed)"/>
+      <rect x="497.5" y="1710.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#EF4444" stroke-width="1"/><text x="547.5" y="1726.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Fail Path</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 1520 1904 L 1615 1904" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="1517.5" y="1890.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="1567.5" y="1906.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Start Using</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 2030 1564 L 2125 1564" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="2027.5" y="1550.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="2077.5" y="1566.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Tap Dial</text>
+    </g>
+    
+
+    <g class="flow-connector">
+      <path d="M 2125 1604 L 2030 1604" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+      <rect x="2027.5" y="1590.0" width="100" height="24" rx="12" fill="#1E293B" stroke="#6366F1" stroke-width="1"/><text x="2077.5" y="1606.0" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Tap Dial</text>
+    </g>
+    
+</svg>
