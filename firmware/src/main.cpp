@@ -72,7 +72,7 @@ void syncToFirebase() {
 
   WiFiClientSecure client;
   client.setInsecure();
-  client.setTimeout(4000);
+  client.setHandshakeTimeout(5);
   HTTPClient https;
 
   String url = firebaseHost;
@@ -120,7 +120,7 @@ void pollFirebaseControl() {
 
   WiFiClientSecure client;
   client.setInsecure();
-  client.setTimeout(3000);
+  client.setHandshakeTimeout(5);
   HTTPClient https;
 
   String url = firebaseHost;
@@ -496,11 +496,11 @@ void loop() {
     static unsigned long lastControlPoll = 0;
     unsigned long now = millis();
 
-    // Heartbeat every 8 seconds, control poll every 2 seconds in between
-    if (now - lastHeartbeatPush >= 8000) {
+    // Heartbeat every 10 seconds, control poll every 3 seconds in between
+    if (now - lastHeartbeatPush >= 10000) {
       lastHeartbeatPush = now;
       syncToFirebase();
-    } else if (now - lastControlPoll >= 2000) {
+    } else if (now - lastControlPoll >= 3000) {
       lastControlPoll = now;
       pollFirebaseControl();
     }
