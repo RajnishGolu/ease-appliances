@@ -4,10 +4,7 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 #include <Preferences.h>
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
+#include <NimBLEDevice.h>
 #include <ArduinoJson.h>
 
 #define DEVICE_NAME "Ease Appliances"
@@ -22,9 +19,9 @@
 #define CHAR_RELAY_UUID        "beb54840-36e1-4688-b7f5-ea07361b26a8"
 
 Preferences prefs;
-BLEServer* pServer = nullptr;
-BLECharacteristic* pStatusChar = nullptr;
-BLECharacteristic* pRelayChar = nullptr;
+NimBLEServer* pServer = nullptr;
+NimBLECharacteristic* pStatusChar = nullptr;
+NimBLECharacteristic* pRelayChar = nullptr;
 WebServer httpServer(80);
 
 bool deviceConnected = false;
@@ -41,8 +38,6 @@ uint32_t totalToggles = 0;
 const char* DEFAULT_FIREBASE_HOST = "https://smart-plug-c131f-default-rtdb.firebaseio.com";
 String firebaseHost = DEFAULT_FIREBASE_HOST;
 String firebaseAuth = ""; // optional auth secret
-unsigned long lastFirebasePoll = 0;
-unsigned long lastTlsTime = 0;
 bool internetConnected = false;
 
 String newSsid = "";
@@ -77,6 +72,7 @@ void syncToFirebase() {
 
   WiFiClientSecure client;
   client.setInsecure();
+  client.setTimeout(4000);
   HTTPClient https;
 
   String url = firebaseHost;
@@ -108,26 +104,23 @@ void syncToFirebase() {
     serializeJson(doc, payload);
 
     int code = https.PUT(payload);
-    Serial.printf("[FIREBASE] State synced! HTTP result: %d\n", code);
+    Serial.printf("[FIREBASE] State synced! HTTP: %d | FreeHeap: %u\n", code, ESP.getFreeHeap());
     if (code == 200) {
       internetConnected = true;
     } else if (code <= 0) {
       internetConnected = false;
     }
     https.end();
-    lastTlsTime = millis();
   }
 }
 
 // Poll Firebase Realtime Database for remote control triggers
 void pollFirebaseControl() {
   if (WiFi.status() != WL_CONNECTED || firebaseHost.length() < 8) return;
-  if (millis() - lastFirebasePoll < 2000) return;
-  if (millis() - lastTlsTime < 1200) return; // Prevent overlapping TLS handshakes
-  lastFirebasePoll = millis();
 
   WiFiClientSecure client;
   client.setInsecure();
+  client.setTimeout(3000);
   HTTPClient https;
 
   String url = firebaseHost;
@@ -168,9 +161,9 @@ void pollFirebaseControl() {
       }
     } else if (code <= 0) {
       internetConnected = false;
+      Serial.printf("[FIREBASE] Poll failed! Code: %d | FreeHeap: %u\n", code, ESP.getFreeHeap());
     }
-    https.end(); // Safe: End GET request before setRelay triggers syncToFirebase
-    lastTlsTime = millis();
+    https.end();
   }
 
   if (shouldTriggerRelay) {
@@ -198,8 +191,8 @@ void setRelay(bool state, bool pushToCloud = true) {
     prefs.putUInt("tot_tog", totalToggles);
   }
 
-  Serial.printf("[RELAY] State: %s (GPIO %d) | ON: %u, OFF: %u, Total: %u\n",
-    relayState ? "ON" : "OFF", TEST_RELAY_PIN, onCount, offCount, totalToggles);
+  Serial.printf("[RELAY] GPIO %d set to %s | ONs: %u | OFFs: %u | Total: %u\n",
+    TEST_RELAY_PIN, relayState ? "ON" : "OFF", onCount, offCount, totalToggles);
 
   if (pRelayChar) {
     pRelayChar->setValue(relayState ? "ON" : "OFF");
@@ -220,15 +213,17 @@ void setupHttpServer() {
     JsonDocument doc;
     doc["name"] = DEVICE_NAME;
     doc["relay"] = relayState;
-    doc["ip"] = WiFi.localIP().toString();
-    doc["ssid"] = WiFi.SSID();
     doc["gpio"] = TEST_RELAY_PIN;
     doc["onCount"] = onCount;
     doc["offCount"] = offCount;
     doc["totalToggles"] = totalToggles;
+    doc["ip"] = WiFi.localIP().toString();
+    doc["ssid"] = WiFi.SSID();
+    doc["rssi"] = WiFi.RSSI();
+    doc["uptime"] = millis() / 1000;
     doc["firebaseConfigured"] = (firebaseHost.length() > 0);
     doc["firebaseHost"] = firebaseHost;
-    doc["wifiConnected"] = (WiFi.status() == WL_CONNECTED);
+    doc["freeHeap"] = ESP.getFreeHeap();
     String res;
     serializeJson(doc, res);
     httpServer.sendHeader("Access-Control-Allow-Origin", "*");
@@ -237,33 +232,32 @@ void setupHttpServer() {
 
   httpServer.on("/relay", HTTP_GET, []() {
     if (httpServer.hasArg("state")) {
-      String st = httpServer.arg("state");
-      st.toUpperCase();
-      setRelay(st == "1" || st == "ON" || st == "TRUE", true);
+      String s = httpServer.arg("state");
+      s.toLowerCase();
+      if (s == "on" || s == "1" || s == "true") {
+        setRelay(true, true);
+      } else if (s == "off" || s == "0" || s == "false") {
+        setRelay(false, true);
+      }
     } else if (httpServer.hasArg("toggle")) {
       setRelay(!relayState, true);
     }
+
     JsonDocument doc;
-    doc["name"] = DEVICE_NAME;
     doc["relay"] = relayState;
     doc["gpio"] = TEST_RELAY_PIN;
     doc["onCount"] = onCount;
     doc["offCount"] = offCount;
     doc["totalToggles"] = totalToggles;
-    doc["ip"] = WiFi.localIP().toString();
     String res;
     serializeJson(doc, res);
     httpServer.sendHeader("Access-Control-Allow-Origin", "*");
     httpServer.send(200, "application/json", res);
   });
 
-  // Endpoint to save Firebase RTDB configuration
-  httpServer.on("/firebase/config", HTTP_GET, []() {
+  httpServer.on("/config/firebase", HTTP_GET, []() {
     if (httpServer.hasArg("host")) {
       firebaseHost = httpServer.arg("host");
-      if (!firebaseHost.startsWith("http://") && !firebaseHost.startsWith("https://")) {
-        firebaseHost = "https://" + firebaseHost;
-      }
       prefs.putString("fb_host", firebaseHost);
     }
     if (httpServer.hasArg("auth")) {
@@ -290,7 +284,6 @@ void setupHttpServer() {
     httpServer.send(200, "application/json", res);
   });
 
-  // Endpoint to reset on/off counters
   httpServer.on("/stats/reset", HTTP_GET, []() {
     onCount = 0;
     offCount = 0;
@@ -322,25 +315,25 @@ void setupHttpServer() {
 }
 
 // BLE Server Callbacks
-class MyServerCallbacks: public BLEServerCallbacks {
-  void onConnect(BLEServer* pServer) override {
+class MyServerCallbacks: public NimBLEServerCallbacks {
+  void onConnect(NimBLEServer* pServer) override {
     deviceConnected = true;
     Serial.println("[BLE] Client Connected!");
     updateStatus(getFullStatus());
   }
 
-  void onDisconnect(BLEServer* pServer) override {
+  void onDisconnect(NimBLEServer* pServer) override {
     deviceConnected = false;
     Serial.println("[BLE] Client Disconnected. Restarting advertising...");
-    delay(100);
-    pServer->startAdvertising();
+    NimBLEDevice::startAdvertising();
   }
 };
 
 // Wi-Fi Provisioning Callback
-class WifiProvCallbacks: public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic *pCharacteristic) override {
-    String value = pCharacteristic->getValue().c_str();
+class WifiProvCallbacks: public NimBLECharacteristicCallbacks {
+  void onWrite(NimBLECharacteristic *pCharacteristic) override {
+    std::string val = pCharacteristic->getValue();
+    String value = String(val.c_str());
     if (value.length() > 0) {
       Serial.print("[BLE] Received Wi-Fi payload: ");
       Serial.println(value);
@@ -372,14 +365,14 @@ class WifiProvCallbacks: public BLECharacteristicCallbacks {
 };
 
 // Relay Control Callback
-class RelayCallbacks: public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic *pCharacteristic) override {
-    // Bluetooth is ONLY for Wi-Fi provisioning. Power control requires Wi-Fi / Internet!
+class RelayCallbacks: public NimBLECharacteristicCallbacks {
+  void onWrite(NimBLECharacteristic *pCharacteristic) override {
     if (WiFi.status() != WL_CONNECTED) {
       Serial.println("[BLE] Power control rejected: ESP32 has no Wi-Fi / Internet connection");
       return;
     }
-    String value = pCharacteristic->getValue().c_str();
+    std::string val = pCharacteristic->getValue();
+    String value = String(val.c_str());
     value.toUpperCase();
     if (value == "1" || value == "ON" || value == "TRUE") {
       setRelay(true, true);
@@ -394,7 +387,7 @@ void setup() {
   delay(1000);
   Serial.println("\n=================================");
   Serial.println("  Ease Appliances - Smart Plug");
-  Serial.println("  Testing on GPIO 2 (Blue LED)");
+  Serial.println("  Lightweight NimBLE + Cloud Engine");
   Serial.println("=================================");
 
   // Initialize GPIO 2 (Onboard Blue LED used for test)
@@ -416,50 +409,41 @@ void setup() {
   // Set initial state
   setRelay(true, false);
 
-  // Initialize BLE
-  BLEDevice::init(DEVICE_NAME);
-  pServer = BLEDevice::createServer();
+  // Initialize NimBLE (Lightweight BLE stack, uses ~15KB RAM instead of 120KB)
+  NimBLEDevice::init(DEVICE_NAME);
+  NimBLEDevice::setPower(ESP_PWR_LVL_P9);
+  pServer = NimBLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
-  // Create BLE Service
-  BLEService *pService = pServer->createService(SERVICE_UUID);
+  NimBLEService *pService = pServer->createService(SERVICE_UUID);
 
-  // Wi-Fi Provisioning Characteristic (Write)
-  BLECharacteristic *pProvChar = pService->createCharacteristic(
+  NimBLECharacteristic *pProvChar = pService->createCharacteristic(
     CHAR_WIFI_PROV_UUID,
-    BLECharacteristic::PROPERTY_WRITE
+    NIMBLE_PROPERTY::WRITE
   );
   pProvChar->setCallbacks(new WifiProvCallbacks());
 
-  // Status Characteristic (Read, Notify)
   pStatusChar = pService->createCharacteristic(
     CHAR_STATUS_UUID,
-    BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY
+    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY
   );
-  pStatusChar->addDescriptor(new BLE2902());
   pStatusChar->setValue(getFullStatus().c_str());
 
-  // Relay Control Characteristic (Read, Write, Notify)
   pRelayChar = pService->createCharacteristic(
     CHAR_RELAY_UUID,
-    BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY
+    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY
   );
-  pRelayChar->addDescriptor(new BLE2902());
   pRelayChar->setCallbacks(new RelayCallbacks());
   pRelayChar->setValue("ON");
 
-  // Start BLE Service
   pService->start();
 
-  // Start Advertising
-  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setScanResponse(true);
-  pAdvertising->setMinPreferred(0x06);
-  pAdvertising->setMinPreferred(0x12);
-  BLEDevice::startAdvertising();
+  pAdvertising->start();
 
-  Serial.println("[BLE] Advertising started as: " DEVICE_NAME);
+  Serial.printf("[BLE] NimBLE Started! Free Heap: %u bytes\n", ESP.getFreeHeap());
 
   // Try auto-connecting to saved Wi-Fi if available
   if (savedSsid.length() > 0) {
@@ -490,10 +474,10 @@ void setup() {
 }
 
 void loop() {
-  // Disconnect/Reconnect handling for BLE advertising
+  // Ensure BLE advertising restarts on client disconnect
   if (!deviceConnected && oldDeviceConnected) {
-    delay(500);
-    pServer->startAdvertising();
+    delay(200);
+    NimBLEDevice::startAdvertising();
     Serial.println("[BLE] Restarted advertising");
     oldDeviceConnected = deviceConnected;
   }
@@ -506,17 +490,19 @@ void loop() {
     httpServer.handleClient();
   }
 
-  // Poll Firebase Realtime Database
+  // Interleaved Cloud Heartbeat & Control Poll (Guaranteed Non-Colliding)
   if (WiFi.status() == WL_CONNECTED) {
-    pollFirebaseControl();
-
-    // Periodic heartbeat to Firebase every 10 seconds
     static unsigned long lastHeartbeatPush = 0;
-    if (firebaseHost.length() > 5 && (millis() - lastHeartbeatPush > 10000)) {
-      if (millis() - lastTlsTime >= 1500) {
-        lastHeartbeatPush = millis();
-        syncToFirebase();
-      }
+    static unsigned long lastControlPoll = 0;
+    unsigned long now = millis();
+
+    // Heartbeat every 8 seconds, control poll every 2 seconds in between
+    if (now - lastHeartbeatPush >= 8000) {
+      lastHeartbeatPush = now;
+      syncToFirebase();
+    } else if (now - lastControlPoll >= 2000) {
+      lastControlPoll = now;
+      pollFirebaseControl();
     }
   }
 
@@ -557,8 +543,8 @@ void loop() {
     }
 
     // Ensure BLE advertising is active after Wi-Fi provisioning
-    if (pServer && !deviceConnected) {
-      pServer->startAdvertising();
+    if (!deviceConnected) {
+      NimBLEDevice::startAdvertising();
     }
   }
 

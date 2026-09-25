@@ -2056,7 +2056,36 @@
           appState.isDeviceOnline = true;
           syncUI();
         } else {
-          handleDeviceOffline();
+          // Double-check via Firebase once before declaring offline (prevents mobile browser background WebSocket throttle)
+          if (firebaseDb && failedPollCount < 2) {
+            failedPollCount++;
+            firebaseDb.ref('ease_appliances/state').once('value').then((snap) => {
+              const st = snap.val();
+              if (st) {
+                const cur = Date.now() + firebaseServerOffset;
+                let fresh = false;
+                if (typeof st.last_seen === 'number' && Math.abs(cur - st.last_seen) < 60000) fresh = true;
+                if (typeof st.uptime === 'number' && st.uptime !== appState.lastUptime) {
+                  fresh = true;
+                  appState.lastUptime = st.uptime;
+                }
+                if (fresh) {
+                  failedPollCount = 0;
+                  appState.lastHeartbeatTime = Date.now();
+                  appState.isDeviceOnline = true;
+                  if (typeof st.relay === 'boolean' && appState.isPowerOn !== st.relay) {
+                    appState.isPowerOn = st.relay;
+                    localStorage.setItem('ease_power', st.relay);
+                  }
+                  syncUI();
+                  return;
+                }
+              }
+              handleDeviceOffline();
+            }).catch(() => handleDeviceOffline());
+          } else {
+            handleDeviceOffline();
+          }
         }
       }
     }
@@ -2359,7 +2388,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.6.0')
+        navigator.serviceWorker.register('./sw.js?v=2.7.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });

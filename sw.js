@@ -1,5 +1,5 @@
-// Cache version 2.6.0 - Robust Heartbeat, Setup Watchdog & Disconnect Recovery
-const CACHE_NAME = 'my-smart-plug-v2.6.0';
+// Cache version 2.7.0 - Active Firebase Verification & Lightweight NimBLE Cloud Engine
+const CACHE_NAME = 'my-smart-plug-v2.7.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',
