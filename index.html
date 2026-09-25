@@ -483,9 +483,14 @@
         </div>
       </div>
 
-      <div class="pt-4 flex items-center justify-between text-xs text-slate-400">
-        <span>Provisioning in progress...</span>
-        <button onclick="navigateTo('wifi-setup')" class="text-slate-500 hover:text-indigo-600 font-medium">Cancel</button>
+      <div class="pt-4 flex flex-col space-y-3">
+        <button id="setup-fallback-dashboard-btn" onclick="navigateTo('home')" class="hidden w-full py-2.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-all shadow-2xs border border-indigo-200/80">
+          Device connected? Continue to Home Dashboard →
+        </button>
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Provisioning in progress...</span>
+          <button onclick="navigateTo('wifi-setup')" class="text-slate-500 hover:text-indigo-600 font-medium">Cancel</button>
+        </div>
       </div>
     </div>
 
@@ -1093,8 +1098,13 @@
 
         if (homeToggle && homeThumb && homeIconBox) {
           homeToggle.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-not-allowed rounded-full border-2 border-transparent bg-slate-200 opacity-60";
-          homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 translate-x-0 flex items-center justify-center text-[9px] font-bold text-slate-400";
-          homeThumb.innerText = "OFF";
+          if (isPowerOn) {
+            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 translate-x-6 flex items-center justify-center text-[9px] font-bold text-indigo-400";
+            homeThumb.innerText = "ON";
+          } else {
+            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 translate-x-0 flex items-center justify-center text-[9px] font-bold text-slate-400";
+            homeThumb.innerText = "OFF";
+          }
           homeIconBox.className = "w-12 h-12 rounded-2xl bg-slate-300 text-white flex items-center justify-center transition-colors";
         }
       } else {
@@ -1432,6 +1442,7 @@
         }
 
         // Check if device is ALREADY connected to Wi-Fi
+        // Check if device is ALREADY connected to Wi-Fi & Internet
         if (initialStatus.startsWith("CONNECTED:")) {
           const parts = initialStatus.split(":");
           const ip = parts[1];
@@ -1448,6 +1459,25 @@
           appState.lastHeartbeatTime = Date.now();
           showToast(`Ease Appliances Connected! (IP: ${appState.assignedIp})`);
           syncUI();
+          return;
+        } else if (initialStatus.startsWith("WIFI_NO_INTERNET:")) {
+          const parts = initialStatus.split(":");
+          const ip = parts[1];
+          const ssid = parts.length > 2 ? parts[2] : "";
+          if (ip) {
+            appState.assignedIp = ip;
+            localStorage.setItem('ease_ip', ip);
+          }
+          if (ssid) {
+            appState.selectedWifi = ssid;
+            localStorage.setItem('ease_wifi', ssid);
+          }
+          appState.isDeviceOnline = false;
+          showToast(`⚠️ Wi-Fi connected to ${ssid}, but ESP32 has no Internet.`);
+          syncUI();
+          setTimeout(() => {
+            navigateTo('wifi-setup');
+          }, 500);
           return;
         }
 
@@ -1494,6 +1524,15 @@
         if (appState.currentView === 'setting-up') {
           navigateTo('ready');
         }
+      } else if (statusValue.startsWith("WIFI_NO_INTERNET:")) {
+        const parts = statusValue.split(":");
+        const ip = parts[1];
+        const ssid = parts.length > 2 ? parts[2] : appState.selectedWifi;
+        if (ip) appState.assignedIp = ip;
+        if (ssid) appState.selectedWifi = ssid;
+        appState.isDeviceOnline = false;
+        showToast(`⚠️ Wi-Fi connected to ${ssid}, but no Internet access.`);
+        syncUI();
       } else if (statusValue === "CONNECTING") {
         showToast("ESP32 connecting to router...");
       } else if (statusValue === "CONNECT_FAILED") {
@@ -1509,7 +1548,18 @@
 
     function onGattDisconnected() {
       appState.isBleConnected = false;
-      showToast("⚠️ Ease Appliances BLE Disconnected");
+      if (appState.currentView === 'setting-up') {
+        // BLE normally disconnects when ESP32 switches radio from BLE to Wi-Fi
+        console.log("[BLE] Disconnected during Wi-Fi setup - ESP32 is switching to Wi-Fi mode");
+        const stepConnText = document.getElementById('step-connecting-text');
+        if (stepConnText) {
+          stepConnText.innerText = "ESP32 connecting to Wi-Fi & Cloud...";
+        }
+        const fallbackBtn = document.getElementById('setup-fallback-dashboard-btn');
+        if (fallbackBtn) fallbackBtn.classList.remove('hidden');
+      } else {
+        showToast("⚠️ Ease Appliances BLE Disconnected");
+      }
       syncUI();
     }
 
@@ -1856,10 +1906,16 @@
             const currentServerTime = Date.now() + firebaseServerOffset;
             let isFresh = false;
 
-            // Only declare online if last_seen timestamp from ESP32 is fresh (within last 15 seconds)
+            // Robust 60-second heartbeat window + uptime detection (prevents network jitter and false offline flapping)
             if (typeof state.last_seen === 'number') {
-              const ageMs = currentServerTime - state.last_seen;
-              isFresh = (ageMs > -5000 && ageMs < 15000);
+              const ageMs = Math.abs(currentServerTime - state.last_seen);
+              if (ageMs < 60000) {
+                isFresh = true;
+              }
+            }
+            if (typeof state.uptime === 'number' && state.uptime !== appState.lastUptime) {
+              isFresh = true;
+              appState.lastUptime = state.uptime;
             }
 
             if (isFresh) {
@@ -1904,9 +1960,9 @@
     let failedPollCount = 0;
 
     function handleDeviceOffline() {
-      failedPollCount++;
-      // After 2 consecutive failures (~6-8s without heartbeat), declare device offline
-      if (failedPollCount >= 2 || appState.lastHeartbeatTime === 0) {
+      const now = Date.now();
+      // Require 60 seconds of sustained silence before declaring offline
+      if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) > 60000) {
         if (appState.isDeviceOnline) {
           appState.isDeviceOnline = false;
           addActivityLog("Ease Appliances lost internet / offline", "off", "Heartbeat");
@@ -1995,7 +2051,7 @@
       // 3. If LAN ping failed or running on static hosting (GitHub Pages), check Firebase heartbeat freshness
       if (!lanSuccess) {
         const now = Date.now();
-        if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) < 15000) {
+        if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) < 60000) {
           failedPollCount = 0;
           appState.isDeviceOnline = true;
           syncUI();
@@ -2122,6 +2178,102 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
+    let setupWatchdogTimer = null;
+    let setupPollInterval = null;
+
+    function startSetupWatchdog() {
+      if (setupWatchdogTimer) clearTimeout(setupWatchdogTimer);
+      if (setupPollInterval) clearInterval(setupPollInterval);
+
+      const fallbackBtn = document.getElementById('setup-fallback-dashboard-btn');
+      if (fallbackBtn) fallbackBtn.classList.add('hidden');
+
+      const stepConnText = document.getElementById('step-connecting-text');
+      const stepReadyText = document.getElementById('step-ready-text');
+      const stepReadyInd = document.getElementById('step-ready-indicator');
+
+      if (stepConnText) stepConnText.innerText = "ESP32 Connecting to Wi-Fi...";
+
+      // After 5 seconds, reveal fallback button so user is NEVER stuck on this screen
+      setupWatchdogTimer = setTimeout(() => {
+        if (appState.currentView === 'setting-up' && fallbackBtn) {
+          fallbackBtn.classList.remove('hidden');
+        }
+      }, 5000);
+
+      // Actively poll Firebase RTDB state to see if ESP32 connected to router & Cloud
+      let elapsedTicks = 0;
+      setupPollInterval = setInterval(async () => {
+        if (appState.currentView !== 'setting-up') {
+          clearInterval(setupPollInterval);
+          return;
+        }
+        elapsedTicks++;
+
+        // 1. Check if Firebase has received state from ESP32
+        if (firebaseDb) {
+          try {
+            const snap = await firebaseDb.ref('ease_appliances/state').once('value');
+            const state = snap.val();
+            if (state && (state.online || state.ip)) {
+              const now = Date.now();
+              const isRecent = state.last_seen ? (Math.abs(now - state.last_seen) < 60000) : true;
+              if (isRecent && state.ip) {
+                clearInterval(setupPollInterval);
+                clearTimeout(setupWatchdogTimer);
+                appState.assignedIp = state.ip;
+                if (state.ssid) appState.selectedWifi = state.ssid;
+                appState.isDeviceOnline = true;
+                appState.lastHeartbeatTime = Date.now();
+                localStorage.setItem('ease_ip', state.ip);
+                if (state.ssid) localStorage.setItem('ease_wifi', state.ssid);
+
+                if (stepReadyText) stepReadyText.innerText = `Verified! IP: ${state.ip}`;
+                if (stepReadyInd) {
+                  stepReadyInd.className = "w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center";
+                  stepReadyInd.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+                }
+                showToast(`Ease Appliances Online! IP: ${state.ip}`);
+                const readyNet = document.getElementById('ready-plug-network');
+                if (readyNet) readyNet.innerText = `Wi-Fi: ${appState.selectedWifi} (IP: ${state.ip})`;
+                syncUI();
+                setTimeout(() => {
+                  navigateTo('ready');
+                }, 800);
+                return;
+              }
+            }
+          } catch (e) {
+            console.warn("Watchdog Firebase check:", e);
+          }
+        }
+
+        // 2. Also check LAN status if running locally
+        if (appState.assignedIp) {
+          try {
+            const res = await fetch(`/api/esp32/status?ip=${encodeURIComponent(appState.assignedIp)}`, { cache: 'no-store' });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.ip && !data.error) {
+                clearInterval(setupPollInterval);
+                clearTimeout(setupWatchdogTimer);
+                appState.assignedIp = data.ip;
+                appState.isDeviceOnline = true;
+                appState.lastHeartbeatTime = Date.now();
+                syncUI();
+                navigateTo('ready');
+                return;
+              }
+            }
+          } catch (e) {}
+        }
+
+        if (elapsedTicks > 6 && stepConnText) {
+          stepConnText.innerText = "Wi-Fi connecting... Verifying Cloud...";
+        }
+      }, 1500);
+    }
+
     // ==============================================================
     // SEND WI-FI CREDENTIALS OVER BLE TO ESP32
     // ==============================================================
@@ -2152,6 +2304,7 @@
 
       err.classList.add('hidden');
       navigateTo('setting-up');
+      startSetupWatchdog();
 
       const payload = JSON.stringify({
         ssid: appState.selectedWifi,
@@ -2206,7 +2359,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.4.0')
+        navigator.serviceWorker.register('./sw.js?v=2.6.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });

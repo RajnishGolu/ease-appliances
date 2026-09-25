@@ -38,9 +38,12 @@ uint32_t offCount = 0;
 uint32_t totalToggles = 0;
 
 // Firebase Cloud Sync
-String firebaseHost = ""; // e.g. "https://my-smart-plug-default-rtdb.firebaseio.com"
+const char* DEFAULT_FIREBASE_HOST = "https://smart-plug-c131f-default-rtdb.firebaseio.com";
+String firebaseHost = DEFAULT_FIREBASE_HOST;
 String firebaseAuth = ""; // optional auth secret
 unsigned long lastFirebasePoll = 0;
+unsigned long lastTlsTime = 0;
+bool internetConnected = false;
 
 String newSsid = "";
 String newPass = "";
@@ -48,7 +51,11 @@ bool pendingWifiConnect = false;
 
 String getFullStatus() {
   if (WiFi.status() == WL_CONNECTED) {
-    return "CONNECTED:" + WiFi.localIP().toString() + ":" + WiFi.SSID();
+    if (internetConnected) {
+      return "CONNECTED:" + WiFi.localIP().toString() + ":" + WiFi.SSID();
+    } else {
+      return "WIFI_NO_INTERNET:" + WiFi.localIP().toString() + ":" + WiFi.SSID();
+    }
   }
   return "READY_FOR_PROVISIONING";
 }
@@ -83,6 +90,7 @@ void syncToFirebase() {
   }
 
   if (https.begin(client, url)) {
+    https.setTimeout(3500);
     https.addHeader("Content-Type", "application/json");
     JsonDocument doc;
     doc["online"] = true;
@@ -101,14 +109,21 @@ void syncToFirebase() {
 
     int code = https.PUT(payload);
     Serial.printf("[FIREBASE] State synced! HTTP result: %d\n", code);
+    if (code == 200) {
+      internetConnected = true;
+    } else if (code <= 0) {
+      internetConnected = false;
+    }
     https.end();
+    lastTlsTime = millis();
   }
 }
 
 // Poll Firebase Realtime Database for remote control triggers
 void pollFirebaseControl() {
   if (WiFi.status() != WL_CONNECTED || firebaseHost.length() < 8) return;
-  if (millis() - lastFirebasePoll < 2500) return;
+  if (millis() - lastFirebasePoll < 2000) return;
+  if (millis() - lastTlsTime < 1200) return; // Prevent overlapping TLS handshakes
   lastFirebasePoll = millis();
 
   WiFiClientSecure client;
@@ -125,31 +140,43 @@ void pollFirebaseControl() {
     url += "?auth=" + firebaseAuth;
   }
 
+  bool shouldTriggerRelay = false;
+  bool targetRelayState = false;
+
   if (https.begin(client, url)) {
     https.setTimeout(2500);
     int code = https.GET();
     if (code == 200) {
+      internetConnected = true;
       String payload = https.getString();
       JsonDocument doc;
       DeserializationError err = deserializeJson(doc, payload);
       if (!err) {
-        if (doc.is<JsonObject>() && doc.containsKey("relay")) {
+        if (doc.is<JsonObject>() && doc["relay"].is<bool>()) {
           bool remoteRelay = doc["relay"].as<bool>();
           if (remoteRelay != relayState) {
-            Serial.printf("[FIREBASE] Remote control trigger: %s\n", remoteRelay ? "ON" : "OFF");
-            void setRelay(bool state, bool pushToCloud);
-            setRelay(remoteRelay, true);
+            shouldTriggerRelay = true;
+            targetRelayState = remoteRelay;
           }
         } else if (doc.is<bool>()) {
           bool remoteRelay = doc.as<bool>();
           if (remoteRelay != relayState) {
-            void setRelay(bool state, bool pushToCloud);
-            setRelay(remoteRelay, true);
+            shouldTriggerRelay = true;
+            targetRelayState = remoteRelay;
           }
         }
       }
+    } else if (code <= 0) {
+      internetConnected = false;
     }
-    https.end();
+    https.end(); // Safe: End GET request before setRelay triggers syncToFirebase
+    lastTlsTime = millis();
+  }
+
+  if (shouldTriggerRelay) {
+    Serial.printf("[FIREBASE] Remote control trigger: %s\n", targetRelayState ? "ON" : "OFF");
+    void setRelay(bool state, bool pushToCloud);
+    setRelay(targetRelayState, true);
   }
 }
 
@@ -305,6 +332,8 @@ class MyServerCallbacks: public BLEServerCallbacks {
   void onDisconnect(BLEServer* pServer) override {
     deviceConnected = false;
     Serial.println("[BLE] Client Disconnected. Restarting advertising...");
+    delay(100);
+    pServer->startAdvertising();
   }
 };
 
@@ -375,7 +404,10 @@ void setup() {
   prefs.begin("ease_app", false);
   String savedSsid = prefs.getString("ssid", "");
   String savedPass = prefs.getString("pass", "");
-  firebaseHost = prefs.getString("fb_host", "");
+  firebaseHost = prefs.getString("fb_host", DEFAULT_FIREBASE_HOST);
+  if (firebaseHost.length() < 8) {
+    firebaseHost = DEFAULT_FIREBASE_HOST;
+  }
   firebaseAuth = prefs.getString("fb_auth", "");
   onCount = prefs.getUInt("on_cnt", 0);
   offCount = prefs.getUInt("off_cnt", 0);
@@ -478,11 +510,13 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     pollFirebaseControl();
 
-    // Periodic heartbeat to Firebase every 4 seconds
+    // Periodic heartbeat to Firebase every 10 seconds
     static unsigned long lastHeartbeatPush = 0;
-    if (firebaseHost.length() > 5 && (millis() - lastHeartbeatPush > 4000)) {
-      lastHeartbeatPush = millis();
-      syncToFirebase();
+    if (firebaseHost.length() > 5 && (millis() - lastHeartbeatPush > 10000)) {
+      if (millis() - lastTlsTime >= 1500) {
+        lastHeartbeatPush = millis();
+        syncToFirebase();
+      }
     }
   }
 
@@ -520,6 +554,11 @@ void loop() {
       Serial.println("\n[WIFI] Connection Failed!");
       digitalWrite(TEST_RELAY_PIN, LOW);
       updateStatus("CONNECT_FAILED");
+    }
+
+    // Ensure BLE advertising is active after Wi-Fi provisioning
+    if (pServer && !deviceConnected) {
+      pServer->startAdvertising();
     }
   }
 
