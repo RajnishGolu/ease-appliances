@@ -986,7 +986,6 @@
     // UI Synchronizer
     function syncUI() {
       const { isBleConnected, isDeviceOnline, bleDeviceName, isPowerOn, selectedWifi, assignedIp } = appState;
-      const isOnline = isBleConnected || isDeviceOnline;
       const hasConfiguredDevice = !!(assignedIp || selectedWifi || isBleConnected || appState.hasEverSeenDevice || localStorage.getItem('ease_ip'));
 
       const noDeviceCard = document.getElementById('view-no-device-card');
@@ -998,7 +997,7 @@
       const bleHeader = document.getElementById('header-ble-indicator');
 
       if (!hasConfiguredDevice) {
-        // No device ever paired
+        // State 1: No device ever paired
         if (noDeviceCard) noDeviceCard.classList.remove('hidden');
         if (connectedCard) connectedCard.classList.add('hidden');
         if (banner) {
@@ -1010,38 +1009,84 @@
           bannerBadge.innerText = "BLE Standby";
         }
         if (bleHeader) bleHeader.className = "text-slate-400";
-      } else if (!isOnline) {
-        // Device was paired, BUT currently powered off / offline
+      } else if (!isDeviceOnline) {
+        // State 2: ESP32 has NO active Internet/Wi-Fi connection (Power Locked)
         if (noDeviceCard) noDeviceCard.classList.add('hidden');
         if (connectedCard) connectedCard.classList.remove('hidden');
-        if (banner) {
-          banner.className = "flex items-center justify-between px-4 py-2.5 bg-rose-50/90 border border-rose-200/80 rounded-2xl mb-5 transition-colors";
-          bannerDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-pulse";
-          bannerText.className = "text-xs font-semibold text-rose-800";
-          bannerText.innerText = "Ease Appliances Offline (Powered Off)";
-          bannerBadge.className = "text-[11px] font-semibold text-rose-700 bg-white px-2.5 py-0.5 rounded-full border border-rose-200 shadow-2xs";
-          bannerBadge.innerText = "Check Power";
+
+        if (isBleConnected) {
+          // Connected via BLE only (Awaiting Wi-Fi Setup)
+          if (banner) {
+            banner.className = "flex items-center justify-between px-4 py-2.5 bg-amber-50/90 border border-amber-200/80 rounded-2xl mb-5 transition-colors";
+            bannerDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+            bannerText.className = "text-xs font-semibold text-amber-800";
+            bannerText.innerText = "Connected via Bluetooth • No Internet";
+            bannerBadge.className = "text-[11px] font-semibold text-amber-700 bg-white px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs";
+            bannerBadge.innerText = "Setup Wi-Fi";
+          }
+          if (bleHeader) bleHeader.className = "text-indigo-600";
+
+          const nameEl = document.getElementById('connected-esp32-name');
+          if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
+
+          const wifiEl = document.getElementById('connected-esp32-wifi-label');
+          if (wifiEl) wifiEl.innerText = selectedWifi ? `${selectedWifi} (No Internet)` : "Not Connected to Wi-Fi";
+
+          const statusPill = document.getElementById('connected-status-pill');
+          if (statusPill) {
+            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span> BLE Only (No Internet)';
+            statusPill.className = "inline-flex items-center text-xs font-semibold text-amber-700";
+          }
+
+          const wattsEl = document.getElementById('home-device-watts');
+          if (wattsEl) wattsEl.innerText = 'Power Locked (No Internet)';
+
+          const ipEl = document.getElementById('esp32-ip-display');
+          if (ipEl) ipEl.innerText = assignedIp ? `IP: ${assignedIp}` : 'Wi-Fi Disconnected';
+
+          const homeWifiBtn = document.getElementById('home-card-wifi-btn');
+          if (homeWifiBtn) {
+            homeWifiBtn.innerText = "Connect Wi-Fi";
+            homeWifiBtn.className = "text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-xl transition-colors ring-1 ring-indigo-300 animate-pulse";
+          }
+        } else {
+          // Completely offline (No power / no internet / no BLE)
+          if (banner) {
+            banner.className = "flex items-center justify-between px-4 py-2.5 bg-rose-50/90 border border-rose-200/80 rounded-2xl mb-5 transition-colors";
+            bannerDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-pulse";
+            bannerText.className = "text-xs font-semibold text-rose-800";
+            bannerText.innerText = "Ease Appliances Offline (Powered Off)";
+            bannerBadge.className = "text-[11px] font-semibold text-rose-700 bg-white px-2.5 py-0.5 rounded-full border border-rose-200 shadow-2xs";
+            bannerBadge.innerText = "Check Power";
+          }
+          if (bleHeader) bleHeader.className = "text-slate-400";
+
+          const nameEl = document.getElementById('connected-esp32-name');
+          if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
+
+          const wifiEl = document.getElementById('connected-esp32-wifi-label');
+          if (wifiEl) wifiEl.innerText = selectedWifi ? `${selectedWifi} (Offline)` : "Offline";
+
+          const statusPill = document.getElementById('connected-status-pill');
+          if (statusPill) {
+            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span> Offline (No Power)';
+            statusPill.className = "inline-flex items-center text-xs font-semibold text-rose-600";
+          }
+
+          const wattsEl = document.getElementById('home-device-watts');
+          if (wattsEl) wattsEl.innerText = 'Offline';
+
+          const ipEl = document.getElementById('esp32-ip-display');
+          if (ipEl) ipEl.innerText = assignedIp ? `IP: ${assignedIp} (Offline)` : 'Offline';
+
+          const homeWifiBtn = document.getElementById('home-card-wifi-btn');
+          if (homeWifiBtn) {
+            homeWifiBtn.innerText = "Connect Wi-Fi";
+            homeWifiBtn.className = "text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors";
+          }
         }
-        if (bleHeader) bleHeader.className = "text-slate-400";
 
-        const nameEl = document.getElementById('connected-esp32-name');
-        if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
-
-        const wifiEl = document.getElementById('connected-esp32-wifi-label');
-        if (wifiEl) wifiEl.innerText = selectedWifi ? `${selectedWifi} (Unreachable)` : "Offline";
-
-        const statusPill = document.getElementById('connected-status-pill');
-        if (statusPill) {
-          statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span> Offline (No Power)';
-          statusPill.className = "inline-flex items-center text-xs font-semibold text-rose-600";
-        }
-
-        const wattsEl = document.getElementById('home-device-watts');
-        if (wattsEl) wattsEl.innerText = 'Offline';
-
-        const ipEl = document.getElementById('esp32-ip-display');
-        if (ipEl) ipEl.innerText = assignedIp ? `IP: ${assignedIp} (Offline)` : 'Offline';
-
+        // Power toggle is strictly disabled when not verified online on Internet
         const homeToggle = document.getElementById('home-quick-toggle');
         const homeThumb = document.getElementById('home-toggle-thumb');
         const homeIconBox = document.getElementById('home-plug-icon-box');
@@ -1053,7 +1098,7 @@
           homeIconBox.className = "w-12 h-12 rounded-2xl bg-slate-300 text-white flex items-center justify-center transition-colors";
         }
       } else {
-        // Device is ONLINE
+        // State 3: Device IS ONLINE on Internet / Cloud / LAN
         if (noDeviceCard) noDeviceCard.classList.add('hidden');
         if (connectedCard) connectedCard.classList.remove('hidden');
         if (banner) {
@@ -1062,7 +1107,7 @@
           bannerText.className = "text-xs font-semibold text-emerald-800";
           bannerText.innerText = "Ease Appliances Online";
           bannerBadge.className = "text-[11px] font-semibold text-emerald-700 bg-white px-2.5 py-0.5 rounded-full border border-emerald-200 shadow-2xs";
-          bannerBadge.innerText = selectedWifi ? selectedWifi : (assignedIp ? "Wi-Fi Online" : "Ready");
+          bannerBadge.innerText = selectedWifi ? selectedWifi : (assignedIp ? "Wi-Fi Online" : "Cloud Active");
         }
         if (bleHeader) bleHeader.className = isBleConnected ? "text-indigo-600" : "text-slate-400";
 
@@ -1070,15 +1115,15 @@
         if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
 
         const wifiEl = document.getElementById('connected-esp32-wifi-label');
-        if (wifiEl) wifiEl.innerText = selectedWifi || (assignedIp ? "Connected" : "Not Configured");
+        if (wifiEl) wifiEl.innerText = selectedWifi || (assignedIp ? "Connected" : "Cloud Active");
 
         const statusPill = document.getElementById('connected-status-pill');
         if (statusPill) {
           statusPill.className = "inline-flex items-center text-xs font-semibold text-emerald-600";
           if (isBleConnected && assignedIp) {
-            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> BLE & Wi-Fi';
+            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> BLE & Wi-Fi Online';
           } else if (isBleConnected) {
-            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-1.5 animate-pulse"></span> BLE Connected';
+            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> BLE & Cloud Online';
           } else {
             statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Wi-Fi Online';
           }
@@ -1089,18 +1134,13 @@
 
         const ipEl = document.getElementById('esp32-ip-display');
         if (ipEl) {
-          ipEl.innerText = assignedIp ? `IP: ${assignedIp}` : 'IP: Pending Wi-Fi';
+          ipEl.innerText = assignedIp ? `IP: ${assignedIp}` : 'Cloud Connected';
         }
 
         const homeWifiBtn = document.getElementById('home-card-wifi-btn');
         if (homeWifiBtn) {
-          if (assignedIp) {
-            homeWifiBtn.innerText = "Change Wi-Fi";
-            homeWifiBtn.className = "text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors";
-          } else {
-            homeWifiBtn.innerText = "Connect Wi-Fi";
-            homeWifiBtn.className = "text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-xl transition-colors";
-          }
+          homeWifiBtn.innerText = "Change Wi-Fi";
+          homeWifiBtn.className = "text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors";
         }
 
         const homeToggle = document.getElementById('home-quick-toggle');
@@ -1134,46 +1174,88 @@
       const controlHeaderPill = document.getElementById('control-header-status-pill');
       const controlBleStatus = document.getElementById('control-ble-status');
 
-      if (controlOfflineBanner) {
-        if (!isOnline && hasConfiguredDevice) {
+      if (!isDeviceOnline && hasConfiguredDevice) {
+        if (controlOfflineBanner) {
           controlOfflineBanner.classList.remove('hidden');
-        } else {
-          controlOfflineBanner.classList.add('hidden');
+          if (isBleConnected) {
+            controlOfflineBanner.className = "mt-3 mb-1 px-3.5 py-2.5 bg-amber-50 border border-amber-200/90 rounded-2xl flex items-center justify-between shadow-2xs";
+            controlOfflineBanner.innerHTML = `
+              <div class="flex items-center space-x-2.5">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-600"></span>
+                </span>
+                <div>
+                  <p class="text-xs font-bold text-amber-950">Bluetooth Only (No Internet)</p>
+                  <p class="text-[11px] text-amber-700">Connect Wi-Fi to enable power control</p>
+                </div>
+              </div>
+              <button onclick="navigateTo('wifi-setup')" class="text-[10px] font-bold text-indigo-700 bg-white border border-indigo-200 px-2.5 py-1 rounded-full shadow-2xs hover:bg-indigo-50">Setup Wi-Fi</button>
+            `;
+          } else {
+            controlOfflineBanner.className = "mt-3 mb-1 px-3.5 py-2.5 bg-rose-50 border border-rose-200/90 rounded-2xl flex items-center justify-between shadow-2xs";
+            controlOfflineBanner.innerHTML = `
+              <div class="flex items-center space-x-2.5">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
+                </span>
+                <div>
+                  <p class="text-xs font-bold text-rose-950">Device Powered Off / Offline</p>
+                  <p class="text-[11px] text-rose-700">Check power connection to ESP32</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold text-rose-700 bg-white border border-rose-200 px-2 py-0.5 rounded-full">Offline</span>
+            `;
+          }
         }
-      }
 
-      if (controlHeaderPill) {
-        if (isOnline) {
-          controlHeaderPill.className = "inline-flex items-center text-[11px] text-emerald-600 font-medium";
-          controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span> Online';
-        } else {
-          controlHeaderPill.className = "inline-flex items-center text-[11px] text-rose-500 font-medium";
-          controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1"></span> Offline (No Power)';
+        if (controlHeaderPill) {
+          if (isBleConnected) {
+            controlHeaderPill.className = "inline-flex items-center text-[11px] text-amber-600 font-medium";
+            controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1 animate-pulse"></span> BLE Only (No Internet)';
+          } else {
+            controlHeaderPill.className = "inline-flex items-center text-[11px] text-rose-500 font-medium";
+            controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1"></span> Offline (No Power)';
+          }
         }
-      }
 
-      if (!isOnline && hasConfiguredDevice) {
-        if (controlWatts) controlWatts.innerText = 'Offline';
-        if (controlWifiLabel) controlWifiLabel.innerText = selectedWifi ? `${selectedWifi} (Offline)` : 'Offline';
-        if (controlWifiShort) controlWifiShort.innerText = 'Offline';
+        if (controlWatts) controlWatts.innerText = isBleConnected ? 'No Internet' : 'Offline';
+        if (controlWifiLabel) controlWifiLabel.innerText = selectedWifi ? `${selectedWifi} (No Internet)` : (isBleConnected ? 'Wi-Fi Not Setup' : 'Offline');
+        if (controlWifiShort) controlWifiShort.innerText = isBleConnected ? 'No Wi-Fi' : 'Offline';
         if (controlBleStatus) {
-          controlBleStatus.innerText = 'Offline';
-          controlBleStatus.className = 'text-xs font-bold text-slate-400 mt-1';
+          controlBleStatus.innerText = isBleConnected ? 'Active' : 'Offline';
+          controlBleStatus.className = isBleConnected ? 'text-xs font-bold text-indigo-600 mt-1' : 'text-xs font-bold text-slate-400 mt-1';
         }
 
         if (mainBtn && stateLabel && stateSub && glow) {
-          mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-md bg-slate-100 text-slate-400 border-2 border-dashed border-slate-300 opacity-80 cursor-not-allowed";
-          stateLabel.innerText = "OFFLINE";
-          stateSub.innerText = "Device Powered Off";
+          if (isBleConnected) {
+            mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-md bg-amber-50/70 text-amber-700 border-2 border-dashed border-amber-300 opacity-80 cursor-not-allowed";
+            stateLabel.innerText = "NO INTERNET";
+            stateSub.innerText = "Connect Wi-Fi to Control";
+          } else {
+            mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-md bg-slate-100 text-slate-400 border-2 border-dashed border-slate-300 opacity-80 cursor-not-allowed";
+            stateLabel.innerText = "OFFLINE";
+            stateSub.innerText = "Device Powered Off";
+          }
           glow.className = "hidden";
         }
       } else {
+        if (controlOfflineBanner) {
+          controlOfflineBanner.classList.add('hidden');
+        }
+
+        if (controlHeaderPill) {
+          controlHeaderPill.className = "inline-flex items-center text-[11px] text-emerald-600 font-medium";
+          controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span> Online';
+        }
+
         if (controlWatts) controlWatts.innerText = isPowerOn ? 'GPIO 2 (Active)' : 'GPIO 2 (Inactive)';
-        if (controlWifiLabel) controlWifiLabel.innerText = selectedWifi || (assignedIp ? `Online (${assignedIp})` : 'Pending Wi-Fi');
-        if (controlWifiShort) controlWifiShort.innerText = selectedWifi ? selectedWifi.substring(0, 10) : (assignedIp ? 'Online' : 'None');
+        if (controlWifiLabel) controlWifiLabel.innerText = selectedWifi || (assignedIp ? `Online (${assignedIp})` : 'Cloud Active');
+        if (controlWifiShort) controlWifiShort.innerText = selectedWifi ? selectedWifi.substring(0, 10) : (assignedIp ? 'Online' : 'Cloud');
         if (controlBleStatus) {
           controlBleStatus.innerText = isBleConnected ? 'Active' : 'Standby';
-          controlBleStatus.className = isBleConnected ? 'text-xs font-bold text-emerald-600 mt-1' : 'text-xs font-bold text-slate-400 mt-1';
+          controlBleStatus.className = isBleConnected ? 'text-xs font-bold text-indigo-600 mt-1' : 'text-xs font-bold text-slate-400 mt-1';
         }
 
         if (mainBtn && stateLabel && stateSub && glow) {
@@ -1216,11 +1298,14 @@
       }
     }
 
-    // Power Toggling Logic (Sends BLE, LAN HTTP, & Firebase RTDB)
+    // Power Toggling Logic (Sends Firebase RTDB & LAN HTTP when ESP32 is online)
     async function setPowerState(isOn) {
-      const isOnline = appState.isBleConnected || appState.isDeviceOnline;
-      if (!isOnline) {
-        showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+      if (!appState.isDeviceOnline) {
+        if (appState.isBleConnected) {
+          showToast("⚠️ ESP32 has no internet connection. Please connect to Wi-Fi first.");
+        } else {
+          showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+        }
         syncUI();
         return;
       }
@@ -1233,7 +1318,7 @@
       // Record activity locally
       addActivityLog(isOn ? 'Power turned ON (GPIO 2 Active)' : 'Power turned OFF (GPIO 2 Inactive)', isOn ? 'on' : 'off', 'App UI');
 
-      // 1. Send via Firebase RTDB if configured
+      // 1. Send via Firebase RTDB (only when device is confirmed online on Internet)
       if (firebaseDb) {
         try {
           firebaseDb.ref('ease_appliances/control').set({ relay: isOn });
@@ -1248,40 +1333,28 @@
         }
       }
 
-      // 2. Send via BLE if connected
-      if (relayChar) {
-        try {
-          const encoder = new TextEncoder();
-          await relayChar.writeValue(encoder.encode(isOn ? "ON" : "OFF"));
-        } catch (e) {
-          console.warn("BLE relay write error:", e);
-        }
+      // 2. Also send via LAN proxy to ESP32 if running locally
+      if (appState.assignedIp) {
+        fetch(`/api/esp32/relay?ip=${encodeURIComponent(appState.assignedIp)}&state=${isOn ? 'on' : 'off'}`)
+          .then(r => r.json())
+          .then(data => {
+            if (data && typeof data.onCount === 'number') {
+              updateStatsFromData(data);
+            }
+          })
+          .catch(() => {});
       }
-
-      // 3. Send via LAN proxy to ESP32
-      const ip = appState.assignedIp || "192.168.0.183";
-      fetch(`/api/esp32/relay?ip=${encodeURIComponent(ip)}&state=${isOn ? 'on' : 'off'}`)
-        .then(r => r.json())
-        .then(data => {
-          if (data && typeof data.onCount === 'number') {
-            updateStatsFromData(data);
-          } else if (data && data.success === false) {
-            handleDeviceOffline();
-          }
-        })
-        .catch(() => {
-          if (!appState.isBleConnected) {
-            handleDeviceOffline();
-          }
-        });
 
       showToast(`Relay turned ${isOn ? 'ON' : 'OFF'}`);
     }
 
     function toggleMainPower() {
-      const isOnline = appState.isBleConnected || appState.isDeviceOnline;
-      if (!isOnline) {
-        showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+      if (!appState.isDeviceOnline) {
+        if (appState.isBleConnected) {
+          showToast("⚠️ ESP32 has no internet connection. Please connect to Wi-Fi first.");
+        } else {
+          showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+        }
         syncUI();
         return;
       }
@@ -1290,9 +1363,12 @@
 
     function togglePlugPower(e) {
       if (e) e.stopPropagation();
-      const isOnline = appState.isBleConnected || appState.isDeviceOnline;
-      if (!isOnline) {
-        showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+      if (!appState.isDeviceOnline) {
+        if (appState.isBleConnected) {
+          showToast("⚠️ ESP32 has no internet connection. Please connect to Wi-Fi first.");
+        } else {
+          showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+        }
         syncUI();
         return;
       }
@@ -1301,6 +1377,7 @@
 
     // ==============================================================
     // REAL WEB BLUETOOTH SCAN & CONNECT TO "EASE APPLIANCES"
+    // (Used exclusively for Wi-Fi provisioning and pairing)
     // ==============================================================
     async function scanAndConnectBle() {
       if (!navigator.bluetooth) {
@@ -1330,14 +1407,17 @@
         // Retrieve characteristics
         provChar = await service.getCharacteristic(CHAR_WIFI_PROV_UUID);
         statusChar = await service.getCharacteristic(CHAR_STATUS_UUID);
-        relayChar = await service.getCharacteristic(CHAR_RELAY_UUID);
+        try {
+          relayChar = await service.getCharacteristic(CHAR_RELAY_UUID);
+        } catch (e) {
+          console.log("Relay char optional:", e);
+        }
 
         // Start notifications on status characteristic
         await statusChar.startNotifications();
         statusChar.addEventListener('characteristicvaluechanged', onStatusNotification);
 
         appState.isBleConnected = true;
-        appState.isDeviceOnline = true;
         appState.bleDeviceName = bleDevice.name || "Ease Appliances";
         localStorage.setItem('ease_name', appState.bleDeviceName);
 
@@ -1349,16 +1429,6 @@
           console.log("[ESP32 Initial Status]", initialStatus);
         } catch (e) {
           console.warn("Could not read status char:", e);
-        }
-
-        // Read initial relay state
-        try {
-          const rawRelay = await relayChar.readValue();
-          const rStr = new TextDecoder().decode(rawRelay).toUpperCase();
-          appState.isPowerOn = (rStr === "ON" || rStr === "1" || rStr === "TRUE");
-          localStorage.setItem('ease_power', appState.isPowerOn);
-        } catch (e) {
-          console.warn("Could not read relay char:", e);
         }
 
         // Check if device is ALREADY connected to Wi-Fi
@@ -1375,14 +1445,16 @@
             localStorage.setItem('ease_wifi', ssid);
           }
           appState.isDeviceOnline = true;
+          appState.lastHeartbeatTime = Date.now();
           showToast(`Ease Appliances Connected! (IP: ${appState.assignedIp})`);
           syncUI();
           return;
         }
 
-        // If NOT yet connected to Wi-Fi, open Wi-Fi setup
+        // Device is NOT yet connected to Wi-Fi / Internet
+        appState.isDeviceOnline = false;
         syncUI();
-        showToast("Connected to BLE! Configure Wi-Fi...");
+        showToast("Connected via Bluetooth. Configure Wi-Fi to enable control.");
         setTimeout(() => {
           navigateTo('wifi-setup');
         }, 500);
@@ -1411,6 +1483,7 @@
         appState.assignedIp = ip;
         if (ssid) appState.selectedWifi = ssid;
         appState.isDeviceOnline = true;
+        appState.lastHeartbeatTime = Date.now();
         localStorage.setItem('ease_ip', ip);
         if (ssid) localStorage.setItem('ease_wifi', ssid);
 
@@ -1424,8 +1497,13 @@
       } else if (statusValue === "CONNECTING") {
         showToast("ESP32 connecting to router...");
       } else if (statusValue === "CONNECT_FAILED") {
+        appState.isDeviceOnline = false;
         showToast("❌ Wi-Fi connection failed on ESP32");
+        syncUI();
         navigateTo('wifi-setup');
+      } else if (statusValue === "READY_FOR_PROVISIONING") {
+        appState.isDeviceOnline = false;
+        syncUI();
       }
     }
 
@@ -1754,6 +1832,13 @@
           }
         });
 
+        let firebaseServerOffset = 0;
+        try {
+          firebaseDb.ref('.info/serverTimeOffset').on('value', (snap) => {
+            firebaseServerOffset = snap.val() || 0;
+          });
+        } catch (e) {}
+
         // Listen for live hardware telemetry and counters pushed directly by the ESP32
         firebaseDb.ref('ease_appliances/state').on('value', (snapshot) => {
           const state = snapshot.val();
@@ -1768,19 +1853,18 @@
               localStorage.setItem('ease_ip', state.ip);
             }
 
-            const now = Date.now();
+            const currentServerTime = Date.now() + firebaseServerOffset;
             let isFresh = false;
 
+            // Only declare online if last_seen timestamp from ESP32 is fresh (within last 15 seconds)
             if (typeof state.last_seen === 'number') {
-              // Firebase server timestamp: must be within last 12 seconds
-              isFresh = (Math.abs(now - state.last_seen) < 12000);
-            } else if (typeof state.heartbeat === 'number') {
-              isFresh = true;
+              const ageMs = currentServerTime - state.last_seen;
+              isFresh = (ageMs > -5000 && ageMs < 15000);
             }
 
             if (isFresh) {
               failedPollCount = 0;
-              appState.lastHeartbeatTime = now;
+              appState.lastHeartbeatTime = Date.now();
               const wasOffline = !appState.isDeviceOnline;
               appState.isDeviceOnline = true;
               if (wasOffline) {
@@ -1793,7 +1877,7 @@
               }
               syncUI();
             } else {
-              // Stale data in Firebase - ESP32 has stopped reporting
+              // Stale data in Firebase - ESP32 has stopped reporting or has no internet
               handleDeviceOffline();
             }
           } else {
@@ -1825,8 +1909,8 @@
       if (failedPollCount >= 2 || appState.lastHeartbeatTime === 0) {
         if (appState.isDeviceOnline) {
           appState.isDeviceOnline = false;
-          addActivityLog("Ease Appliances lost power / offline", "off", "Heartbeat");
-          showToast("⚠️ Ease Appliances offline (Power lost)");
+          addActivityLog("Ease Appliances lost internet / offline", "off", "Heartbeat");
+          showToast("⚠️ Ease Appliances offline (Internet / Power lost)");
           syncUI();
         }
       }
@@ -1834,13 +1918,11 @@
 
     // Periodic check to verify ESP32 is online on LAN & Cloud Watchdog
     async function checkDeviceStatusOnline() {
-      // 1. If connected via Web Bluetooth, BLE GATT connection is proof of life
+      // 1. Maintain BLE connection status indicator (GATT connection is NOT internet connection)
       if (bleDevice && bleDevice.gatt && bleDevice.gatt.connected) {
         appState.isBleConnected = true;
-        appState.isDeviceOnline = true;
-        appState.lastHeartbeatTime = Date.now();
-        syncUI();
-        return;
+      } else {
+        appState.isBleConnected = false;
       }
 
       // 2. If running on local server with LAN IP, ping LAN
@@ -1913,7 +1995,7 @@
       // 3. If LAN ping failed or running on static hosting (GitHub Pages), check Firebase heartbeat freshness
       if (!lanSuccess) {
         const now = Date.now();
-        if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) < 10000) {
+        if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) < 15000) {
           failedPollCount = 0;
           appState.isDeviceOnline = true;
           syncUI();

@@ -345,6 +345,11 @@ class WifiProvCallbacks: public BLECharacteristicCallbacks {
 // Relay Control Callback
 class RelayCallbacks: public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) override {
+    // Bluetooth is ONLY for Wi-Fi provisioning. Power control requires Wi-Fi / Internet!
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("[BLE] Power control rejected: ESP32 has no Wi-Fi / Internet connection");
+      return;
+    }
     String value = pCharacteristic->getValue().c_str();
     value.toUpperCase();
     if (value == "1" || value == "ON" || value == "TRUE") {
