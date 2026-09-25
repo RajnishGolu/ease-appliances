@@ -135,13 +135,13 @@ void pollFirebaseControl() {
           if (remoteRelay != relayState) {
             Serial.printf("[FIREBASE] Remote control trigger: %s\n", remoteRelay ? "ON" : "OFF");
             void setRelay(bool state, bool pushToCloud);
-            setRelay(remoteRelay, false);
+            setRelay(remoteRelay, true);
           }
         } else if (doc.is<bool>()) {
           bool remoteRelay = doc.as<bool>();
           if (remoteRelay != relayState) {
             void setRelay(bool state, bool pushToCloud);
-            setRelay(remoteRelay, false);
+            setRelay(remoteRelay, true);
           }
         }
       }

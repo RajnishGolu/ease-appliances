@@ -1221,6 +1221,7 @@
       // 1. Send via Firebase RTDB if configured
       if (firebaseDb) {
         try {
+          firebaseDb.ref('ease_appliances/control').set({ relay: isOn });
           firebaseDb.ref('ease_relay').set(isOn ? "ON" : "OFF");
           firebaseDb.ref('ease_history').push({
             action: isOn ? "ON" : "OFF",
@@ -1732,6 +1733,28 @@
               playTactileClick(boolVal);
               syncUI();
               addActivityLog(`Cloud changed Power to ${boolVal ? 'ON' : 'OFF'} (GPIO 2)`, boolVal ? 'on' : 'off', 'Firebase RTDB');
+            }
+          }
+        });
+
+        // Listen for live hardware telemetry and counters pushed directly by the ESP32
+        firebaseDb.ref('ease_appliances/state').on('value', (snapshot) => {
+          const state = snapshot.val();
+          if (state) {
+            failedPollCount = 0;
+            if (!appState.isDeviceOnline) {
+              appState.isDeviceOnline = true;
+              syncUI();
+            }
+            updateStatsFromData(state);
+            if (typeof state.relay === 'boolean' && appState.isPowerOn !== state.relay) {
+              appState.isPowerOn = state.relay;
+              localStorage.setItem('ease_power', state.relay);
+              syncUI();
+            }
+            if (state.ip) {
+              appState.assignedIp = state.ip;
+              localStorage.setItem('esp32_ip', state.ip);
             }
           }
         });
