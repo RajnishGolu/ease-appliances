@@ -1,5 +1,5 @@
-// Cache version 2.3.0 - Default Cloud Integration & Automatic Provisioning Detection
-const CACHE_NAME = 'my-smart-plug-v2.3.0';
+// Cache version 2.4.0 - Direct Wi-Fi SSID Entry Support
+const CACHE_NAME = 'my-smart-plug-v2.4.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',
