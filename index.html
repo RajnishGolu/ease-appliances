@@ -856,15 +856,18 @@
     const CHAR_RELAY_UUID     = "beb54840-36e1-4688-b7f5-ea07361b26a8";
 
     // Application state (with persistent storage restoration)
+    const DEFAULT_FIREBASE_URL = "https://smart-plug-c131f-default-rtdb.firebaseio.com";
     const savedIp = localStorage.getItem('ease_ip') || "";
     const savedWifi = localStorage.getItem('ease_wifi') || "";
     const savedPower = localStorage.getItem('ease_power');
+    const configuredFbUrl = localStorage.getItem('ease_firebase_url') || DEFAULT_FIREBASE_URL;
 
     const appState = {
       isBleConnected: false,
       isDeviceOnline: false,
+      hasEverSeenDevice: !!(savedIp || savedWifi),
       lastHeartbeatTime: 0,
-      bleDeviceName: localStorage.getItem('ease_name') || "",
+      bleDeviceName: localStorage.getItem('ease_name') || "Ease Appliances",
       assignedIp: savedIp,
       isPowerOn: savedPower === 'true' ? true : false,
       selectedWifi: savedWifi,
@@ -873,8 +876,8 @@
       onCount: parseInt(localStorage.getItem('ease_on_count') || '0', 10),
       offCount: parseInt(localStorage.getItem('ease_off_count') || '0', 10),
       totalToggles: parseInt(localStorage.getItem('ease_total_toggles') || '0', 10),
-      firebaseHost: localStorage.getItem('ease_firebase_url') || "",
-      firebaseConfigured: !!(localStorage.getItem('ease_firebase_url')),
+      firebaseHost: configuredFbUrl,
+      firebaseConfigured: true,
       activityLogs: JSON.parse(localStorage.getItem('ease_activity_logs') || '[]')
     };
 
@@ -971,7 +974,7 @@
     function syncUI() {
       const { isBleConnected, isDeviceOnline, bleDeviceName, isPowerOn, selectedWifi, assignedIp } = appState;
       const isOnline = isBleConnected || isDeviceOnline;
-      const hasConfiguredDevice = !!(assignedIp || bleDeviceName);
+      const hasConfiguredDevice = !!(assignedIp || selectedWifi || isBleConnected || appState.hasEverSeenDevice || localStorage.getItem('ease_ip'));
 
       const noDeviceCard = document.getElementById('view-no-device-card');
       const connectedCard = document.getElementById('view-connected-device-card');
@@ -1742,6 +1745,16 @@
         firebaseDb.ref('ease_appliances/state').on('value', (snapshot) => {
           const state = snapshot.val();
           if (state) {
+            appState.hasEverSeenDevice = true;
+            if (state.ssid) {
+              appState.selectedWifi = state.ssid;
+              localStorage.setItem('ease_wifi', state.ssid);
+            }
+            if (state.ip) {
+              appState.assignedIp = state.ip;
+              localStorage.setItem('ease_ip', state.ip);
+            }
+
             const now = Date.now();
             let isFresh = false;
 
@@ -1764,10 +1777,6 @@
               if (typeof state.relay === 'boolean' && appState.isPowerOn !== state.relay) {
                 appState.isPowerOn = state.relay;
                 localStorage.setItem('ease_power', state.relay);
-              }
-              if (state.ip) {
-                appState.assignedIp = state.ip;
-                localStorage.setItem('ease_ip', state.ip);
               }
               syncUI();
             } else {
@@ -2093,7 +2102,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.2.0')
+        navigator.serviceWorker.register('./sw.js?v=2.3.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
@@ -2104,10 +2113,7 @@
       updateClock();
       setInterval(updateClock, 30000);
       renderActivityLogs();
-      const savedFbUrl = localStorage.getItem('ease_firebase_url');
-      if (savedFbUrl) {
-        initFirebaseClient(savedFbUrl, localStorage.getItem('ease_firebase_auth'));
-      }
+      initFirebaseClient(appState.firebaseHost, localStorage.getItem('ease_firebase_auth'));
       syncUI();
       loadRealWifiNetworks(false);
       checkDeviceStatusOnline();
