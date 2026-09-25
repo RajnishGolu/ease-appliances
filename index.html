@@ -265,10 +265,6 @@
           <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
           <span>Scan for 'Ease Appliances'</span>
         </button>
-
-        <button onclick="simulateBleConnected()" class="w-full mt-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors text-xs text-center">
-          ⚡ Demo Mode: Simulate ESP32 Connected
-        </button>
       </div>
 
       <!-- STATE B: CONNECTED DEVICE CARD (Revealed only upon connection) -->
@@ -866,10 +862,11 @@
 
     const appState = {
       isBleConnected: false,
-      isDeviceOnline: !!savedIp,
-      bleDeviceName: localStorage.getItem('ease_name') || "Ease Appliances",
+      isDeviceOnline: false,
+      lastHeartbeatTime: 0,
+      bleDeviceName: localStorage.getItem('ease_name') || "",
       assignedIp: savedIp,
-      isPowerOn: savedPower === 'false' ? false : true,
+      isPowerOn: savedPower === 'true' ? true : false,
       selectedWifi: savedWifi,
       realNetworks: [],
       currentView: "home",
@@ -1205,8 +1202,10 @@
 
     // Power Toggling Logic (Sends BLE, LAN HTTP, & Firebase RTDB)
     async function setPowerState(isOn) {
-      if (!appState.isBleConnected && !appState.isDeviceOnline) {
-        showToast("⚠️ Device is powered off / offline");
+      const isOnline = appState.isBleConnected || appState.isDeviceOnline;
+      if (!isOnline) {
+        showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+        syncUI();
         return;
       }
 
@@ -1250,9 +1249,15 @@
         .then(data => {
           if (data && typeof data.onCount === 'number') {
             updateStatsFromData(data);
+          } else if (data && data.success === false) {
+            handleDeviceOffline();
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          if (!appState.isBleConnected) {
+            handleDeviceOffline();
+          }
+        });
 
       showToast(`Relay turned ${isOn ? 'ON' : 'OFF'}`);
     }
@@ -1260,17 +1265,19 @@
     function toggleMainPower() {
       const isOnline = appState.isBleConnected || appState.isDeviceOnline;
       if (!isOnline) {
-        showToast("⚠️ Ease Appliances is powered off / offline");
+        showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+        syncUI();
         return;
       }
       setPowerState(!appState.isPowerOn);
     }
 
     function togglePlugPower(e) {
-      e.stopPropagation();
+      if (e) e.stopPropagation();
       const isOnline = appState.isBleConnected || appState.isDeviceOnline;
       if (!isOnline) {
-        showToast("⚠️ Ease Appliances is powered off / offline");
+        showToast("⚠️ Device is powered off / offline. Please plug in your ESP32.");
+        syncUI();
         return;
       }
       setPowerState(!appState.isPowerOn);
@@ -1281,8 +1288,8 @@
     // ==============================================================
     async function scanAndConnectBle() {
       if (!navigator.bluetooth) {
-        showToast("Web Bluetooth not supported in this browser. Use Chrome on Mac/Android!");
-        simulateBleConnected();
+        showToast("❌ Web Bluetooth not supported in this browser");
+        alert("⚠️ Web Bluetooth is not supported in Safari or iOS browsers.\n\nTo scan and connect to your ESP32, please open this app in Google Chrome or Microsoft Edge on a Mac, Windows, or Android device.");
         return;
       }
 
@@ -1314,6 +1321,7 @@
         statusChar.addEventListener('characteristicvaluechanged', onStatusNotification);
 
         appState.isBleConnected = true;
+        appState.isDeviceOnline = true;
         appState.bleDeviceName = bleDevice.name || "Ease Appliances";
         localStorage.setItem('ease_name', appState.bleDeviceName);
 
@@ -1353,7 +1361,6 @@
           appState.isDeviceOnline = true;
           showToast(`Ease Appliances Connected! (IP: ${appState.assignedIp})`);
           syncUI();
-          // DO NOT navigate to wifi-setup! Device is already connected.
           return;
         }
 
@@ -1366,8 +1373,12 @@
 
       } catch (err) {
         console.warn("BLE Connection cancelled or failed:", err);
-        if (err.name !== 'NotFoundError') {
-          showToast("Bluetooth error: " + err.message);
+        appState.isBleConnected = false;
+        syncUI();
+        if (err.name === 'NotFoundError') {
+          showToast("❌ No device selected or ESP32 is powered off");
+        } else {
+          showToast("❌ Bluetooth error: " + err.message);
         }
       }
     }
@@ -1397,14 +1408,14 @@
       } else if (statusValue === "CONNECTING") {
         showToast("ESP32 connecting to router...");
       } else if (statusValue === "CONNECT_FAILED") {
-        showToast("Wi-Fi connection failed on ESP32");
+        showToast("❌ Wi-Fi connection failed on ESP32");
         navigateTo('wifi-setup');
       }
     }
 
     function onGattDisconnected() {
       appState.isBleConnected = false;
-      showToast("Ease Appliances BLE Disconnected");
+      showToast("⚠️ Ease Appliances BLE Disconnected");
       syncUI();
     }
 
@@ -1430,16 +1441,6 @@
         syncUI();
         showToast("Device forgotten");
       }
-    }
-
-    function simulateBleConnected() {
-      appState.isBleConnected = true;
-      appState.bleDeviceName = "Ease Appliances (Simulated)";
-      showToast("Ease Appliances Connected!");
-      syncUI();
-      setTimeout(() => {
-        navigateTo('wifi-setup');
-      }, 500);
     }
 
     // ==============================================================
@@ -1741,21 +1742,40 @@
         firebaseDb.ref('ease_appliances/state').on('value', (snapshot) => {
           const state = snapshot.val();
           if (state) {
-            failedPollCount = 0;
-            if (!appState.isDeviceOnline) {
+            const now = Date.now();
+            let isFresh = false;
+
+            if (typeof state.last_seen === 'number') {
+              // Firebase server timestamp: must be within last 12 seconds
+              isFresh = (Math.abs(now - state.last_seen) < 12000);
+            } else if (typeof state.heartbeat === 'number') {
+              isFresh = true;
+            }
+
+            if (isFresh) {
+              failedPollCount = 0;
+              appState.lastHeartbeatTime = now;
+              const wasOffline = !appState.isDeviceOnline;
               appState.isDeviceOnline = true;
+              if (wasOffline) {
+                addActivityLog("Ease Appliances online (Cloud Sync)", "sync", "Firebase");
+              }
+              updateStatsFromData(state);
+              if (typeof state.relay === 'boolean' && appState.isPowerOn !== state.relay) {
+                appState.isPowerOn = state.relay;
+                localStorage.setItem('ease_power', state.relay);
+              }
+              if (state.ip) {
+                appState.assignedIp = state.ip;
+                localStorage.setItem('ease_ip', state.ip);
+              }
               syncUI();
+            } else {
+              // Stale data in Firebase - ESP32 has stopped reporting
+              handleDeviceOffline();
             }
-            updateStatsFromData(state);
-            if (typeof state.relay === 'boolean' && appState.isPowerOn !== state.relay) {
-              appState.isPowerOn = state.relay;
-              localStorage.setItem('ease_power', state.relay);
-              syncUI();
-            }
-            if (state.ip) {
-              appState.assignedIp = state.ip;
-              localStorage.setItem('esp32_ip', state.ip);
-            }
+          } else {
+            handleDeviceOffline();
           }
         });
 
@@ -1780,25 +1800,38 @@
     function handleDeviceOffline() {
       failedPollCount++;
       // After 2 consecutive failures (~6-8s without heartbeat), declare device offline
-      if (failedPollCount >= 2) {
+      if (failedPollCount >= 2 || appState.lastHeartbeatTime === 0) {
         if (appState.isDeviceOnline) {
           appState.isDeviceOnline = false;
           addActivityLog("Ease Appliances lost power / offline", "off", "Heartbeat");
-          showToast("Ease Appliances offline (Power lost)");
+          showToast("⚠️ Ease Appliances offline (Power lost)");
           syncUI();
         }
       }
     }
 
-    // Periodic check to verify ESP32 is online on LAN
+    // Periodic check to verify ESP32 is online on LAN & Cloud Watchdog
     async function checkDeviceStatusOnline() {
+      // 1. If connected via Web Bluetooth, BLE GATT connection is proof of life
+      if (bleDevice && bleDevice.gatt && bleDevice.gatt.connected) {
+        appState.isBleConnected = true;
+        appState.isDeviceOnline = true;
+        appState.lastHeartbeatTime = Date.now();
+        syncUI();
+        return;
+      }
+
+      // 2. If running on local server with LAN IP, ping LAN
       const ip = appState.assignedIp || "192.168.0.183";
+      let lanSuccess = false;
       try {
         const res = await fetch(`/api/esp32/status?ip=${encodeURIComponent(ip)}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data && data.ip && !data.error && data.online !== false) {
+            lanSuccess = true;
             failedPollCount = 0;
+            appState.lastHeartbeatTime = Date.now();
             const wasOffline = !appState.isDeviceOnline;
             appState.isDeviceOnline = true;
             if (wasOffline) {
@@ -1851,9 +1884,20 @@
             return;
           }
         }
-        handleDeviceOffline();
       } catch (e) {
-        handleDeviceOffline();
+        // LAN fetch error
+      }
+
+      // 3. If LAN ping failed or running on static hosting (GitHub Pages), check Firebase heartbeat freshness
+      if (!lanSuccess) {
+        const now = Date.now();
+        if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) < 10000) {
+          failedPollCount = 0;
+          appState.isDeviceOnline = true;
+          syncUI();
+        } else {
+          handleDeviceOffline();
+        }
       }
     }
 
@@ -1986,6 +2030,15 @@
         return;
       }
 
+      if (!provChar || !appState.isBleConnected) {
+        showToast("❌ Bluetooth disconnected. Cannot send Wi-Fi credentials.");
+        if (err) {
+          err.innerText = "ESP32 Bluetooth is not connected. Make sure your ESP32 is powered on and scan again.";
+          err.classList.remove('hidden');
+        }
+        return;
+      }
+
       err.classList.add('hidden');
       navigateTo('setting-up');
 
@@ -1994,29 +2047,14 @@
         password: password
       });
 
-      // If connected via real Web Bluetooth, send payload directly to ESP32
-      if (provChar) {
-        try {
-          const encoder = new TextEncoder();
-          await provChar.writeValue(encoder.encode(payload));
-          showToast(`Transmitted credentials for ${appState.selectedWifi}`);
-        } catch (e) {
-          console.warn("Could not write Wi-Fi credentials to BLE char:", e);
-        }
-      } else {
-        // Simulated progress
-        setTimeout(() => {
-          document.getElementById('step-connecting-indicator').className = "w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center";
-          document.getElementById('step-connecting-indicator').innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
-
-          document.getElementById('step-ready-indicator').className = "w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center";
-          document.getElementById('step-ready-indicator').innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
-
-          appState.assignedIp = "192.168.0.105";
-          document.getElementById('ready-plug-network').innerText = `Wi-Fi: ${appState.selectedWifi} (IP: 192.168.0.105)`;
-          syncUI();
-          setTimeout(() => navigateTo('ready'), 800);
-        }, 1600);
+      try {
+        const encoder = new TextEncoder();
+        await provChar.writeValue(encoder.encode(payload));
+        showToast(`Transmitted credentials for ${appState.selectedWifi}. Awaiting ESP32 connection...`);
+      } catch (e) {
+        console.warn("Could not write Wi-Fi credentials to BLE char:", e);
+        showToast("❌ Failed to send credentials to ESP32: " + e.message);
+        navigateTo('wifi-setup');
       }
     }
 
@@ -2056,7 +2094,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.1.2')
+        navigator.serviceWorker.register('./sw.js?v=2.2.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });

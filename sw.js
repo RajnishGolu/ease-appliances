@@ -1,5 +1,5 @@
-// Cache version 2.1.2 - Offline Detection & Auto-Recovery
-const CACHE_NAME = 'my-smart-plug-v2.1.2';
+// Cache version 2.2.0 - Real Hardware Verification & Zero Simulation
+const CACHE_NAME = 'my-smart-plug-v2.2.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

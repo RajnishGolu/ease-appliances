@@ -85,6 +85,9 @@ void syncToFirebase() {
   if (https.begin(client, url)) {
     https.addHeader("Content-Type", "application/json");
     JsonDocument doc;
+    doc["online"] = true;
+    doc["heartbeat"] = millis();
+    doc["last_seen"][".sv"] = "timestamp";
     doc["relay"] = relayState;
     doc["onCount"] = onCount;
     doc["offCount"] = offCount;
@@ -469,6 +472,13 @@ void loop() {
   // Poll Firebase Realtime Database
   if (WiFi.status() == WL_CONNECTED) {
     pollFirebaseControl();
+
+    // Periodic heartbeat to Firebase every 4 seconds
+    static unsigned long lastHeartbeatPush = 0;
+    if (firebaseHost.length() > 5 && (millis() - lastHeartbeatPush > 4000)) {
+      lastHeartbeatPush = millis();
+      syncToFirebase();
+    }
   }
 
   // Handle incoming Wi-Fi configuration request
