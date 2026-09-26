@@ -1,5 +1,5 @@
-// Cache version 2.9.5 - Named appliances: Bed Room Light 1, Bed Room 2, Fan, Outdoor Light (Balcony)
-const CACHE_NAME = 'my-smart-plug-v2.9.5';
+// Cache version 2.9.6 - Accurate client stats, removed redundant total tile, clean activity record
+const CACHE_NAME = 'my-smart-plug-v2.9.6';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

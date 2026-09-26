@@ -472,7 +472,7 @@
             <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Analytics</span>
             <button onclick="resetStatsCounters()" class="text-[11px] font-semibold text-rose-500 hover:text-rose-600 transition-colors">Reset Counters</button>
           </div>
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-2 gap-3">
             <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
               <span class="text-[10px] uppercase font-bold text-emerald-600 flex items-center justify-center space-x-1">
                 <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
@@ -487,13 +487,6 @@
               </span>
               <div id="stat-off-count" class="text-lg font-black text-slate-900 mt-0.5">0</div>
             </div>
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
-              <span class="text-[10px] uppercase font-bold text-indigo-600 flex items-center justify-center space-x-1">
-                <svg class="w-3 h-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                <span>Total</span>
-              </span>
-              <div id="stat-total-toggles" class="text-lg font-black text-slate-900 mt-0.5">0</div>
-            </div>
           </div>
         </div>
 
@@ -502,7 +495,6 @@
           <div class="bg-white border border-slate-200/80 rounded-3xl p-4 shadow-2xs">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Live Activity Record</span>
-              <span id="log-count-badge" class="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">0 events</span>
             </div>
             <div id="activity-log-list" class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
               <div class="text-xs text-slate-400 text-center py-2">No power events recorded yet</div>
@@ -1128,12 +1120,34 @@
       const pin = pinMap[ch] || 23;
       addActivityLog(`${devName} turned ${isOn ? 'ON' : 'OFF'}`, isOn ? 'on' : 'off', 'App UI');
 
+      // Increment live statistics counters accurately
+      if (isOn) {
+        appState.onCount = (appState.onCount || 0) + 1;
+      } else {
+        appState.offCount = (appState.offCount || 0) + 1;
+      }
+      appState.totalToggles = appState.onCount + appState.offCount;
+      localStorage.setItem('ease_on_count', appState.onCount);
+      localStorage.setItem('ease_off_count', appState.offCount);
+      localStorage.setItem('ease_total_toggles', appState.totalToggles);
+
+      const onEl = document.getElementById('stat-on-count');
+      if (onEl) onEl.innerText = appState.onCount;
+      const offEl = document.getElementById('stat-off-count');
+      if (offEl) offEl.innerText = appState.offCount;
+
       // 1. Firebase RTDB update
       if (firebaseDb) {
         try {
           const updatePayload = {};
           updatePayload[key] = isOn;
           firebaseDb.ref('ease_appliances/control').update(updatePayload);
+          firebaseDb.ref('ease_stats').set({
+            onCount: appState.onCount,
+            offCount: appState.offCount,
+            totalToggles: appState.totalToggles,
+            lastUpdate: Date.now()
+          });
           firebaseDb.ref('ease_history').push({
             channel: ch,
             deviceName: devName,
@@ -1149,14 +1163,7 @@
 
       // 2. LAN Proxy
       if (appState.assignedIp) {
-        fetch(`/api/esp32/relay?ip=${encodeURIComponent(appState.assignedIp)}&ch=${ch}&state=${isOn ? 'on' : 'off'}`)
-          .then(r => r.json())
-          .then(data => {
-            if (data && typeof data.onCount === 'number') {
-              updateStatsFromData(data);
-            }
-          })
-          .catch(() => {});
+        fetch(`/api/esp32/relay?ip=${encodeURIComponent(appState.assignedIp)}&ch=${ch}&state=${isOn ? 'on' : 'off'}`).catch(() => {});
       }
 
       showToast(`${devName} turned ${isOn ? 'ON' : 'OFF'}`);
@@ -1190,6 +1197,22 @@
 
       addActivityLog(isOn ? 'All 4 Appliances turned ON' : 'All 4 Appliances turned OFF', isOn ? 'on' : 'off', 'App UI');
 
+      // Increment stats for all 4 channels
+      if (isOn) {
+        appState.onCount = (appState.onCount || 0) + 4;
+      } else {
+        appState.offCount = (appState.offCount || 0) + 4;
+      }
+      appState.totalToggles = appState.onCount + appState.offCount;
+      localStorage.setItem('ease_on_count', appState.onCount);
+      localStorage.setItem('ease_off_count', appState.offCount);
+      localStorage.setItem('ease_total_toggles', appState.totalToggles);
+
+      const onEl = document.getElementById('stat-on-count');
+      if (onEl) onEl.innerText = appState.onCount;
+      const offEl = document.getElementById('stat-off-count');
+      if (offEl) offEl.innerText = appState.offCount;
+
       if (firebaseDb) {
         try {
           firebaseDb.ref('ease_appliances/control').update({
@@ -1197,6 +1220,12 @@
             r2: isOn,
             r3: isOn,
             r4: isOn
+          });
+          firebaseDb.ref('ease_stats').set({
+            onCount: appState.onCount,
+            offCount: appState.offCount,
+            totalToggles: appState.totalToggles,
+            lastUpdate: Date.now()
           });
           firebaseDb.ref('ease_history').push({
             channel: 0,
@@ -1210,14 +1239,7 @@
       }
 
       if (appState.assignedIp) {
-        fetch(`/api/esp32/relay?ip=${encodeURIComponent(appState.assignedIp)}&ch=0&state=${isOn ? 'on' : 'off'}`)
-          .then(r => r.json())
-          .then(data => {
-            if (data && typeof data.onCount === 'number') {
-              updateStatsFromData(data);
-            }
-          })
-          .catch(() => {});
+        fetch(`/api/esp32/relay?ip=${encodeURIComponent(appState.assignedIp)}&ch=0&state=${isOn ? 'on' : 'off'}`).catch(() => {});
       }
 
       showToast(`All 4 Appliances turned ${isOn ? 'ON' : 'OFF'}`);
@@ -1545,10 +1567,8 @@
 
     function renderActivityLogs() {
       const listEl = document.getElementById('activity-log-list');
-      const badgeEl = document.getElementById('log-count-badge');
       if (!listEl) return;
       const logs = appState.activityLogs || [];
-      if (badgeEl) badgeEl.innerText = `${logs.length} events`;
 
       if (logs.length === 0) {
         listEl.innerHTML = '<div class="text-xs text-slate-400 text-center py-2">No power events recorded yet</div>';
@@ -1606,47 +1626,43 @@
       if (typeof data.totalToggles === 'number') {
         appState.totalToggles = data.totalToggles;
         localStorage.setItem('ease_total_toggles', data.totalToggles);
-        const el = document.getElementById('stat-total-toggles');
-        if (el) el.innerText = data.totalToggles;
       }
     }
 
     async function resetStatsCounters() {
       if (!confirm("Reset power ON/OFF counters to 0?")) return;
-      try {
-        const ip = appState.assignedIp || "192.168.0.183";
-        await fetch(`/api/esp32/stats-reset?ip=${encodeURIComponent(ip)}`);
+      appState.onCount = 0;
+      appState.offCount = 0;
+      appState.totalToggles = 0;
+      localStorage.setItem('ease_on_count', '0');
+      localStorage.setItem('ease_off_count', '0');
+      localStorage.setItem('ease_total_toggles', '0');
 
-        if (firebaseDb) {
-          try {
-            firebaseDb.ref('ease_stats').set({
-              onCount: 0,
-              offCount: 0,
-              totalToggles: 0,
-              lastReset: Date.now()
-            });
-          } catch (e) {}
-        }
+      const onEl = document.getElementById('stat-on-count');
+      const offEl = document.getElementById('stat-off-count');
+      if (onEl) onEl.innerText = '0';
+      if (offEl) offEl.innerText = '0';
 
-        appState.onCount = 0;
-        appState.offCount = 0;
-        appState.totalToggles = 0;
-        localStorage.setItem('ease_on_count', '0');
-        localStorage.setItem('ease_off_count', '0');
-        localStorage.setItem('ease_total_toggles', '0');
-
-        const onEl = document.getElementById('stat-on-count');
-        const offEl = document.getElementById('stat-off-count');
-        const totEl = document.getElementById('stat-total-toggles');
-        if (onEl) onEl.innerText = '0';
-        if (offEl) offEl.innerText = '0';
-        if (totEl) totEl.innerText = '0';
-
-        addActivityLog("Power counters reset to 0", "reset", "User");
-        showToast("Power analytics counters reset to 0");
-      } catch (e) {
-        showToast("Error resetting stats: " + e.message);
+      if (firebaseDb) {
+        try {
+          firebaseDb.ref('ease_stats').set({
+            onCount: 0,
+            offCount: 0,
+            totalToggles: 0,
+            lastReset: Date.now()
+          });
+        } catch (e) {}
       }
+
+      try {
+        const ip = appState.assignedIp;
+        if (ip) {
+          fetch(`/api/esp32/stats-reset?ip=${encodeURIComponent(ip)}`).catch(() => {});
+        }
+      } catch (e) {}
+
+      addActivityLog("Analytics counters reset to 0", "reset", "App UI");
+      showToast("Counters reset to 0");
     }
 
     // Firebase Realtime Database
@@ -1715,7 +1731,6 @@
               if (wasOffline) {
                 addActivityLog("Ease Appliances online (Cloud Sync)", "sync", "Firebase");
               }
-              updateStatsFromData(state);
               if (state.relays) {
                 if (typeof state.relays.r1 === 'boolean') appState.relays.r1 = state.relays.r1;
                 if (typeof state.relays.r2 === 'boolean') appState.relays.r2 = state.relays.r2;
@@ -1813,8 +1828,6 @@
                 addActivityLog(`Power status changed to ${data.relay ? 'ON' : 'OFF'}`, data.relay ? 'on' : 'off', 'ESP32 Status');
               }
             }
-
-            updateStatsFromData(data);
 
             if (typeof data.firebaseConfigured === 'boolean') {
               appState.firebaseConfigured = data.firebaseConfigured;
@@ -2252,7 +2265,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.5')
+        navigator.serviceWorker.register('./sw.js?v=2.9.6')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
