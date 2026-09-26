@@ -222,10 +222,13 @@ void pollFirebaseControl() {
           }
         }
 
-        // 4. Master relay toggle: { "relay": true }
-        if (!changedAny && doc["relay"].is<bool>()) {
+        // 4. Legacy single-relay fallback ONLY if NO multi-channel keys exist at all
+        bool hasChannelKeys = doc["r1"].is<bool>() || doc["r2"].is<bool>() ||
+                              doc["r3"].is<bool>() || doc["r4"].is<bool>() ||
+                              doc["relays"].is<JsonObject>() || doc["channel"].is<int>();
+        if (!hasChannelKeys && doc["relay"].is<bool>()) {
           bool st = doc["relay"].as<bool>();
-          if (st != (relay1State || relay2State || relay3State || relay4State)) {
+          if (relay1State != st || relay2State != st || relay3State != st || relay4State != st) {
             relay1State = st;
             relay2State = st;
             relay3State = st;
@@ -240,9 +243,11 @@ void pollFirebaseControl() {
           prefs.putBool("r2", relay2State);
           prefs.putBool("r3", relay3State);
           prefs.putBool("r4", relay4State);
-          onCount++;
-          totalToggles++;
+          bool anyOn = (relay1State || relay2State || relay3State || relay4State);
+          if (anyOn) onCount++; else offCount++;
+          totalToggles = onCount + offCount;
           prefs.putUInt("on_cnt", onCount);
+          prefs.putUInt("off_cnt", offCount);
           prefs.putUInt("tot_tog", totalToggles);
 
           Serial.printf("[FIREBASE] Remote control applied: R1:%d R2:%d R3:%d R4:%d\n",

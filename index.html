@@ -1524,9 +1524,7 @@
         try {
           const updatePayload = {};
           updatePayload[key] = isOn;
-          updatePayload['relay'] = appState.isPowerOn;
           firebaseDb.ref('ease_appliances/control').update(updatePayload);
-          firebaseDb.ref('ease_relay').set(appState.isPowerOn ? "ON" : "OFF");
           firebaseDb.ref('ease_history').push({
             channel: ch,
             pin: pin,
@@ -1588,10 +1586,8 @@
             r1: isOn,
             r2: isOn,
             r3: isOn,
-            r4: isOn,
-            relay: isOn
+            r4: isOn
           });
-          firebaseDb.ref('ease_relay').set(isOn ? "ON" : "OFF");
           firebaseDb.ref('ease_history').push({
             channel: 0,
             action: isOn ? "ALL_ON" : "ALL_OFF",
@@ -2118,20 +2114,7 @@
         firebaseDb = firebase.database();
         isFirebaseInited = true;
 
-        // Listen for relay state changes from phone/cloud
-        firebaseDb.ref('ease_relay').on('value', (snapshot) => {
-          const val = snapshot.val();
-          if (val !== null && val !== undefined) {
-            const boolVal = (val === true || val === 'ON' || val === 'on' || val === 1 || val === '1');
-            if (appState.isPowerOn !== boolVal) {
-              appState.isPowerOn = boolVal;
-              localStorage.setItem('ease_power', boolVal);
-              playTactileClick(boolVal);
-              syncUI();
-              addActivityLog(`Cloud changed Power to ${boolVal ? 'ON' : 'OFF'} (GPIO 2)`, boolVal ? 'on' : 'off', 'Firebase RTDB');
-            }
-          }
-        });
+        // Time offset calibration
 
         try {
           firebaseDb.ref('.info/serverTimeOffset').on('value', (snap) => {
@@ -2645,7 +2628,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.0')
+        navigator.serviceWorker.register('./sw.js?v=2.9.1')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
