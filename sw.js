@@ -1,5 +1,5 @@
-// Cache version 2.9.1 - 4-Channel Independent Relay Control
-const CACHE_NAME = 'my-smart-plug-v2.9.1';
+// Cache version 2.9.2 - Device Unpair & Full Reset System
+const CACHE_NAME = 'my-smart-plug-v2.9.2';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

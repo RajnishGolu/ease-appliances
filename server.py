@@ -119,6 +119,34 @@ class PWAHandler(http.server.SimpleHTTPRequestHandler):
                 self._send_json({"success": False, "error": str(e)}, status=500)
                 return
 
+        # 7. Unpair & Factory Reset Proxy
+        if path == '/api/esp32/unpair' or path == '/api/esp32/reset':
+            target_ip = query.get('ip', [get_known_ip()])[0]
+            try:
+                if os.path.exists(IP_CACHE_FILE):
+                    try:
+                        os.remove(IP_CACHE_FILE)
+                    except Exception:
+                        pass
+                req = urllib.request.Request(f"http://{target_ip}/unpair", headers={'User-Agent': 'SmartPlugApp/1.0', 'Connection': 'close'})
+                with urllib.request.urlopen(req, timeout=2.5) as resp:
+                    data = json.loads(resp.read().decode('utf-8'))
+                    self._send_json(data)
+                    return
+            except Exception as e:
+                self._send_json({"success": True, "note": f"Reset dispatched ({e})"}, status=200)
+                return
+
+        # 8. Clear IP Cache endpoint
+        if path == '/api/esp32/clear-cache':
+            if os.path.exists(IP_CACHE_FILE):
+                try:
+                    os.remove(IP_CACHE_FILE)
+                except Exception:
+                    pass
+            self._send_json({"cleared": True})
+            return
+
         # Serve static files with no-cache headers for dev
         return super().do_GET()
 

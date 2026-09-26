@@ -55,6 +55,7 @@ bool pendingWifiConnect = false;
 
 void syncToFirebase();
 void setRelayChannel(int ch, bool state, bool pushToCloud = true);
+void unpairAndResetDevice();
 
 void applyRelayPins() {
   // Optocoupler relays are Active LOW:
@@ -180,6 +181,14 @@ void pollFirebaseControl() {
       JsonDocument doc;
       DeserializationError err = deserializeJson(doc, payload);
       if (!err && doc.is<JsonObject>()) {
+        // 0. Cloud unpair / factory reset trigger
+        if ((doc["unpair"].is<bool>() && doc["unpair"].as<bool>()) ||
+            (doc["reset"].is<bool>() && doc["reset"].as<bool>())) {
+          https.end();
+          unpairAndResetDevice();
+          return;
+        }
+
         bool changedAny = false;
 
         // 1. Direct r1, r2, r3, r4 keys
@@ -316,6 +325,82 @@ void setRelayChannel(int ch, bool state, bool pushToCloud) {
   }
 }
 
+// Unpair & Factory Reset: Disconnects Wi-Fi, clears NVS, and restarts into clean BLE provisioning mode
+void unpairAndResetDevice() {
+  Serial.println("\n[UNPAIR] =========================================");
+  Serial.println("[UNPAIR] Unpair request received!");
+  Serial.println("[UNPAIR] Erasing Wi-Fi settings, NVS, and restarting...");
+  Serial.println("[UNPAIR] =========================================");
+
+  // 1. Immediately turn OFF all 4 relays & test LED
+  relay1State = false;
+  relay2State = false;
+  relay3State = false;
+  relay4State = false;
+  applyRelayPins();
+
+  // 2. Notify Firebase Cloud that device is unpaired and offline
+  if (WiFi.status() == WL_CONNECTED && firebaseHost.length() > 5) {
+    WiFiClientSecure client;
+    client.setInsecure();
+    client.setHandshakeTimeout(3);
+    HTTPClient https;
+    String url = firebaseHost;
+    if (!url.startsWith("http://") && !url.startsWith("https://")) url = "https://" + url;
+    if (!url.endsWith("/")) url += "/";
+
+    // Set state to unpaired and offline
+    String stateUrl = url + "ease_appliances/state.json";
+    if (firebaseAuth.length() > 0) stateUrl += "?auth=" + firebaseAuth;
+    if (https.begin(client, stateUrl)) {
+      https.setTimeout(2500);
+      https.addHeader("Content-Type", "application/json");
+      https.PUT("{\"online\":false,\"unpaired\":true,\"ip\":\"\",\"ssid\":\"\",\"last_seen\":0,\"r1\":false,\"r2\":false,\"r3\":false,\"r4\":false,\"relay\":false}");
+      https.end();
+    }
+
+    // Reset control triggers
+    String ctrlUrl = url + "ease_appliances/control.json";
+    if (firebaseAuth.length() > 0) ctrlUrl += "?auth=" + firebaseAuth;
+    if (https.begin(client, ctrlUrl)) {
+      https.setTimeout(2500);
+      https.addHeader("Content-Type", "application/json");
+      https.PUT("{\"r1\":false,\"r2\":false,\"r3\":false,\"r4\":false,\"reset\":false,\"unpair\":false}");
+      https.end();
+    }
+  }
+
+  // 3. Clear Wi-Fi credentials & states from NVS Preferences
+  prefs.remove("ssid");
+  prefs.remove("pass");
+  prefs.remove("r1");
+  prefs.remove("r2");
+  prefs.remove("r3");
+  prefs.remove("r4");
+
+  // 4. Erase ESP-IDF saved Wi-Fi and shutdown Wi-Fi radio
+  WiFi.disconnect(true, true);
+  WiFi.mode(WIFI_OFF);
+  internetConnected = false;
+  httpServerStarted = false;
+
+  // 5. Update BLE status
+  updateStatus("READY_FOR_PROVISIONING");
+  if (pRelayChar) {
+    pRelayChar->setValue("R1:0,R2:0,R3:0,R4:0");
+  }
+
+  // 6. Disconnect any active BLE client
+  if (pServer && deviceConnected) {
+    pServer->disconnect(0);
+    deviceConnected = false;
+  }
+
+  Serial.println("[UNPAIR] Wiped successfully. Restarting into clean BLE provisioning mode...");
+  delay(600);
+  ESP.restart();
+}
+
 void setupHttpServer() {
   if (httpServerStarted) return;
 
@@ -436,6 +521,20 @@ void setupHttpServer() {
     httpServer.send(200, "application/json", res);
   });
 
+  httpServer.on("/unpair", HTTP_GET, []() {
+    httpServer.sendHeader("Access-Control-Allow-Origin", "*");
+    httpServer.send(200, "application/json", "{\"success\":true,\"message\":\"Unpairing and wiping device\"}");
+    delay(200);
+    unpairAndResetDevice();
+  });
+
+  httpServer.on("/reset", HTTP_GET, []() {
+    httpServer.sendHeader("Access-Control-Allow-Origin", "*");
+    httpServer.send(200, "application/json", "{\"success\":true,\"message\":\"Unpairing and wiping device\"}");
+    delay(200);
+    unpairAndResetDevice();
+  });
+
   httpServer.onNotFound([]() {
     httpServer.sendHeader("Access-Control-Allow-Origin", "*");
     httpServer.send(404, "text/plain", "Not Found");
@@ -467,30 +566,45 @@ class WifiProvCallbacks: public NimBLECharacteristicCallbacks {
     std::string val = pCharacteristic->getValue();
     if (val.length() > 0) {
       String value = String(val.c_str());
-      Serial.print("[BLE PROV] Received JSON: ");
+      value.trim();
+      Serial.print("[BLE PROV] Received: ");
       Serial.println(value);
+
+      if (value.equalsIgnoreCase("UNPAIR") || value.equalsIgnoreCase("RESET")) {
+        unpairAndResetDevice();
+        return;
+      }
 
       JsonDocument doc;
       DeserializationError error = deserializeJson(doc, value);
-      if (!error && doc["ssid"].is<const char*>()) {
-        newSsid = doc["ssid"].as<String>();
-        newPass = doc["password"].is<const char*>() ? doc["password"].as<String>() : "";
-        if (doc["firebaseHost"].is<const char*>()) {
-          firebaseHost = doc["firebaseHost"].as<String>();
-          prefs.putString("fb_host", firebaseHost);
+      if (!error) {
+        if ((doc["unpair"].is<bool>() && doc["unpair"].as<bool>()) ||
+            (doc["reset"].is<bool>() && doc["reset"].as<bool>()) ||
+            (doc["action"].is<const char*>() && strcmp(doc["action"].as<const char*>(), "unpair") == 0)) {
+          unpairAndResetDevice();
+          return;
         }
+        if (doc["ssid"].is<const char*>()) {
+          newSsid = doc["ssid"].as<String>();
+          newPass = doc["password"].is<const char*>() ? doc["password"].as<String>() : "";
+          if (doc["firebaseHost"].is<const char*>()) {
+            firebaseHost = doc["firebaseHost"].as<String>();
+            prefs.putString("fb_host", firebaseHost);
+          }
+          pendingWifiConnect = true;
+          return;
+        }
+      }
+
+      int separatorIdx = value.indexOf(':');
+      if (separatorIdx != -1) {
+        newSsid = value.substring(0, separatorIdx);
+        newPass = value.substring(separatorIdx + 1);
         pendingWifiConnect = true;
       } else {
-        int separatorIdx = value.indexOf(':');
-        if (separatorIdx != -1) {
-          newSsid = value.substring(0, separatorIdx);
-          newPass = value.substring(separatorIdx + 1);
-          pendingWifiConnect = true;
-        } else {
-          newSsid = value;
-          newPass = "";
-          pendingWifiConnect = true;
-        }
+        newSsid = value;
+        newPass = "";
+        pendingWifiConnect = true;
       }
     }
   }

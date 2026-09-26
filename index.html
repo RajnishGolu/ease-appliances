@@ -1809,19 +1809,104 @@
       syncUI();
     }
 
-    function unpairDevice() {
-      if (confirm("Disconnect and forget Ease Appliances?")) {
-        disconnectBle();
-        localStorage.removeItem('ease_ip');
-        localStorage.removeItem('ease_wifi');
-        localStorage.removeItem('ease_power');
-        appState.assignedIp = "";
-        appState.selectedWifi = "";
-        appState.isDeviceOnline = false;
-        appState.isBleConnected = false;
-        syncUI();
-        showToast("Device forgotten");
+    async function unpairDevice() {
+      if (!confirm("Are you sure you want to unpair and disconnect Ease Appliances?\n\nThis will disconnect the device from Wi-Fi and Bluetooth, erase saved Wi-Fi settings on the ESP32, and require re-entering your Wi-Fi password when connecting again.")) {
+        return;
       }
+
+      showToast("Unpairing device and clearing Wi-Fi...");
+      const currentIp = appState.assignedIp;
+
+      // 1. Send UNPAIR command to ESP32 over BLE if connected
+      if (provChar && appState.isBleConnected) {
+        try {
+          const encoder = new TextEncoder();
+          await provChar.writeValue(encoder.encode(JSON.stringify({ action: "unpair", reset: true })));
+          console.log("[BLE] Unpair command sent over BLE");
+        } catch (e) {
+          console.warn("[BLE] Unpair over BLE failed:", e);
+        }
+      }
+
+      // 2. Send UNPAIR command to ESP32 via LAN proxy if reachable
+      if (currentIp) {
+        try {
+          fetch(`/api/esp32/unpair?ip=${encodeURIComponent(currentIp)}`, { cache: 'no-store' }).catch(() => {});
+          fetch(`http://${currentIp}/unpair`, { mode: 'no-cors' }).catch(() => {});
+        } catch (e) {}
+      }
+
+      // 3. Clear cloud state & issue unpair command via Firebase RTDB
+      if (firebaseDb) {
+        try {
+          firebaseDb.ref('ease_appliances/control').set({
+            unpair: true,
+            reset: true,
+            r1: false,
+            r2: false,
+            r3: false,
+            r4: false
+          });
+          firebaseDb.ref('ease_appliances/state').set({
+            online: false,
+            unpaired: true,
+            ip: "",
+            ssid: "",
+            last_seen: 0,
+            r1: false,
+            r2: false,
+            r3: false,
+            r4: false,
+            relay: false
+          });
+        } catch (e) {
+          console.warn("[Firebase] Unpair clear error:", e);
+        }
+      }
+
+      // 4. Clear server.py cache
+      try {
+        fetch('/api/esp32/clear-cache').catch(() => {});
+      } catch (e) {}
+
+      // 5. Disconnect Bluetooth
+      disconnectBle();
+
+      // 6. Clear all local storage credentials
+      localStorage.removeItem('ease_ip');
+      localStorage.removeItem('ease_wifi');
+      localStorage.removeItem('ease_power');
+      localStorage.removeItem('ease_r1');
+      localStorage.removeItem('ease_r2');
+      localStorage.removeItem('ease_r3');
+      localStorage.removeItem('ease_r4');
+      localStorage.removeItem('ease_name');
+      localStorage.removeItem('ease_activity_logs');
+      localStorage.removeItem('ease_on_count');
+      localStorage.removeItem('ease_off_count');
+      localStorage.removeItem('ease_total_toggles');
+
+      // 7. Reset app state completely
+      appState.assignedIp = "";
+      appState.selectedWifi = "";
+      appState.isDeviceOnline = false;
+      appState.isBleConnected = false;
+      appState.hasEverSeenDevice = false;
+      appState.isPowerOn = false;
+      appState.relays = { r1: false, r2: false, r3: false, r4: false };
+      appState.lastHeartbeatTime = 0;
+      appState.activityLogs = [];
+
+      // 8. Clear password and SSID input in Wi-Fi form so re-pair asks fresh
+      const pwdInput = document.getElementById('wifi-password-input');
+      if (pwdInput) pwdInput.value = "";
+      const ssidInput = document.getElementById('wifi-ssid-input');
+      if (ssidInput) ssidInput.value = "";
+
+      renderActivityLogs();
+      syncUI();
+      navigateTo('home');
+      showToast("Device unpaired! Wi-Fi settings erased.");
     }
 
     // ==============================================================
@@ -2126,6 +2211,10 @@
         firebaseDb.ref('ease_appliances/state').on('value', (snapshot) => {
           const state = snapshot.val();
           if (state) {
+            if (state.unpaired === true || state.online === false) {
+              handleDeviceOffline("⚠️ Ease Appliances offline (Device unpaired or powered off)");
+              return;
+            }
             appState.hasEverSeenDevice = true;
             if (state.ssid) {
               appState.selectedWifi = state.ssid;
@@ -2210,8 +2299,11 @@
         appState.isBleConnected = false;
       }
 
-      // 2. If running on local server with LAN IP, ping LAN
-      const ip = appState.assignedIp || "192.168.0.183";
+      // 2. If running on local server with LAN IP, ping LAN only when device IP is assigned
+      const ip = appState.assignedIp;
+      if (!ip) {
+        return;
+      }
       let lanSuccess = false;
       try {
         const res = await fetch(`/api/esp32/status?ip=${encodeURIComponent(ip)}`, { cache: 'no-store' });
@@ -2628,7 +2720,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.1')
+        navigator.serviceWorker.register('./sw.js?v=2.9.2')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
