@@ -62,8 +62,9 @@ class PWAHandler(http.server.SimpleHTTPRequestHandler):
         if path == '/api/esp32/relay':
             target_ip = query.get('ip', [get_known_ip()])[0]
             state = query.get('state', ['toggle'])[0]
+            ch = query.get('ch', query.get('channel', ['0']))[0]
             try:
-                url = f"http://{target_ip}/relay?state={state}" if state in ['on', 'off', '0', '1', 'TRUE', 'FALSE'] else f"http://{target_ip}/relay?toggle=1"
+                url = f"http://{target_ip}/relay?ch={ch}&state={state}" if state in ['on', 'off', '0', '1', 'TRUE', 'FALSE'] else f"http://{target_ip}/relay?ch={ch}&toggle=1"
                 req = urllib.request.Request(url, headers={'User-Agent': 'SmartPlugApp/1.0', 'Connection': 'close'})
                 with urllib.request.urlopen(req, timeout=3.5) as resp:
                     data = json.loads(resp.read().decode('utf-8'))

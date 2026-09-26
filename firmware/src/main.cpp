@@ -9,8 +9,12 @@
 
 #define DEVICE_NAME "Ease Appliances"
 
-// GPIO Pins - Using Onboard Blue LED (GPIO 2) as the single test relay pin!
-#define TEST_RELAY_PIN 2
+// 4-Channel Relay Output Pins (Active LOW for optocoupler relay boards)
+#define RELAY1_PIN 23
+#define RELAY2_PIN 22
+#define RELAY3_PIN 21
+#define RELAY4_PIN 19
+#define TEST_LED_PIN 2
 
 // UUIDs
 #define SERVICE_UUID           "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
@@ -26,8 +30,13 @@ WebServer httpServer(80);
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
-bool relayState = true;
 bool httpServerStarted = false;
+
+// 4 Relay States (Active LOW: LOW = Relay energized/ON, HIGH = Relay de-energized/OFF)
+bool relay1State = false;
+bool relay2State = false;
+bool relay3State = false;
+bool relay4State = false;
 
 // Persistent Counters & Tracking
 uint32_t onCount = 0;
@@ -43,6 +52,22 @@ bool internetConnected = false;
 String newSsid = "";
 String newPass = "";
 bool pendingWifiConnect = false;
+
+void syncToFirebase();
+void setRelayChannel(int ch, bool state, bool pushToCloud = true);
+
+void applyRelayPins() {
+  // Optocoupler relays are Active LOW:
+  // LOW (0V) -> Relay ON (contacts close, indicator LED on board lights up)
+  // HIGH (3.3V) -> Relay OFF (contacts open, indicator LED on board turns off)
+  digitalWrite(RELAY1_PIN, relay1State ? LOW : HIGH);
+  digitalWrite(RELAY2_PIN, relay2State ? LOW : HIGH);
+  digitalWrite(RELAY3_PIN, relay3State ? LOW : HIGH);
+  digitalWrite(RELAY4_PIN, relay4State ? LOW : HIGH);
+
+  // Onboard blue LED (GPIO 2) illuminates if ANY relay is active
+  digitalWrite(TEST_LED_PIN, (relay1State || relay2State || relay3State || relay4State) ? HIGH : LOW);
+}
 
 String getFullStatus() {
   if (WiFi.status() == WL_CONNECTED) {
@@ -92,11 +117,23 @@ void syncToFirebase() {
     doc["online"] = true;
     doc["heartbeat"] = millis();
     doc["last_seen"][".sv"] = "timestamp";
-    doc["relay"] = relayState;
+    doc["relay"] = (relay1State || relay2State || relay3State || relay4State);
+
+    JsonObject relays = doc["relays"].to<JsonObject>();
+    relays["r1"] = relay1State;
+    relays["r2"] = relay2State;
+    relays["r3"] = relay3State;
+    relays["r4"] = relay4State;
+
+    doc["r1"] = relay1State;
+    doc["r2"] = relay2State;
+    doc["r3"] = relay3State;
+    doc["r4"] = relay4State;
+
     doc["onCount"] = onCount;
     doc["offCount"] = offCount;
     doc["totalToggles"] = totalToggles;
-    doc["gpio"] = TEST_RELAY_PIN;
+    doc["gpio"] = 23;
     doc["ip"] = WiFi.localIP().toString();
     doc["ssid"] = WiFi.SSID();
     doc["uptime"] = millis() / 1000;
@@ -104,7 +141,8 @@ void syncToFirebase() {
     serializeJson(doc, payload);
 
     int code = https.PUT(payload);
-    Serial.printf("[FIREBASE] State synced! HTTP: %d | FreeHeap: %u\n", code, ESP.getFreeHeap());
+    Serial.printf("[FIREBASE] State synced! HTTP: %d | R1:%d R2:%d R3:%d R4:%d | Heap:%u\n",
+      code, relay1State, relay2State, relay3State, relay4State, ESP.getFreeHeap());
     if (code == 200) {
       internetConnected = true;
     } else if (code <= 0) {
@@ -133,9 +171,6 @@ void pollFirebaseControl() {
     url += "?auth=" + firebaseAuth;
   }
 
-  bool shouldTriggerRelay = false;
-  bool targetRelayState = false;
-
   if (https.begin(client, url)) {
     https.setTimeout(2500);
     int code = https.GET();
@@ -144,19 +179,83 @@ void pollFirebaseControl() {
       String payload = https.getString();
       JsonDocument doc;
       DeserializationError err = deserializeJson(doc, payload);
-      if (!err) {
-        if (doc.is<JsonObject>() && doc["relay"].is<bool>()) {
-          bool remoteRelay = doc["relay"].as<bool>();
-          if (remoteRelay != relayState) {
-            shouldTriggerRelay = true;
-            targetRelayState = remoteRelay;
+      if (!err && doc.is<JsonObject>()) {
+        bool changedAny = false;
+
+        // 1. Direct r1, r2, r3, r4 keys
+        if (doc["r1"].is<bool>()) {
+          bool st = doc["r1"].as<bool>();
+          if (st != relay1State) { relay1State = st; changedAny = true; }
+        }
+        if (doc["r2"].is<bool>()) {
+          bool st = doc["r2"].as<bool>();
+          if (st != relay2State) { relay2State = st; changedAny = true; }
+        }
+        if (doc["r3"].is<bool>()) {
+          bool st = doc["r3"].as<bool>();
+          if (st != relay3State) { relay3State = st; changedAny = true; }
+        }
+        if (doc["r4"].is<bool>()) {
+          bool st = doc["r4"].as<bool>();
+          if (st != relay4State) { relay4State = st; changedAny = true; }
+        }
+
+        // 2. Nested relays object: { "relays": { "r1": true, ... } }
+        if (doc["relays"].is<JsonObject>()) {
+          JsonObject ro = doc["relays"].as<JsonObject>();
+          if (ro["r1"].is<bool>() && ro["r1"].as<bool>() != relay1State) { relay1State = ro["r1"].as<bool>(); changedAny = true; }
+          if (ro["r2"].is<bool>() && ro["r2"].as<bool>() != relay2State) { relay2State = ro["r2"].as<bool>(); changedAny = true; }
+          if (ro["r3"].is<bool>() && ro["r3"].as<bool>() != relay3State) { relay3State = ro["r3"].as<bool>(); changedAny = true; }
+          if (ro["r4"].is<bool>() && ro["r4"].as<bool>() != relay4State) { relay4State = ro["r4"].as<bool>(); changedAny = true; }
+        }
+
+        // 3. Channel + state format: { "channel": 1, "state": true }
+        if (doc["channel"].is<int>() && doc["state"].is<bool>()) {
+          int ch = doc["channel"].as<int>();
+          bool st = doc["state"].as<bool>();
+          if (ch == 1 && relay1State != st) { relay1State = st; changedAny = true; }
+          else if (ch == 2 && relay2State != st) { relay2State = st; changedAny = true; }
+          else if (ch == 3 && relay3State != st) { relay3State = st; changedAny = true; }
+          else if (ch == 4 && relay4State != st) { relay4State = st; changedAny = true; }
+          else if (ch == 0) {
+            relay1State = st; relay2State = st; relay3State = st; relay4State = st; changedAny = true;
           }
-        } else if (doc.is<bool>()) {
-          bool remoteRelay = doc.as<bool>();
-          if (remoteRelay != relayState) {
-            shouldTriggerRelay = true;
-            targetRelayState = remoteRelay;
+        }
+
+        // 4. Master relay toggle: { "relay": true }
+        if (!changedAny && doc["relay"].is<bool>()) {
+          bool st = doc["relay"].as<bool>();
+          if (st != (relay1State || relay2State || relay3State || relay4State)) {
+            relay1State = st;
+            relay2State = st;
+            relay3State = st;
+            relay4State = st;
+            changedAny = true;
           }
+        }
+
+        if (changedAny) {
+          applyRelayPins();
+          prefs.putBool("r1", relay1State);
+          prefs.putBool("r2", relay2State);
+          prefs.putBool("r3", relay3State);
+          prefs.putBool("r4", relay4State);
+          onCount++;
+          totalToggles++;
+          prefs.putUInt("on_cnt", onCount);
+          prefs.putUInt("tot_tog", totalToggles);
+
+          Serial.printf("[FIREBASE] Remote control applied: R1:%d R2:%d R3:%d R4:%d\n",
+            relay1State, relay2State, relay3State, relay4State);
+
+          if (pRelayChar) {
+            char statusBuf[32];
+            snprintf(statusBuf, sizeof(statusBuf), "R1:%d,R2:%d,R3:%d,R4:%d", relay1State, relay2State, relay3State, relay4State);
+            pRelayChar->setValue(statusBuf);
+            if (deviceConnected) pRelayChar->notify();
+          }
+
+          syncToFirebase();
         }
       }
     } else if (code <= 0) {
@@ -165,44 +264,50 @@ void pollFirebaseControl() {
     }
     https.end();
   }
-
-  if (shouldTriggerRelay) {
-    Serial.printf("[FIREBASE] Remote control trigger: %s\n", targetRelayState ? "ON" : "OFF");
-    void setRelay(bool state, bool pushToCloud);
-    setRelay(targetRelayState, true);
-  }
 }
 
-// Set relay and LED state, maintaining persistent on/off counters
-void setRelay(bool state, bool pushToCloud = true) {
-  bool changed = (relayState != state);
-  relayState = state;
-  digitalWrite(TEST_RELAY_PIN, relayState ? HIGH : LOW);
+// Set relay channel and apply pin state
+void setRelayChannel(int ch, bool state, bool pushToCloud) {
+  bool changed = false;
+  if (ch == 1 && relay1State != state) { relay1State = state; changed = true; }
+  else if (ch == 2 && relay2State != state) { relay2State = state; changed = true; }
+  else if (ch == 3 && relay3State != state) { relay3State = state; changed = true; }
+  else if (ch == 4 && relay4State != state) { relay4State = state; changed = true; }
+  else if (ch == 0) { // All channels
+    if (relay1State != state || relay2State != state || relay3State != state || relay4State != state) {
+      relay1State = state;
+      relay2State = state;
+      relay3State = state;
+      relay4State = state;
+      changed = true;
+    }
+  }
 
   if (changed) {
-    if (relayState) {
-      onCount++;
-      prefs.putUInt("on_cnt", onCount);
-    } else {
-      offCount++;
-      prefs.putUInt("off_cnt", offCount);
-    }
+    applyRelayPins();
+    if (state) onCount++; else offCount++;
     totalToggles = onCount + offCount;
+    prefs.putBool("r1", relay1State);
+    prefs.putBool("r2", relay2State);
+    prefs.putBool("r3", relay3State);
+    prefs.putBool("r4", relay4State);
+    prefs.putUInt("on_cnt", onCount);
+    prefs.putUInt("off_cnt", offCount);
     prefs.putUInt("tot_tog", totalToggles);
-  }
 
-  Serial.printf("[RELAY] GPIO %d set to %s | ONs: %u | OFFs: %u | Total: %u\n",
-    TEST_RELAY_PIN, relayState ? "ON" : "OFF", onCount, offCount, totalToggles);
+    Serial.printf("[RELAY] Channel %d set to %s | R1:%d R2:%d R3:%d R4:%d\n",
+      ch, state ? "ON" : "OFF", relay1State, relay2State, relay3State, relay4State);
 
-  if (pRelayChar) {
-    pRelayChar->setValue(relayState ? "ON" : "OFF");
-    if (deviceConnected) {
-      pRelayChar->notify();
+    if (pRelayChar) {
+      char statusBuf[32];
+      snprintf(statusBuf, sizeof(statusBuf), "R1:%d,R2:%d,R3:%d,R4:%d", relay1State, relay2State, relay3State, relay4State);
+      pRelayChar->setValue(statusBuf);
+      if (deviceConnected) pRelayChar->notify();
     }
-  }
 
-  if (pushToCloud && WiFi.status() == WL_CONNECTED && firebaseHost.length() > 5) {
-    syncToFirebase();
+    if (pushToCloud && WiFi.status() == WL_CONNECTED && firebaseHost.length() > 5) {
+      syncToFirebase();
+    }
   }
 }
 
@@ -212,8 +317,17 @@ void setupHttpServer() {
   httpServer.on("/status", HTTP_GET, []() {
     JsonDocument doc;
     doc["name"] = DEVICE_NAME;
-    doc["relay"] = relayState;
-    doc["gpio"] = TEST_RELAY_PIN;
+    doc["relay"] = (relay1State || relay2State || relay3State || relay4State);
+    JsonObject relays = doc["relays"].to<JsonObject>();
+    relays["r1"] = relay1State;
+    relays["r2"] = relay2State;
+    relays["r3"] = relay3State;
+    relays["r4"] = relay4State;
+    doc["r1"] = relay1State;
+    doc["r2"] = relay2State;
+    doc["r3"] = relay3State;
+    doc["r4"] = relay4State;
+    doc["gpio"] = 23;
     doc["onCount"] = onCount;
     doc["offCount"] = offCount;
     doc["totalToggles"] = totalToggles;
@@ -231,21 +345,34 @@ void setupHttpServer() {
   });
 
   httpServer.on("/relay", HTTP_GET, []() {
+    int ch = 0;
+    if (httpServer.hasArg("ch")) ch = httpServer.arg("ch").toInt();
+    else if (httpServer.hasArg("channel")) ch = httpServer.arg("channel").toInt();
+
     if (httpServer.hasArg("state")) {
       String s = httpServer.arg("state");
       s.toLowerCase();
-      if (s == "on" || s == "1" || s == "true") {
-        setRelay(true, true);
-      } else if (s == "off" || s == "0" || s == "false") {
-        setRelay(false, true);
-      }
+      bool target = (s == "on" || s == "1" || s == "true");
+      setRelayChannel(ch, target, true);
     } else if (httpServer.hasArg("toggle")) {
-      setRelay(!relayState, true);
+      if (ch == 1) setRelayChannel(1, !relay1State, true);
+      else if (ch == 2) setRelayChannel(2, !relay2State, true);
+      else if (ch == 3) setRelayChannel(3, !relay3State, true);
+      else if (ch == 4) setRelayChannel(4, !relay4State, true);
+      else setRelayChannel(0, !(relay1State || relay2State || relay3State || relay4State), true);
     }
 
     JsonDocument doc;
-    doc["relay"] = relayState;
-    doc["gpio"] = TEST_RELAY_PIN;
+    doc["relay"] = (relay1State || relay2State || relay3State || relay4State);
+    JsonObject relays = doc["relays"].to<JsonObject>();
+    relays["r1"] = relay1State;
+    relays["r2"] = relay2State;
+    relays["r3"] = relay3State;
+    relays["r4"] = relay4State;
+    doc["r1"] = relay1State;
+    doc["r2"] = relay2State;
+    doc["r3"] = relay3State;
+    doc["r4"] = relay4State;
     doc["onCount"] = onCount;
     doc["offCount"] = offCount;
     doc["totalToggles"] = totalToggles;
@@ -318,24 +445,24 @@ void setupHttpServer() {
 class MyServerCallbacks: public NimBLEServerCallbacks {
   void onConnect(NimBLEServer* pServer) override {
     deviceConnected = true;
-    Serial.println("[BLE] Client Connected!");
+    Serial.println("[BLE] Phone / Web Connected!");
     updateStatus(getFullStatus());
   }
 
   void onDisconnect(NimBLEServer* pServer) override {
     deviceConnected = false;
-    Serial.println("[BLE] Client Disconnected. Restarting advertising...");
+    Serial.println("[BLE] Client Disconnected. Resuming Advertising...");
     NimBLEDevice::startAdvertising();
   }
 };
 
-// Wi-Fi Provisioning Callback
+// Wi-Fi Provisioning Characteristic Callback
 class WifiProvCallbacks: public NimBLECharacteristicCallbacks {
   void onWrite(NimBLECharacteristic *pCharacteristic) override {
     std::string val = pCharacteristic->getValue();
-    String value = String(val.c_str());
-    if (value.length() > 0) {
-      Serial.print("[BLE] Received Wi-Fi payload: ");
+    if (val.length() > 0) {
+      String value = String(val.c_str());
+      Serial.print("[BLE PROV] Received JSON: ");
       Serial.println(value);
 
       JsonDocument doc;
@@ -374,11 +501,12 @@ class RelayCallbacks: public NimBLECharacteristicCallbacks {
     std::string val = pCharacteristic->getValue();
     String value = String(val.c_str());
     value.toUpperCase();
-    if (value == "1" || value == "ON" || value == "TRUE") {
-      setRelay(true, true);
-    } else if (value == "0" || value == "OFF" || value == "FALSE") {
-      setRelay(false, true);
-    }
+    if (value.startsWith("R1:")) setRelayChannel(1, value.substring(3) == "1" || value.substring(3) == "ON");
+    else if (value.startsWith("R2:")) setRelayChannel(2, value.substring(3) == "1" || value.substring(3) == "ON");
+    else if (value.startsWith("R3:")) setRelayChannel(3, value.substring(3) == "1" || value.substring(3) == "ON");
+    else if (value.startsWith("R4:")) setRelayChannel(4, value.substring(3) == "1" || value.substring(3) == "ON");
+    else if (value == "1" || value == "ON" || value == "TRUE") setRelayChannel(0, true);
+    else if (value == "0" || value == "OFF" || value == "FALSE") setRelayChannel(0, false);
   }
 };
 
@@ -386,12 +514,9 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("\n=================================");
-  Serial.println("  Ease Appliances - Smart Plug");
+  Serial.println("  Ease Appliances - 4 Channel Relay");
   Serial.println("  Lightweight NimBLE + Cloud Engine");
   Serial.println("=================================");
-
-  // Initialize GPIO 2 (Onboard Blue LED used for test)
-  pinMode(TEST_RELAY_PIN, OUTPUT);
 
   // Initialize NVS storage
   prefs.begin("ease_app", false);
@@ -406,10 +531,23 @@ void setup() {
   offCount = prefs.getUInt("off_cnt", 0);
   totalToggles = prefs.getUInt("tot_tog", onCount + offCount);
 
-  // Set initial state
-  setRelay(true, false);
+  // Restore saved relay states (default false / OFF)
+  relay1State = prefs.getBool("r1", false);
+  relay2State = prefs.getBool("r2", false);
+  relay3State = prefs.getBool("r3", false);
+  relay4State = prefs.getBool("r4", false);
 
-  // Initialize NimBLE (Lightweight BLE stack, uses ~15KB RAM instead of 120KB)
+  // Initialize 4 Relay GPIO Pins & Onboard Test LED
+  pinMode(RELAY1_PIN, OUTPUT);
+  pinMode(RELAY2_PIN, OUTPUT);
+  pinMode(RELAY3_PIN, OUTPUT);
+  pinMode(RELAY4_PIN, OUTPUT);
+  pinMode(TEST_LED_PIN, OUTPUT);
+
+  // Apply pin states (Active LOW: LOW = ON, HIGH = OFF)
+  applyRelayPins();
+
+  // Initialize NimBLE
   NimBLEDevice::init(DEVICE_NAME);
   NimBLEDevice::setPower(ESP_PWR_LVL_P9);
   pServer = NimBLEDevice::createServer();
@@ -434,7 +572,7 @@ void setup() {
     NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY
   );
   pRelayChar->setCallbacks(new RelayCallbacks());
-  pRelayChar->setValue("ON");
+  pRelayChar->setValue("R1:0,R2:0,R3:0,R4:0");
 
   pService->start();
 
@@ -450,48 +588,62 @@ void setup() {
     Serial.printf("[WIFI] Auto-connecting to saved network: %s\n", savedSsid.c_str());
     WiFi.mode(WIFI_STA);
     WiFi.begin(savedSsid.c_str(), savedPass.c_str());
-
-    int timeout = 0;
-    while (WiFi.status() != WL_CONNECTED && timeout < 20) {
-      delay(500);
-      Serial.print(".");
-      timeout++;
-    }
-
-    if (WiFi.status() == WL_CONNECTED) {
-      Serial.printf("\n[WIFI] Connected! IP: %s\n", WiFi.localIP().toString().c_str());
-      setupHttpServer();
-      updateStatus(getFullStatus());
-      syncToFirebase();
-    } else {
-      Serial.println("\n[WIFI] Auto-connect timed out. Awaiting BLE provisioning.");
-      updateStatus("READY_FOR_PROVISIONING");
-    }
   } else {
-    Serial.println("[WIFI] No saved credentials found. Ready for BLE provisioning.");
-    updateStatus("READY_FOR_PROVISIONING");
+    Serial.println("[WIFI] No saved credentials. Awaiting Bluetooth provisioning...");
   }
 }
 
 void loop() {
-  // Ensure BLE advertising restarts on client disconnect
-  if (!deviceConnected && oldDeviceConnected) {
-    delay(200);
-    NimBLEDevice::startAdvertising();
-    Serial.println("[BLE] Restarted advertising");
-    oldDeviceConnected = deviceConnected;
-  }
-  if (deviceConnected && !oldDeviceConnected) {
-    oldDeviceConnected = deviceConnected;
+  // 1. Handle Wi-Fi provisioning requests received over BLE
+  if (pendingWifiConnect) {
+    pendingWifiConnect = false;
+    Serial.printf("[PROV] Connecting to SSID: '%s'...\n", newSsid.c_str());
+    updateStatus("CONNECTING");
+
+    WiFi.disconnect();
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(newSsid.c_str(), newPass.c_str());
+
+    unsigned long startMs = millis();
+    bool connected = false;
+    while (millis() - startMs < 12000) {
+      if (WiFi.status() == WL_CONNECTED) {
+        connected = true;
+        break;
+      }
+      delay(300);
+      Serial.print(".");
+    }
+    Serial.println();
+
+    if (connected) {
+      Serial.printf("[WIFI] Connected! IP: %s\n", WiFi.localIP().toString().c_str());
+      prefs.putString("ssid", newSsid);
+      prefs.putString("pass", newPass);
+
+      setupHttpServer();
+
+      // Test internet connection via Firebase heartbeat push
+      syncToFirebase();
+      updateStatus(getFullStatus());
+    } else {
+      Serial.println("[WIFI] Connection Failed!");
+      updateStatus("CONNECT_FAILED");
+    }
   }
 
-  // Handle incoming HTTP client requests
-  if (httpServerStarted && WiFi.status() == WL_CONNECTED) {
+  // 2. Start local HTTP server once Wi-Fi connects
+  if (WiFi.status() == WL_CONNECTED && !httpServerStarted) {
+    setupHttpServer();
+  }
+
+  // 3. Handle local HTTP client requests
+  if (httpServerStarted) {
     httpServer.handleClient();
   }
 
-  // Interleaved Cloud Heartbeat & Control Poll (Guaranteed Non-Colliding)
-  if (WiFi.status() == WL_CONNECTED) {
+  // 4. Cloud Synchronizer & Remote Control Polling (when connected to Wi-Fi)
+  if (WiFi.status() == WL_CONNECTED && firebaseHost.length() > 0) {
     static unsigned long lastHeartbeatPush = 0;
     static unsigned long lastControlPoll = 0;
     unsigned long now = millis();
@@ -506,47 +658,16 @@ void loop() {
     }
   }
 
-  // Handle incoming Wi-Fi configuration request
-  if (pendingWifiConnect) {
-    pendingWifiConnect = false;
-    Serial.printf("[WIFI] Provisioning to SSID: '%s'\n", newSsid.c_str());
-    updateStatus("CONNECTING");
-
-    WiFi.disconnect(true);
-    delay(200);
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(newSsid.c_str(), newPass.c_str());
-
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 30) {
-      delay(500);
-      Serial.print(".");
-      digitalWrite(TEST_RELAY_PIN, !digitalRead(TEST_RELAY_PIN));
-      attempts++;
-    }
-
-    if (WiFi.status() == WL_CONNECTED) {
-      String ip = WiFi.localIP().toString();
-      Serial.printf("\n[WIFI] Success! Assigned IP: %s\n", ip.c_str());
-
-      prefs.putString("ssid", newSsid);
-      prefs.putString("pass", newPass);
-
-      digitalWrite(TEST_RELAY_PIN, HIGH);
-      setupHttpServer();
-      updateStatus(getFullStatus());
-      syncToFirebase();
-    } else {
-      Serial.println("\n[WIFI] Connection Failed!");
-      digitalWrite(TEST_RELAY_PIN, LOW);
-      updateStatus("CONNECT_FAILED");
-    }
-
-    // Ensure BLE advertising is active after Wi-Fi provisioning
-    if (!deviceConnected) {
-      NimBLEDevice::startAdvertising();
+  // 5. Watchdog for Wi-Fi reconnection if router drops
+  static unsigned long lastWifiCheck = 0;
+  if (millis() - lastWifiCheck > 15000) {
+    lastWifiCheck = millis();
+    String saved = prefs.getString("ssid", "");
+    if (WiFi.status() != WL_CONNECTED && saved.length() > 0) {
+      Serial.println("[WIFI] Disconnected from AP. Reconnecting...");
+      WiFi.reconnect();
     }
   }
 
-  delay(10);
+  delay(20);
 }

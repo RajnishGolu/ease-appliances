@@ -1,5 +1,5 @@
-// Cache version 2.8.0 - Instant Power Off & Heartbeat Silence Detection
-const CACHE_NAME = 'my-smart-plug-v2.8.0';
+// Cache version 2.9.0 - 4-Channel Independent Relay Control
+const CACHE_NAME = 'my-smart-plug-v2.9.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',
