@@ -8,7 +8,6 @@
 #include <ArduinoJson.h>
 
 #define DEVICE_NAME "Ease Appliances"
-#define BLE_SECURITY_PIN 849201 // 6-digit PIN required for Bluetooth pairing authorization
 
 // 4-Channel Relay Output Pins (Active LOW for optocoupler relay boards)
 #define RELAY1_PIN 23
@@ -672,13 +671,9 @@ void setup() {
   // Apply pin states (Active LOW: LOW = ON, HIGH = OFF)
   applyRelayPins();
 
-  // Initialize NimBLE with Link-Layer Encryption & 6-Digit Passkey Bonding
+  // Initialize NimBLE
   NimBLEDevice::init(DEVICE_NAME);
   NimBLEDevice::setPower(ESP_PWR_LVL_P9);
-  NimBLEDevice::setSecurityAuth(BLE_SM_PAIR_AUTHREQ_SC | BLE_SM_PAIR_AUTHREQ_BOND | BLE_SM_PAIR_AUTHREQ_MITM);
-  NimBLEDevice::setSecurityIOCap(BLE_SM_IO_CAP_DISP_ONLY);
-  NimBLEDevice::setSecurityPasskey(BLE_SECURITY_PIN);
-
   pServer = NimBLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
@@ -686,19 +681,19 @@ void setup() {
 
   NimBLECharacteristic *pProvChar = pService->createCharacteristic(
     CHAR_WIFI_PROV_UUID,
-    NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC
+    NIMBLE_PROPERTY::WRITE
   );
   pProvChar->setCallbacks(new WifiProvCallbacks());
 
   pStatusChar = pService->createCharacteristic(
     CHAR_STATUS_UUID,
-    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::READ_ENC | NIMBLE_PROPERTY::NOTIFY
+    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY
   );
   pStatusChar->setValue(getFullStatus().c_str());
 
   pRelayChar = pService->createCharacteristic(
     CHAR_RELAY_UUID,
-    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::READ_ENC | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC | NIMBLE_PROPERTY::NOTIFY
+    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY
   );
   pRelayChar->setCallbacks(new RelayCallbacks());
   pRelayChar->setValue("R1:0,R2:0,R3:0,R4:0");
