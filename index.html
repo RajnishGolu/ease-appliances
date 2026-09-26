@@ -387,35 +387,14 @@
           Connect your smart device to configure Wi-Fi and start controlling your appliances.
         </p>
 
-        <button onclick="scanAndConnectBle(false)" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer">
+        <button onclick="scanAndConnectBle()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           <span>Connect Device</span>
-        </button>
-
-        <button onclick="scanAndConnectBle(true)" class="mt-2.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer py-1">
-          Can't see Ease Appliances? Scan all devices
         </button>
       </div>
 
       <!-- STATE B: CONNECTED DEVICE DASHBOARD -->
       <div id="view-connected-device-card" class="hidden space-y-4">
-        <!-- Offline / Disconnected Reconnect Banner -->
-        <div id="home-offline-alert-banner" class="hidden p-4 rounded-3xl bg-amber-50 border border-amber-200/90 shadow-2xs flex items-center justify-between">
-          <div class="flex items-center space-x-3 pr-2">
-            <div class="w-9 h-9 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            </div>
-            <div>
-              <h4 class="text-xs font-bold text-slate-800">Device Offline or Unpaired</h4>
-              <p class="text-[11px] text-slate-500">Pair via Bluetooth to set up Wi-Fi</p>
-            </div>
-          </div>
-          <button onclick="scanAndConnectBle()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all flex items-center space-x-1.5 flex-shrink-0 cursor-pointer">
-            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
-            <span>Pair Device</span>
-          </button>
-        </div>
-
         <!-- Devices Section Header -->
         <div class="flex items-center justify-between px-1">
           <div>
@@ -540,22 +519,6 @@
 
         <h1 id="wifi-setup-title" class="text-2xl font-bold text-slate-900">Available Wi-Fi</h1>
         <p id="wifi-setup-desc" class="text-sm text-slate-500 mt-1">Tap your network to connect Ease Appliances:</p>
-
-        <!-- Dynamic Banner if BLE is NOT connected -->
-        <div id="wifi-ble-not-connected-banner" class="hidden my-3 p-3 bg-indigo-50 border border-indigo-200/90 rounded-2xl flex items-center justify-between">
-          <div class="flex items-center space-x-2.5">
-            <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-indigo-900">Bluetooth Pair Required</p>
-              <p class="text-[11px] text-indigo-600">Connect via Bluetooth to send credentials</p>
-            </div>
-          </div>
-          <button onclick="scanAndConnectBle()" class="text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-xl shadow-2xs flex-shrink-0 cursor-pointer">
-            Pair Now
-          </button>
-        </div>
 
         <!-- Dynamic Banner if already connected -->
         <div id="wifi-already-connected-banner" class="hidden my-3 p-3 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between">
@@ -765,22 +728,6 @@
 
         <!-- Device Actions Card -->
         <div class="mt-2 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
-          <!-- Pair Device via Bluetooth -->
-          <button onclick="scanAndConnectBle()" class="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer">
-            <div class="flex items-center space-x-3">
-              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
-                </svg>
-              </div>
-              <div>
-                <span class="text-sm font-semibold text-indigo-600 block">Pair Device</span>
-                <span class="text-[11px] text-slate-400">Connect via Bluetooth to configure Wi-Fi</span>
-              </div>
-            </div>
-            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-          </button>
-
           <!-- Change Wi-Fi -->
           <button onclick="navigateTo('wifi-setup')" class="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors">
             <div class="flex items-center space-x-3">
@@ -965,18 +912,9 @@
     function updateWifiSetupView() {
       const banner = document.getElementById('wifi-already-connected-banner');
       const bannerText = document.getElementById('wifi-already-connected-text');
-      const bleBanner = document.getElementById('wifi-ble-not-connected-banner');
       const title = document.getElementById('wifi-setup-title');
       const desc = document.getElementById('wifi-setup-desc');
       const submitBtnLabel = document.getElementById('wifi-connect-btn-label');
-
-      if (bleBanner) {
-        if (!appState.isBleConnected) {
-          bleBanner.classList.remove('hidden');
-        } else {
-          bleBanner.classList.add('hidden');
-        }
-      }
 
       if (appState.assignedIp) {
         if (banner) banner.classList.remove('hidden');
@@ -1032,7 +970,6 @@
       const connectedCard = document.getElementById('view-connected-device-card');
       const statusBadge = document.getElementById('single-status-badge');
       const bleHeader = document.getElementById('header-ble-indicator');
-      const offlineBanner = document.getElementById('home-offline-alert-banner');
 
       if (bleHeader) {
         bleHeader.className = isBleConnected ? "text-indigo-600 transition-colors" : "text-slate-400 transition-colors";
@@ -1041,9 +978,9 @@
       // Single Status Indicator (Green if online with SSID, Red if offline, Slate if not connected)
       if (statusBadge) {
         if (!hasConfiguredDevice) {
-          statusBadge.innerHTML = '<button onclick="scanAndConnectBle()" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors cursor-pointer"><span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></span><span>Not Connected • Tap to Pair</span></button>';
+          statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></span><span class="text-slate-500 font-medium">Not Connected</span>';
         } else if (!isDeviceOnline) {
-          statusBadge.innerHTML = '<button onclick="scanAndConnectBle()" class="inline-flex items-center text-xs font-semibold text-rose-600 hover:text-rose-700 transition-colors cursor-pointer"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span><span>Offline • Tap to Pair</span></button>';
+          statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500 mr-1.5"></span><span class="text-rose-600 font-semibold">Offline</span>';
         } else {
           const netName = selectedWifi || (assignedIp ? "Connected" : "Online");
           statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span><span class="text-emerald-700 font-semibold">Online • ${escapeHtml(netName)}</span>`;
@@ -1057,15 +994,6 @@
       } else {
         if (noDeviceCard) noDeviceCard.classList.add('hidden');
         if (connectedCard) connectedCard.classList.remove('hidden');
-      }
-
-      // Offline Alert Banner inside connected card
-      if (offlineBanner) {
-        if (hasConfiguredDevice && !isDeviceOnline) {
-          offlineBanner.classList.remove('hidden');
-        } else {
-          offlineBanner.classList.add('hidden');
-        }
       }
 
       // 4 Devices Channel Switches Sync
@@ -1453,14 +1381,7 @@
         appState.isBleConnected = false;
         syncUI();
         if (err.name === 'NotFoundError') {
-          showToast("❌ No device selected or not found");
-          if (/Android/i.test(navigator.userAgent) && !showAll) {
-            setTimeout(() => {
-              if (confirm("📱 Ease Appliances not showing on Android?\n\n1. Disconnect Mac: The ESP32 Bluetooth can only connect to 1 device at a time. If your MacBook was paired, disconnect or turn off Mac Bluetooth first.\n\n2. Turn ON Phone Location (GPS): Android requires Location to be ON in quick settings to scan BLE.\n\n3. Tap OK to scan ALL nearby devices.")) {
-                scanAndConnectBle(true);
-              }
-            }, 300);
-          }
+          showToast("❌ No device selected or cancelled");
         } else {
           showToast("❌ Bluetooth error: " + err.message);
         }
@@ -2389,7 +2310,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.9')
+        navigator.serviceWorker.register('./sw.js?v=3.0.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });

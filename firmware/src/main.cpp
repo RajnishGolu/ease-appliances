@@ -8,6 +8,7 @@
 #include <ArduinoJson.h>
 
 #define DEVICE_NAME "Ease Appliances"
+#define BLE_SECURITY_PIN 849201 // 6-digit PIN required for Bluetooth pairing authorization
 
 // 4-Channel Relay Output Pins (Active LOW for optocoupler relay boards)
 #define RELAY1_PIN 23
@@ -555,8 +556,13 @@ class MyServerCallbacks: public NimBLEServerCallbacks {
 
   void onDisconnect(NimBLEServer* pServer) override {
     deviceConnected = false;
-    Serial.println("[BLE] Client Disconnected. Resuming Advertising...");
-    NimBLEDevice::startAdvertising();
+    Serial.println("[BLE] Client Disconnected.");
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("[BLE] Resuming Advertising for setup...");
+      NimBLEDevice::startAdvertising();
+    } else {
+      Serial.println("[BLE] Wi-Fi is connected - BLE stays hidden for security.");
+    }
   }
 };
 
@@ -666,9 +672,13 @@ void setup() {
   // Apply pin states (Active LOW: LOW = ON, HIGH = OFF)
   applyRelayPins();
 
-  // Initialize NimBLE
+  // Initialize NimBLE with Link-Layer Encryption & 6-Digit Passkey Bonding
   NimBLEDevice::init(DEVICE_NAME);
   NimBLEDevice::setPower(ESP_PWR_LVL_P9);
+  NimBLEDevice::setSecurityAuth(BLE_SM_PAIR_AUTHREQ_SC | BLE_SM_PAIR_AUTHREQ_BOND | BLE_SM_PAIR_AUTHREQ_MITM);
+  NimBLEDevice::setSecurityIOCap(BLE_SM_IO_CAP_DISP_ONLY);
+  NimBLEDevice::setSecurityPasskey(BLE_SECURITY_PIN);
+
   pServer = NimBLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
@@ -676,19 +686,19 @@ void setup() {
 
   NimBLECharacteristic *pProvChar = pService->createCharacteristic(
     CHAR_WIFI_PROV_UUID,
-    NIMBLE_PROPERTY::WRITE
+    NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC
   );
   pProvChar->setCallbacks(new WifiProvCallbacks());
 
   pStatusChar = pService->createCharacteristic(
     CHAR_STATUS_UUID,
-    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY
+    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::READ_ENC | NIMBLE_PROPERTY::NOTIFY
   );
   pStatusChar->setValue(getFullStatus().c_str());
 
   pRelayChar = pService->createCharacteristic(
     CHAR_RELAY_UUID,
-    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY
+    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::READ_ENC | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC | NIMBLE_PROPERTY::NOTIFY
   );
   pRelayChar->setCallbacks(new RelayCallbacks());
   pRelayChar->setValue("R1:0,R2:0,R3:0,R4:0");
@@ -785,6 +795,20 @@ void loop() {
     if (WiFi.status() != WL_CONNECTED && saved.length() > 0) {
       Serial.println("[WIFI] Disconnected from AP. Reconnecting...");
       WiFi.reconnect();
+    }
+  }
+
+  // 6. Security Watchdog: Auto-Shutoff BLE Advertising once Wi-Fi connects
+  if (WiFi.status() == WL_CONNECTED) {
+    if (NimBLEDevice::getAdvertising()->isAdvertising()) {
+      Serial.println("[SECURITY] Wi-Fi is connected! Stopping BLE advertising for safety.");
+      NimBLEDevice::getAdvertising()->stop();
+    }
+  } else {
+    // If Wi-Fi is lost/disconnected and no device is connected, resume BLE so owner can configure
+    if (!NimBLEDevice::getAdvertising()->isAdvertising() && !deviceConnected) {
+      Serial.println("[SECURITY] Wi-Fi offline. Resuming BLE advertising for setup...");
+      NimBLEDevice::getAdvertising()->start();
     }
   }
 

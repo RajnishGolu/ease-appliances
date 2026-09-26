@@ -1,5 +1,5 @@
-// Cache version 2.9.9 - Auto acceptAllDevices for Android BLE discovery
-const CACHE_NAME = 'my-smart-plug-v2.9.9';
+// Cache version 3.0.0 - Clean UI, minimal device controls, robust Android BLE
+const CACHE_NAME = 'my-smart-plug-v3.0.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',
