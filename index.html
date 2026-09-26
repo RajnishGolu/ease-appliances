@@ -395,6 +395,23 @@
 
       <!-- STATE B: CONNECTED DEVICE DASHBOARD -->
       <div id="view-connected-device-card" class="hidden space-y-4">
+        <!-- Offline / Disconnected Reconnect Banner -->
+        <div id="home-offline-alert-banner" class="hidden p-4 rounded-3xl bg-amber-50 border border-amber-200/90 shadow-2xs flex items-center justify-between">
+          <div class="flex items-center space-x-3 pr-2">
+            <div class="w-9 h-9 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-slate-800">Device Offline or Unpaired</h4>
+              <p class="text-[11px] text-slate-500">Pair via Bluetooth to set up Wi-Fi</p>
+            </div>
+          </div>
+          <button onclick="scanAndConnectBle()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all flex items-center space-x-1.5 flex-shrink-0 cursor-pointer">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
+            <span>Pair Device</span>
+          </button>
+        </div>
+
         <!-- Devices Section Header -->
         <div class="flex items-center justify-between px-1">
           <div>
@@ -519,6 +536,22 @@
 
         <h1 id="wifi-setup-title" class="text-2xl font-bold text-slate-900">Available Wi-Fi</h1>
         <p id="wifi-setup-desc" class="text-sm text-slate-500 mt-1">Tap your network to connect Ease Appliances:</p>
+
+        <!-- Dynamic Banner if BLE is NOT connected -->
+        <div id="wifi-ble-not-connected-banner" class="hidden my-3 p-3 bg-indigo-50 border border-indigo-200/90 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-indigo-900">Bluetooth Pair Required</p>
+              <p class="text-[11px] text-indigo-600">Connect via Bluetooth to send credentials</p>
+            </div>
+          </div>
+          <button onclick="scanAndConnectBle()" class="text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-xl shadow-2xs flex-shrink-0 cursor-pointer">
+            Pair Now
+          </button>
+        </div>
 
         <!-- Dynamic Banner if already connected -->
         <div id="wifi-already-connected-banner" class="hidden my-3 p-3 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between">
@@ -728,6 +761,22 @@
 
         <!-- Device Actions Card -->
         <div class="mt-2 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
+          <!-- Pair Device via Bluetooth -->
+          <button onclick="scanAndConnectBle()" class="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
+                </svg>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-indigo-600 block">Pair Device</span>
+                <span class="text-[11px] text-slate-400">Connect via Bluetooth to configure Wi-Fi</span>
+              </div>
+            </div>
+            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+
           <!-- Change Wi-Fi -->
           <button onclick="navigateTo('wifi-setup')" class="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors">
             <div class="flex items-center space-x-3">
@@ -841,15 +890,17 @@
 
     // Application state (with persistent storage restoration)
     const DEFAULT_FIREBASE_URL = "https://smart-plug-c131f-default-rtdb.firebaseio.com";
-    const savedIp = localStorage.getItem('ease_ip') || "";
-    const savedWifi = localStorage.getItem('ease_wifi') || "";
+    const isUnpairedStored = localStorage.getItem('ease_unpaired') === 'true';
+    const savedIp = isUnpairedStored ? "" : (localStorage.getItem('ease_ip') || "");
+    const savedWifi = isUnpairedStored ? "" : (localStorage.getItem('ease_wifi') || "");
     const savedPower = localStorage.getItem('ease_power');
     const configuredFbUrl = localStorage.getItem('ease_firebase_url') || DEFAULT_FIREBASE_URL;
 
     const appState = {
       isBleConnected: false,
       isDeviceOnline: false,
-      hasEverSeenDevice: !!(savedIp || savedWifi),
+      isUnpaired: isUnpairedStored,
+      hasEverSeenDevice: !isUnpairedStored && !!(savedIp || savedWifi),
       lastHeartbeatTime: 0,
       bleDeviceName: localStorage.getItem('ease_name') || "Ease Appliances",
       assignedIp: savedIp,
@@ -910,9 +961,18 @@
     function updateWifiSetupView() {
       const banner = document.getElementById('wifi-already-connected-banner');
       const bannerText = document.getElementById('wifi-already-connected-text');
+      const bleBanner = document.getElementById('wifi-ble-not-connected-banner');
       const title = document.getElementById('wifi-setup-title');
       const desc = document.getElementById('wifi-setup-desc');
       const submitBtnLabel = document.getElementById('wifi-connect-btn-label');
+
+      if (bleBanner) {
+        if (!appState.isBleConnected) {
+          bleBanner.classList.remove('hidden');
+        } else {
+          bleBanner.classList.add('hidden');
+        }
+      }
 
       if (appState.assignedIp) {
         if (banner) banner.classList.remove('hidden');
@@ -961,12 +1021,14 @@
     // UI Synchronizer
     function syncUI() {
       const { isBleConnected, isDeviceOnline, selectedWifi, assignedIp } = appState;
-      const hasConfiguredDevice = !!(assignedIp || selectedWifi || isBleConnected || appState.hasEverSeenDevice || localStorage.getItem('ease_ip'));
+      const hasSavedCreds = !!(localStorage.getItem('ease_ip') || localStorage.getItem('ease_wifi'));
+      const hasConfiguredDevice = !!((assignedIp || selectedWifi || isBleConnected || hasSavedCreds) && !appState.isUnpaired);
 
       const noDeviceCard = document.getElementById('view-no-device-card');
       const connectedCard = document.getElementById('view-connected-device-card');
       const statusBadge = document.getElementById('single-status-badge');
       const bleHeader = document.getElementById('header-ble-indicator');
+      const offlineBanner = document.getElementById('home-offline-alert-banner');
 
       if (bleHeader) {
         bleHeader.className = isBleConnected ? "text-indigo-600 transition-colors" : "text-slate-400 transition-colors";
@@ -975,9 +1037,9 @@
       // Single Status Indicator (Green if online with SSID, Red if offline, Slate if not connected)
       if (statusBadge) {
         if (!hasConfiguredDevice) {
-          statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></span><span class="text-slate-500 font-medium">Not Connected</span>';
+          statusBadge.innerHTML = '<button onclick="scanAndConnectBle()" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors cursor-pointer"><span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></span><span>Not Connected • Tap to Pair</span></button>';
         } else if (!isDeviceOnline) {
-          statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500 mr-1.5"></span><span class="text-rose-600 font-semibold">Offline</span>';
+          statusBadge.innerHTML = '<button onclick="scanAndConnectBle()" class="inline-flex items-center text-xs font-semibold text-rose-600 hover:text-rose-700 transition-colors cursor-pointer"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span><span>Offline • Tap to Pair</span></button>';
         } else {
           const netName = selectedWifi || (assignedIp ? "Connected" : "Online");
           statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span><span class="text-emerald-700 font-semibold">Online • ${escapeHtml(netName)}</span>`;
@@ -991,6 +1053,15 @@
       } else {
         if (noDeviceCard) noDeviceCard.classList.add('hidden');
         if (connectedCard) connectedCard.classList.remove('hidden');
+      }
+
+      // Offline Alert Banner inside connected card
+      if (offlineBanner) {
+        if (hasConfiguredDevice && !isDeviceOnline) {
+          offlineBanner.classList.remove('hidden');
+        } else {
+          offlineBanner.classList.add('hidden');
+        }
       }
 
       // 4 Devices Channel Switches Sync
@@ -1297,6 +1368,8 @@
         statusChar.addEventListener('characteristicvaluechanged', onStatusNotification);
 
         appState.isBleConnected = true;
+        appState.isUnpaired = false;
+        localStorage.removeItem('ease_unpaired');
         appState.bleDeviceName = bleDevice.name || "Ease Appliances";
         localStorage.setItem('ease_name', appState.bleDeviceName);
 
@@ -1325,6 +1398,9 @@
             localStorage.setItem('ease_wifi', ssid);
           }
           appState.isDeviceOnline = true;
+          appState.isUnpaired = false;
+          appState.hasEverSeenDevice = true;
+          localStorage.removeItem('ease_unpaired');
           appState.lastHeartbeatTime = Date.now();
           showToast(`Ease Appliances Connected! (IP: ${appState.assignedIp})`);
           syncUI();
@@ -1382,6 +1458,9 @@
         appState.assignedIp = ip;
         if (ssid) appState.selectedWifi = ssid;
         appState.isDeviceOnline = true;
+        appState.isUnpaired = false;
+        appState.hasEverSeenDevice = true;
+        localStorage.removeItem('ease_unpaired');
         appState.lastHeartbeatTime = Date.now();
         localStorage.setItem('ease_ip', ip);
         if (ssid) localStorage.setItem('ease_wifi', ssid);
@@ -1491,6 +1570,14 @@
             r4: false,
             relay: false
           });
+          setTimeout(() => {
+            if (firebaseDb) {
+              firebaseDb.ref('ease_appliances/control').update({
+                unpair: false,
+                reset: false
+              });
+            }
+          }, 1500);
         } catch (e) {
           console.warn("[Firebase] Unpair clear error:", e);
         }
@@ -1517,6 +1604,7 @@
       localStorage.removeItem('ease_on_count');
       localStorage.removeItem('ease_off_count');
       localStorage.removeItem('ease_total_toggles');
+      localStorage.setItem('ease_unpaired', 'true');
 
       // 7. Reset app state completely
       appState.assignedIp = "";
@@ -1524,6 +1612,7 @@
       appState.isDeviceOnline = false;
       appState.isBleConnected = false;
       appState.hasEverSeenDevice = false;
+      appState.isUnpaired = true;
       appState.isPowerOn = false;
       appState.relays = { r1: false, r2: false, r3: false, r4: false };
       appState.lastHeartbeatTime = 0;
@@ -1707,11 +1796,24 @@
         firebaseDb.ref('ease_appliances/state').on('value', (snapshot) => {
           const state = snapshot.val();
           if (state) {
-            if (state.unpaired === true || state.online === false) {
-              handleDeviceOffline("⚠️ Ease Appliances offline (Device unpaired or powered off)");
+            if (state.unpaired === true) {
+              appState.isUnpaired = true;
+              appState.hasEverSeenDevice = false;
+              appState.assignedIp = "";
+              appState.selectedWifi = "";
+              localStorage.removeItem('ease_ip');
+              localStorage.removeItem('ease_wifi');
+              localStorage.setItem('ease_unpaired', 'true');
+              handleDeviceOffline("⚠️ Ease Appliances unpaired");
               return;
             }
+            if (state.online === false) {
+              handleDeviceOffline("⚠️ Ease Appliances offline (Device powered off or disconnected)");
+              return;
+            }
+            appState.isUnpaired = false;
             appState.hasEverSeenDevice = true;
+            localStorage.removeItem('ease_unpaired');
             if (state.ssid) {
               appState.selectedWifi = state.ssid;
               localStorage.setItem('ease_wifi', state.ssid);
@@ -2148,11 +2250,12 @@
       appState.selectedWifi = ssid;
 
       if (!provChar || !appState.isBleConnected) {
-        showToast("❌ Bluetooth disconnected. Cannot send Wi-Fi credentials.");
+        showToast("⚠️ Bluetooth not connected. Opening scanner to pair...");
         if (err) {
-          err.innerText = "ESP32 Bluetooth is not connected. Make sure your ESP32 is powered on and scan again.";
+          err.innerText = "Pairing with Ease Appliances via Bluetooth...";
           err.classList.remove('hidden');
         }
+        await scanAndConnectBle();
         return;
       }
 
@@ -2265,7 +2368,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.6')
+        navigator.serviceWorker.register('./sw.js?v=2.9.7')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
