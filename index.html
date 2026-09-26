@@ -217,37 +217,30 @@
     </div>
 
     <!-- ============================================================== -->
-    <!-- 1. HOME SCREEN (DIRECT LANDING - NO SPLASH) -->
+    <!-- 1. HOME SCREEN (UNIFIED DIRECT LANDING DASHBOARD) -->
     <!-- ============================================================== -->
     <div id="view-home" class="view-screen active px-5 pb-8">
-      <!-- Top Bar -->
+      <!-- Top Bar: App Title, Single Status Badge & Settings Gear -->
       <div class="flex items-center justify-between mb-4">
         <div>
-          <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold" id="home-greeting">Good afternoon</span>
           <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Ease Appliances</h1>
+          <div id="single-status-badge" class="mt-1 inline-flex items-center text-xs font-semibold text-slate-500">
+            <span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></span>
+            <span>Not Connected</span>
+          </div>
         </div>
         <div class="flex items-center space-x-2">
-          <button onclick="scanAndConnectBle()" title="Scan for Ease Appliances BLE" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <button onclick="navigateTo('device-settings')" title="Device Settings" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors shadow-2xs">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- Live Connection Banner -->
-      <div id="home-connection-banner" class="flex items-center justify-between px-4 py-2.5 bg-amber-50/80 border border-amber-200/60 rounded-2xl mb-5 transition-colors">
-        <div class="flex items-center space-x-2">
-          <span id="home-banner-dot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-          <span id="home-banner-text" class="text-xs font-semibold text-amber-800">No Device Connected</span>
-        </div>
-        <span id="home-banner-badge" class="text-[11px] font-semibold text-amber-700 bg-white px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs">BLE Standby</span>
-      </div>
-
-      <!-- STATE A: NO DEVICE CONNECTED (Scan & Connect Hub) -->
+      <!-- STATE A: NO DEVICE CONNECTED -->
       <div id="view-no-device-card" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200/80 rounded-3xl shadow-sm text-center">
-        <!-- Glowing BLE Icon -->
         <div class="relative w-20 h-20 rounded-3xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mb-5 text-indigo-600 shadow-inner">
-          <svg class="w-10 h-10 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"/>
           </svg>
           <span class="absolute -top-1 -right-1 flex h-3 w-3">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -257,134 +250,146 @@
 
         <h3 class="text-lg font-bold text-slate-900">Connect Ease Appliances</h3>
         <p class="text-xs text-slate-500 mt-1.5 mb-6 max-w-xs leading-relaxed">
-          Scan for your ESP32 device over Bluetooth Low Energy (BLE) to configure its Wi-Fi connection.
+          Connect your smart device to configure Wi-Fi and start controlling your appliances.
         </p>
 
-        <!-- Primary Action Button: Web Bluetooth Scan -->
         <button onclick="scanAndConnectBle()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm">
-          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
-          <span>Scan for 'Ease Appliances'</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Connect Device</span>
         </button>
       </div>
 
-      <!-- STATE B: CONNECTED DEVICE CARD (Revealed only upon connection) -->
+      <!-- STATE B: CONNECTED DEVICE DASHBOARD -->
       <div id="view-connected-device-card" class="hidden space-y-4">
-        <div class="bg-white border-2 border-indigo-500/30 rounded-3xl p-5 shadow-md transition-all">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center space-x-3.5 cursor-pointer flex-1" onclick="navigateTo('device-control')">
-              <div id="home-plug-icon-box" class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
+        <!-- Devices Section Header -->
+        <div class="flex items-center justify-between px-1">
+          <div>
+            <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Devices</h2>
+            <p id="devices-active-summary" class="text-[11px] text-slate-400">0 of 4 active</p>
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <button onclick="setPowerState(true)" class="px-3 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all shadow-2xs">All ON</button>
+            <button onclick="setPowerState(false)" class="px-3 py-1 text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all shadow-2xs">All OFF</button>
+          </div>
+        </div>
+
+        <!-- 4 Device Cards (Clean - No GPIO, No IP, No Pin details) -->
+        <div class="space-y-2.5">
+          <!-- Device 1 -->
+          <div id="ctrl-card-1" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+              <div id="ctrl-icon-box-1" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
+                💡
               </div>
               <div>
-                <h3 id="connected-esp32-name" class="text-base font-bold text-slate-900 hover:text-indigo-600 transition-colors">Ease Appliances</h3>
-                <div class="flex items-center space-x-2 mt-0.5">
-                  <span id="connected-status-pill" class="inline-flex items-center text-xs font-semibold text-emerald-600">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
-                    Online
-                  </span>
-                  <span class="text-slate-300">•</span>
-                  <span id="connected-wifi-badge" class="inline-flex items-center text-[11px] text-slate-500">
-                    <svg class="w-3 h-3 mr-1 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
-                    <span id="connected-esp32-wifi-label">JARVISTECH</span>
-                  </span>
+                <div class="flex items-center space-x-2">
+                  <h3 class="text-sm font-bold text-slate-900">Appliance 1</h3>
+                  <span id="ctrl-badge-1" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
                 </div>
               </div>
             </div>
-
-            <!-- Quick Power Toggle (Master) -->
-            <button onclick="togglePlugPower(event)" id="home-quick-toggle" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-indigo-600">
-              <span class="sr-only">Toggle power</span>
-              <span id="home-toggle-thumb" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-6 flex items-center justify-center text-[10px] font-bold text-indigo-600">
-                ON
-              </span>
+            <button onclick="toggleChannelPower(1, event)" id="ctrl-toggle-1" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
+              <span id="ctrl-thumb-1" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
             </button>
           </div>
 
-          <!-- 4 Channels Quick Toggles Grid -->
-          <div class="mt-4 pt-3 border-t border-slate-100">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">4-Channel Relays</span>
-              <span id="home-channels-active-count" class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">0/4 Active</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <!-- Channel 1 -->
-              <div onclick="toggleChannelPower(1, event)" id="home-ch-tile-1" class="border border-slate-200 rounded-2xl p-2.5 flex items-center justify-between cursor-pointer transition-all bg-white hover:bg-slate-50">
-                <div class="flex items-center space-x-2">
-                  <div id="home-ch-icon-1" class="w-7 h-7 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs">💡</div>
-                  <div>
-                    <div class="text-xs font-bold text-slate-800 leading-tight">Switch 1</div>
-                    <div class="text-[10px] text-slate-400 font-mono">D23</div>
-                  </div>
-                </div>
-                <span id="home-ch-badge-1" class="text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-lg">OFF</span>
+          <!-- Device 2 -->
+          <div id="ctrl-card-2" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+              <div id="ctrl-icon-box-2" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
+                🌀
               </div>
-
-              <!-- Channel 2 -->
-              <div onclick="toggleChannelPower(2, event)" id="home-ch-tile-2" class="border border-slate-200 rounded-2xl p-2.5 flex items-center justify-between cursor-pointer transition-all bg-white hover:bg-slate-50">
+              <div>
                 <div class="flex items-center space-x-2">
-                  <div id="home-ch-icon-2" class="w-7 h-7 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs">🌀</div>
-                  <div>
-                    <div class="text-xs font-bold text-slate-800 leading-tight">Switch 2</div>
-                    <div class="text-[10px] text-slate-400 font-mono">D22</div>
-                  </div>
+                  <h3 class="text-sm font-bold text-slate-900">Appliance 2</h3>
+                  <span id="ctrl-badge-2" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
                 </div>
-                <span id="home-ch-badge-2" class="text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-lg">OFF</span>
-              </div>
-
-              <!-- Channel 3 -->
-              <div onclick="toggleChannelPower(3, event)" id="home-ch-tile-3" class="border border-slate-200 rounded-2xl p-2.5 flex items-center justify-between cursor-pointer transition-all bg-white hover:bg-slate-50">
-                <div class="flex items-center space-x-2">
-                  <div id="home-ch-icon-3" class="w-7 h-7 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs">🔌</div>
-                  <div>
-                    <div class="text-xs font-bold text-slate-800 leading-tight">Switch 3</div>
-                    <div class="text-[10px] text-slate-400 font-mono">D21</div>
-                  </div>
-                </div>
-                <span id="home-ch-badge-3" class="text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-lg">OFF</span>
-              </div>
-
-              <!-- Channel 4 -->
-              <div onclick="toggleChannelPower(4, event)" id="home-ch-tile-4" class="border border-slate-200 rounded-2xl p-2.5 flex items-center justify-between cursor-pointer transition-all bg-white hover:bg-slate-50">
-                <div class="flex items-center space-x-2">
-                  <div id="home-ch-icon-4" class="w-7 h-7 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs">📺</div>
-                  <div>
-                    <div class="text-xs font-bold text-slate-800 leading-tight">Switch 4</div>
-                    <div class="text-[10px] text-slate-400 font-mono">D19</div>
-                  </div>
-                </div>
-                <span id="home-ch-badge-4" class="text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-lg">OFF</span>
               </div>
             </div>
+            <button onclick="toggleChannelPower(2, event)" id="ctrl-toggle-2" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
+              <span id="ctrl-thumb-2" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
+            </button>
           </div>
 
-          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span class="flex items-center text-slate-400">
-              <span id="home-device-watts" class="font-semibold text-slate-700 mr-2">GPIO 2 (LED)</span>
-              <span class="mr-1">•</span>
-              <span id="esp32-ip-display" class="text-slate-600 font-mono text-[11px]">IP: 192.168.0.183</span>
-            </span>
-            <div class="flex items-center space-x-2">
-              <button onclick="navigateTo('wifi-setup')" id="home-card-wifi-btn" class="text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors">
-                Change Wi-Fi
-              </button>
-              <button onclick="navigateTo('device-control')" class="text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-xl transition-colors flex items-center">
-                Control
-                <svg class="w-3.5 h-3.5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-              </button>
+          <!-- Device 3 -->
+          <div id="ctrl-card-3" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+              <div id="ctrl-icon-box-3" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
+                🔌
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h3 class="text-sm font-bold text-slate-900">Appliance 3</h3>
+                  <span id="ctrl-badge-3" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="toggleChannelPower(3, event)" id="ctrl-toggle-3" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
+              <span id="ctrl-thumb-3" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
+            </button>
+          </div>
+
+          <!-- Device 4 -->
+          <div id="ctrl-card-4" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+              <div id="ctrl-icon-box-4" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
+                📺
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h3 class="text-sm font-bold text-slate-900">Appliance 4</h3>
+                  <span id="ctrl-badge-4" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="toggleChannelPower(4, event)" id="ctrl-toggle-4" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
+              <span id="ctrl-thumb-4" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Power Analytics Counters -->
+        <div class="pt-2">
+          <div class="flex items-center justify-between mb-2 px-1">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Power Analytics</span>
+            <button onclick="resetStatsCounters()" class="text-[11px] font-semibold text-rose-500 hover:text-rose-600 transition-colors">Reset Counters</button>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+              <span class="text-[10px] uppercase font-bold text-emerald-600 flex items-center justify-center space-x-1">
+                <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                <span>ONs</span>
+              </span>
+              <div id="stat-on-count" class="text-lg font-black text-slate-900 mt-0.5">0</div>
+            </div>
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+              <span class="text-[10px] uppercase font-bold text-slate-500 flex items-center justify-center space-x-1">
+                <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                <span>OFFs</span>
+              </span>
+              <div id="stat-off-count" class="text-lg font-black text-slate-900 mt-0.5">0</div>
+            </div>
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
+              <span class="text-[10px] uppercase font-bold text-indigo-600 flex items-center justify-center space-x-1">
+                <svg class="w-3 h-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span>Total</span>
+              </span>
+              <div id="stat-total-toggles" class="text-lg font-black text-slate-900 mt-0.5">0</div>
             </div>
           </div>
         </div>
 
-        <div class="flex items-center space-x-2">
-          <button onclick="scanAndConnectBle()" class="flex-1 py-2 text-xs text-indigo-600 hover:text-indigo-700 font-medium transition-colors text-center border border-indigo-100 rounded-2xl bg-indigo-50/50 flex items-center justify-center space-x-1">
-            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
-            <span id="ble-sync-text">Sync via BLE</span>
-          </button>
-          <button onclick="unpairDevice()" class="py-2 px-3 text-xs text-rose-500 hover:text-rose-600 font-medium transition-colors text-center border border-rose-100 rounded-2xl bg-rose-50/40">
-            Unpair
-          </button>
+        <!-- Live Activity History Log -->
+        <div class="pt-1">
+          <div class="bg-white border border-slate-200/80 rounded-3xl p-4 shadow-2xs">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Live Activity Record</span>
+              <span id="log-count-badge" class="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">0 events</span>
+            </div>
+            <div id="activity-log-list" class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+              <div class="text-xs text-slate-400 text-center py-2">No power events recorded yet</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -491,7 +496,7 @@
         </div>
 
         <h1 class="text-2xl font-bold text-slate-900">Connecting to Wi-Fi</h1>
-        <p class="text-sm text-slate-500 mt-2">Sending credentials to Ease Appliances over BLE...</p>
+        <p class="text-sm text-slate-500 mt-2">Connecting Ease Appliances to your Wi-Fi network...</p>
 
         <!-- Progress Spinner -->
         <div class="my-8 flex justify-center">
@@ -501,8 +506,8 @@
               <circle cx="50" cy="50" r="42" stroke="#4F46E5" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="190" stroke-linecap="round" fill="none"/>
             </svg>
             <div class="absolute inset-0 flex items-center justify-center text-indigo-600">
-              <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
           </div>
@@ -514,7 +519,7 @@
             <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
-            <span class="text-sm font-semibold text-slate-800">BLE Connected to Ease Appliances</span>
+            <span class="text-sm font-semibold text-slate-800">Connected to Device</span>
           </div>
 
           <div class="flex items-center space-x-3">
@@ -591,242 +596,15 @@
       </div>
 
       <div class="space-y-3 pt-6">
-        <button onclick="navigateTo('device-control')" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
-          <span>Start Controlling</span>
+        <button onclick="navigateTo('home')" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+          <span>Go to Dashboard</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </button>
-        <button onclick="navigateTo('home')" class="w-full py-2.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors text-center">
-          Return to Home
-        </button>
       </div>
     </div>
 
     <!-- ============================================================== -->
-    <!-- 5. DEVICE CONTROL SCREEN -->
-    <!-- ============================================================== -->
-    <div id="view-device-control" class="view-screen px-6 pb-8 justify-between">
-      <div>
-        <div class="flex items-center justify-between mb-4">
-          <button onclick="navigateTo('home')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-          </button>
-          <div class="text-center">
-            <h1 class="text-lg font-bold text-slate-900 leading-tight">Ease Appliances</h1>
-            <span id="control-header-status-pill" class="inline-flex items-center text-[11px] text-emerald-600 font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>
-              Online • BLE + Wi-Fi
-            </span>
-          </div>
-          <button onclick="navigateTo('device-settings')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </button>
-        </div>
-
-        <!-- Offline Warning Banner (Displayed when ESP32 is powered off / unreachable) -->
-        <div id="control-offline-banner" class="mt-3 mb-1 px-3.5 py-2.5 bg-rose-50 border border-rose-200/90 rounded-2xl flex items-center justify-between shadow-2xs hidden">
-          <div class="flex items-center space-x-2.5">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
-            </span>
-            <div>
-              <p class="text-xs font-bold text-rose-950">Device Powered Off / Offline</p>
-              <p class="text-[11px] text-rose-700">Check power connection to ESP32</p>
-            </div>
-          </div>
-          <span class="text-[10px] font-bold text-rose-700 bg-white border border-rose-200 px-2 py-0.5 rounded-full">Offline</span>
-        </div>
-
-        <!-- 4-Channel Dedicated Switches Section -->
-        <div class="mt-4 space-y-3">
-          <div class="flex items-center justify-between px-1">
-            <div>
-              <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Independent Channel Controls</h2>
-              <p id="control-active-summary" class="text-[11px] text-slate-400">0 of 4 active</p>
-            </div>
-            <div class="flex items-center space-x-1.5">
-              <button onclick="setPowerState(true)" class="px-3 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all shadow-2xs">All ON</button>
-              <button onclick="setPowerState(false)" class="px-3 py-1 text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all shadow-2xs">All OFF</button>
-            </div>
-          </div>
-
-          <!-- Channel 1 Card -->
-          <div id="ctrl-card-1" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
-            <div class="flex items-center space-x-3.5">
-              <div id="ctrl-icon-box-1" class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-xl transition-colors">
-                💡
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h3 class="text-sm font-bold text-slate-900">Appliance 1</h3>
-                  <span id="ctrl-badge-1" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
-                </div>
-                <p class="text-xs text-slate-400 font-mono mt-0.5">Relay 1 • GPIO 23 (D23)</p>
-              </div>
-            </div>
-            <button onclick="toggleChannelPower(1, event)" id="ctrl-toggle-1" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
-              <span id="ctrl-thumb-1" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
-            </button>
-          </div>
-
-          <!-- Channel 2 Card -->
-          <div id="ctrl-card-2" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
-            <div class="flex items-center space-x-3.5">
-              <div id="ctrl-icon-box-2" class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-xl transition-colors">
-                🌀
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h3 class="text-sm font-bold text-slate-900">Appliance 2</h3>
-                  <span id="ctrl-badge-2" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
-                </div>
-                <p class="text-xs text-slate-400 font-mono mt-0.5">Relay 2 • GPIO 22 (D22)</p>
-              </div>
-            </div>
-            <button onclick="toggleChannelPower(2, event)" id="ctrl-toggle-2" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
-              <span id="ctrl-thumb-2" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
-            </button>
-          </div>
-
-          <!-- Channel 3 Card -->
-          <div id="ctrl-card-3" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
-            <div class="flex items-center space-x-3.5">
-              <div id="ctrl-icon-box-3" class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-xl transition-colors">
-                🔌
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h3 class="text-sm font-bold text-slate-900">Appliance 3</h3>
-                  <span id="ctrl-badge-3" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
-                </div>
-                <p class="text-xs text-slate-400 font-mono mt-0.5">Relay 3 • GPIO 21 (D21)</p>
-              </div>
-            </div>
-            <button onclick="toggleChannelPower(3, event)" id="ctrl-toggle-3" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
-              <span id="ctrl-thumb-3" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
-            </button>
-          </div>
-
-          <!-- Channel 4 Card -->
-          <div id="ctrl-card-4" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
-            <div class="flex items-center space-x-3.5">
-              <div id="ctrl-icon-box-4" class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-xl transition-colors">
-                📺
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h3 class="text-sm font-bold text-slate-900">Appliance 4</h3>
-                  <span id="ctrl-badge-4" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">OFF</span>
-                </div>
-                <p class="text-xs text-slate-400 font-mono mt-0.5">Relay 4 • GPIO 19 (D19)</p>
-              </div>
-            </div>
-            <button onclick="toggleChannelPower(4, event)" id="ctrl-toggle-4" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
-              <span id="ctrl-thumb-4" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Power Analytics Counters (Persistent on ESP32 flash) -->
-        <div class="mt-5">
-          <div class="flex items-center justify-between mb-2 px-1">
-            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Power Analytics</span>
-            <button onclick="resetStatsCounters()" class="text-[11px] font-semibold text-rose-500 hover:text-rose-600 transition-colors">Reset Counters</button>
-          </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
-              <span class="text-[10px] uppercase font-bold text-emerald-600 flex items-center justify-center space-x-1">
-                <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                <span>ONs</span>
-              </span>
-              <div id="stat-on-count" class="text-lg font-black text-slate-900 mt-0.5">0</div>
-            </div>
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
-              <span class="text-[10px] uppercase font-bold text-slate-500 flex items-center justify-center space-x-1">
-                <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-                <span>OFFs</span>
-              </span>
-              <div id="stat-off-count" class="text-lg font-black text-slate-900 mt-0.5">0</div>
-            </div>
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
-              <span class="text-[10px] uppercase font-bold text-indigo-600 flex items-center justify-center space-x-1">
-                <svg class="w-3 h-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                <span>Total</span>
-              </span>
-              <div id="stat-total-toggles" class="text-lg font-black text-slate-900 mt-0.5">0</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Firebase Cloud Control Banner (Only shown when NOT configured) -->
-        <div id="tile-firebase-setup" class="mt-3.5 bg-gradient-to-tr from-amber-500 to-amber-600 rounded-3xl p-3.5 text-white shadow-md shadow-amber-500/20">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-9 h-9 rounded-2xl bg-white/20 flex items-center justify-center text-white">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.09 16.92L6.85 4.07a.9.9 0 0 1 1.62-.31l3.5 6.37-7.88 6.79zm15.82-3.87L18.4 5.92a.9.9 0 0 0-1.63-.12l-2.42 4.49 5.56 2.76zM13.2 9.47L10.3 4.18a.9.9 0 0 0-1.6 0L2.1 18.05l9.96 5.58a.9.9 0 0 0 .88 0l8.96-5.02-8.7-9.14z"/></svg>
-              </div>
-              <div>
-                <h4 class="text-xs font-bold leading-tight">Firebase Cloud RTDB</h4>
-                <p id="firebase-cloud-status" class="text-[10px] text-amber-100">Control from Phone / Anywhere</p>
-              </div>
-            </div>
-            <button onclick="openFirebaseModal()" class="px-3 py-1 bg-white text-amber-700 hover:bg-amber-50 rounded-xl text-xs font-bold shadow-xs transition-colors">
-              Cloud Setup
-            </button>
-          </div>
-        </div>
-
-        <!-- Live Activity History Log -->
-        <div class="mt-3.5 bg-white border border-slate-200/80 rounded-3xl p-4 shadow-2xs">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Live Activity Record</span>
-            <span id="log-count-badge" class="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">0 events</span>
-          </div>
-          <div id="activity-log-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-            <div class="text-xs text-slate-400 text-center py-2">No power events recorded yet</div>
-          </div>
-        </div>
-
-        <!-- Telemetry Cards -->
-        <div class="mt-3.5 grid grid-cols-3 gap-2">
-          <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
-            <span class="text-[10px] uppercase font-bold text-slate-400">Pin State</span>
-            <div id="control-watts-val" class="text-xs font-bold text-indigo-600 mt-1">GPIO 2 (Active)</div>
-          </div>
-          <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
-            <span class="text-[10px] uppercase font-bold text-slate-400">Wi-Fi</span>
-            <div class="text-xs font-bold text-slate-800 mt-1 flex items-center justify-center">
-              <svg class="w-3 h-3 text-indigo-600 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
-              <span id="control-wifi-short">Wi-Fi</span>
-            </div>
-          </div>
-          <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 text-center shadow-2xs">
-            <span class="text-[10px] uppercase font-bold text-slate-400">BLE Link</span>
-            <div id="control-ble-status" class="text-xs font-bold text-emerald-600 mt-1">Active</div>
-          </div>
-        </div>
-
-        <div class="mt-3 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
-          <button onclick="navigateTo('wifi-setup')" class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-slate-50 transition-colors">
-            <div class="flex items-center space-x-3">
-              <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
-              </div>
-              <span class="text-xs font-semibold text-slate-800">Change Wi-Fi</span>
-            </div>
-            <span id="control-network-label" class="text-xs text-slate-400 font-medium truncate max-w-[120px]">JARVISTECH</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="pt-3 flex justify-between items-center text-xs text-slate-400">
-        <button onclick="disconnectBle()" class="text-rose-500 hover:text-rose-600 font-medium">Disconnect BLE</button>
-        <button onclick="navigateTo('home')" class="font-medium text-indigo-600 hover:underline">Done</button>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- 6. DEVICE SETTINGS SCREEN -->
+    <!-- 5. DEVICE SETTINGS SCREEN -->
     <!-- ============================================================== -->
     <div id="view-device-settings" class="view-screen px-6 pb-8 justify-between">
       <div>
@@ -834,39 +612,72 @@
           <button onclick="navigateTo('home')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
           </button>
-          <h1 class="text-lg font-bold text-slate-900">Ease Appliances Details</h1>
+          <h1 class="text-lg font-bold text-slate-900">Settings</h1>
           <div class="w-9"></div>
         </div>
 
-        <div class="mt-4 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
-          <div class="px-4 py-3.5 flex items-center justify-between">
-            <span class="text-sm font-medium text-slate-700">Device Name</span>
-            <span class="text-sm font-semibold text-slate-900">Ease Appliances</span>
-          </div>
-
-          <div class="px-4 py-3.5 flex items-center justify-between">
-            <span class="text-sm font-medium text-slate-700">Chipset</span>
-            <span class="text-sm font-semibold text-slate-900">ESP32-D0WD-V3</span>
-          </div>
-
-          <div class="px-4 py-3.5 flex items-center justify-between">
-            <span class="text-sm font-medium text-slate-700">Firmware</span>
-            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">v1.0.0 (Custom BLE)</span>
-          </div>
-
-          <div class="px-4 py-3.5 flex items-center justify-between">
-            <span class="text-sm font-medium text-slate-700">Relay Control Pin</span>
-            <span id="settings-gpio-pin" class="text-xs font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">GPIO 2 (Onboard Blue LED)</span>
-          </div>
-
-          <div class="px-4 py-3.5 flex items-center justify-between">
-            <div>
-              <span class="text-sm font-medium text-slate-700 block">Cloud RTDB</span>
-              <span id="settings-firebase-url" class="text-[11px] text-slate-400 font-mono truncate max-w-[170px] block">Not configured</span>
+        <!-- Device Actions Card -->
+        <div class="mt-2 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
+          <!-- Change Wi-Fi -->
+          <button onclick="navigateTo('wifi-setup')" class="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-slate-800 block">Change Wi-Fi</span>
+                <span class="text-[11px] text-slate-400">Configure router network</span>
+              </div>
             </div>
-            <button onclick="openFirebaseModal()" class="text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-xl transition-colors">
-              Configure
-            </button>
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+
+          <!-- Sync Device -->
+          <button onclick="syncDevice()" class="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-slate-800 block">Sync Device</span>
+                <span class="text-[11px] text-slate-400">Refresh connection status</span>
+              </div>
+            </div>
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+
+          <!-- Reset Device -->
+          <button onclick="unpairDevice()" class="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-rose-50/50 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-rose-600 block">Reset Device</span>
+                <span class="text-[11px] text-slate-400">Disconnect Bluetooth & erase Wi-Fi</span>
+              </div>
+            </div>
+            <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- Device Info Card -->
+        <div class="mt-4 bg-white border border-slate-200/80 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
+          <div class="px-4 py-3 flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Device</span>
+            <span class="text-xs font-semibold text-slate-800">Ease Appliances</span>
+          </div>
+          <div class="px-4 py-3 flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Connected Wi-Fi</span>
+            <span id="settings-network-name" class="text-xs font-semibold text-slate-800">Not Connected</span>
+          </div>
+          <div class="px-4 py-3 flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Status</span>
+            <span id="settings-status-badge" class="inline-flex items-center text-xs font-semibold text-slate-500">Offline</span>
+          </div>
+          <div class="px-4 py-3 flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">App Version</span>
+            <span class="text-xs font-mono font-medium text-slate-400">v2.9.3</span>
           </div>
         </div>
       </div>
@@ -875,78 +686,6 @@
         <button onclick="navigateTo('home')" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-semibold transition-colors">
           Back to Home
         </button>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- 7. FIREBASE CLOUD SETUP MODAL / SHEET -->
-    <!-- ============================================================== -->
-    <div id="modal-firebase" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs hidden transition-opacity">
-      <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto transform transition-transform scale-100">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div class="flex items-center space-x-2.5">
-            <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
-              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.09 16.92L6.85 4.07a.9.9 0 0 1 1.62-.31l3.5 6.37-7.88 6.79zm15.82-3.87L18.4 5.92a.9.9 0 0 0-1.63-.12l-2.42 4.49 5.56 2.76zM13.2 9.47L10.3 4.18a.9.9 0 0 0-1.6 0L2.1 18.05l9.96 5.58a.9.9 0 0 0 .88 0l8.96-5.02-8.7-9.14z"/></svg>
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-slate-900 leading-tight">Firebase Realtime Database</h3>
-              <p class="text-[10px] text-slate-400">Control & sync from phone anywhere</p>
-            </div>
-          </div>
-          <button onclick="closeFirebaseModal()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
-
-        <!-- 5-Step Instructions Accordion -->
-        <div class="mt-3.5 bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3 text-xs text-amber-900">
-          <p class="font-bold text-[11px] uppercase tracking-wider text-amber-800 flex items-center justify-between">
-            <span>5-Step Setup Guide</span>
-            <span class="text-[10px] font-normal text-amber-600">Free Tier</span>
-          </p>
-          <ol class="mt-2 space-y-1.5 text-[11px] leading-relaxed text-slate-700 list-decimal list-inside pl-0.5">
-            <li>Go to <a href="https://console.firebase.google.com" target="_blank" class="font-bold text-indigo-600 underline">console.firebase.google.com</a> & create a project.</li>
-            <li>Click <b>Build</b> &gt; <b>Realtime Database</b> &gt; <b>Create Database</b>.</li>
-            <li>Choose <b>Start in test mode</b> (allows read & write).</li>
-            <li>Copy your Database URL (e.g. <span class="font-mono text-[10px] text-slate-600 bg-white px-1 py-0.5 rounded">https://xxx-rtdb.firebaseio.com</span>).</li>
-            <li>Paste it below and tap <b>Save & Sync with ESP32</b>.</li>
-          </ol>
-        </div>
-
-        <!-- Form Inputs -->
-        <div class="mt-4 space-y-3">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-              Database URL <span class="text-rose-500">*</span>
-            </label>
-            <input id="firebase-url-input" type="url" placeholder="https://your-project-default-rtdb.firebaseio.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100 text-xs font-medium text-slate-800 outline-none transition-all font-mono">
-            <p class="text-[10px] text-slate-400 mt-1">Found in Firebase Console &gt; Realtime Database</p>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-              Database Secret / Auth Token <span class="text-slate-400 font-normal">(Optional for test mode)</span>
-            </label>
-            <input id="firebase-auth-input" type="password" placeholder="Leave empty if test mode enabled" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100 text-xs font-medium text-slate-800 outline-none transition-all font-mono">
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="mt-5 space-y-2">
-          <button id="save-firebase-btn" onclick="saveFirebaseConfig()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-500/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            <span id="save-firebase-btn-text">Save & Sync with ESP32</span>
-          </button>
-          <div class="flex items-center justify-between pt-1">
-            <button onclick="testFirebaseDirectWrite()" class="text-[11px] font-semibold text-indigo-600 hover:underline">
-              Test Cloud Ping
-            </button>
-            <button onclick="clearFirebaseConfig()" class="text-[11px] font-semibold text-rose-500 hover:underline">
-              Clear Cloud Config
-            </button>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -1036,13 +775,11 @@
 
     // Navigation controller
     function navigateTo(viewId) {
-      if (viewId === 'control') viewId = 'device-control';
+      if (viewId === 'control' || viewId === 'device-control') viewId = 'home';
       const screens = document.querySelectorAll('.view-screen');
       screens.forEach(s => s.classList.remove('active'));
 
       let target = document.getElementById('view-' + viewId);
-      if (!target && viewId === 'device-control') target = document.getElementById('view-control');
-
       if (target) {
         target.classList.add('active');
         appState.currentView = viewId;
@@ -1113,307 +850,46 @@
 
     // UI Synchronizer
     function syncUI() {
-      const { isBleConnected, isDeviceOnline, bleDeviceName, isPowerOn, selectedWifi, assignedIp } = appState;
+      const { isBleConnected, isDeviceOnline, selectedWifi, assignedIp } = appState;
       const hasConfiguredDevice = !!(assignedIp || selectedWifi || isBleConnected || appState.hasEverSeenDevice || localStorage.getItem('ease_ip'));
 
       const noDeviceCard = document.getElementById('view-no-device-card');
       const connectedCard = document.getElementById('view-connected-device-card');
-      const banner = document.getElementById('home-connection-banner');
-      const bannerDot = document.getElementById('home-banner-dot');
-      const bannerText = document.getElementById('home-banner-text');
-      const bannerBadge = document.getElementById('home-banner-badge');
+      const statusBadge = document.getElementById('single-status-badge');
       const bleHeader = document.getElementById('header-ble-indicator');
 
+      if (bleHeader) {
+        bleHeader.className = isBleConnected ? "text-indigo-600 transition-colors" : "text-slate-400 transition-colors";
+      }
+
+      // Single Status Indicator (Green if online with SSID, Red if offline, Slate if not connected)
+      if (statusBadge) {
+        if (!hasConfiguredDevice) {
+          statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></span><span class="text-slate-500 font-medium">Not Connected</span>';
+        } else if (!isDeviceOnline) {
+          statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500 mr-1.5"></span><span class="text-rose-600 font-semibold">Offline</span>';
+        } else {
+          const netName = selectedWifi || (assignedIp ? "Connected" : "Online");
+          statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span><span class="text-emerald-700 font-semibold">Online • ${escapeHtml(netName)}</span>`;
+        }
+      }
+
+      // State toggling: No Device vs Connected Dashboard
       if (!hasConfiguredDevice) {
-        // State 1: No device ever paired
         if (noDeviceCard) noDeviceCard.classList.remove('hidden');
         if (connectedCard) connectedCard.classList.add('hidden');
-        if (banner) {
-          banner.className = "flex items-center justify-between px-4 py-2.5 bg-amber-50/80 border border-amber-200/60 rounded-2xl mb-5 transition-colors";
-          bannerDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
-          bannerText.className = "text-xs font-semibold text-amber-800";
-          bannerText.innerText = "No Device Connected";
-          bannerBadge.className = "text-[11px] font-semibold text-amber-700 bg-white px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs";
-          bannerBadge.innerText = "BLE Standby";
-        }
-        if (bleHeader) bleHeader.className = "text-slate-400";
-      } else if (!isDeviceOnline) {
-        // State 2: ESP32 has NO active Internet/Wi-Fi connection (Power Locked)
-        if (noDeviceCard) noDeviceCard.classList.add('hidden');
-        if (connectedCard) connectedCard.classList.remove('hidden');
-
-        if (isBleConnected) {
-          // Connected via BLE only (Awaiting Wi-Fi Setup)
-          if (banner) {
-            banner.className = "flex items-center justify-between px-4 py-2.5 bg-amber-50/90 border border-amber-200/80 rounded-2xl mb-5 transition-colors";
-            bannerDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
-            bannerText.className = "text-xs font-semibold text-amber-800";
-            bannerText.innerText = "Connected via Bluetooth • No Internet";
-            bannerBadge.className = "text-[11px] font-semibold text-amber-700 bg-white px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs";
-            bannerBadge.innerText = "Setup Wi-Fi";
-          }
-          if (bleHeader) bleHeader.className = "text-indigo-600";
-
-          const nameEl = document.getElementById('connected-esp32-name');
-          if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
-
-          const wifiEl = document.getElementById('connected-esp32-wifi-label');
-          if (wifiEl) wifiEl.innerText = selectedWifi ? `${selectedWifi} (No Internet)` : "Not Connected to Wi-Fi";
-
-          const statusPill = document.getElementById('connected-status-pill');
-          if (statusPill) {
-            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span> BLE Only (No Internet)';
-            statusPill.className = "inline-flex items-center text-xs font-semibold text-amber-700";
-          }
-
-          const wattsEl = document.getElementById('home-device-watts');
-          if (wattsEl) wattsEl.innerText = 'Power Locked (No Internet)';
-
-          const ipEl = document.getElementById('esp32-ip-display');
-          if (ipEl) ipEl.innerText = assignedIp ? `IP: ${assignedIp}` : 'Wi-Fi Disconnected';
-
-          const homeWifiBtn = document.getElementById('home-card-wifi-btn');
-          if (homeWifiBtn) {
-            homeWifiBtn.innerText = "Connect Wi-Fi";
-            homeWifiBtn.className = "text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-xl transition-colors ring-1 ring-indigo-300 animate-pulse";
-          }
-        } else {
-          // Completely offline (No power / no internet / no BLE)
-          if (banner) {
-            banner.className = "flex items-center justify-between px-4 py-2.5 bg-rose-50/90 border border-rose-200/80 rounded-2xl mb-5 transition-colors";
-            bannerDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-pulse";
-            bannerText.className = "text-xs font-semibold text-rose-800";
-            bannerText.innerText = "Ease Appliances Offline (Powered Off)";
-            bannerBadge.className = "text-[11px] font-semibold text-rose-700 bg-white px-2.5 py-0.5 rounded-full border border-rose-200 shadow-2xs";
-            bannerBadge.innerText = "Check Power";
-          }
-          if (bleHeader) bleHeader.className = "text-slate-400";
-
-          const nameEl = document.getElementById('connected-esp32-name');
-          if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
-
-          const wifiEl = document.getElementById('connected-esp32-wifi-label');
-          if (wifiEl) wifiEl.innerText = selectedWifi ? `${selectedWifi} (Offline)` : "Offline";
-
-          const statusPill = document.getElementById('connected-status-pill');
-          if (statusPill) {
-            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span> Offline (No Power)';
-            statusPill.className = "inline-flex items-center text-xs font-semibold text-rose-600";
-          }
-
-          const wattsEl = document.getElementById('home-device-watts');
-          if (wattsEl) wattsEl.innerText = 'Offline';
-
-          const ipEl = document.getElementById('esp32-ip-display');
-          if (ipEl) ipEl.innerText = assignedIp ? `IP: ${assignedIp} (Offline)` : 'Offline';
-
-          const homeWifiBtn = document.getElementById('home-card-wifi-btn');
-          if (homeWifiBtn) {
-            homeWifiBtn.innerText = "Connect Wi-Fi";
-            homeWifiBtn.className = "text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors";
-          }
-        }
-
-        // Power toggle is strictly disabled when not verified online on Internet
-        const homeToggle = document.getElementById('home-quick-toggle');
-        const homeThumb = document.getElementById('home-toggle-thumb');
-        const homeIconBox = document.getElementById('home-plug-icon-box');
-
-        if (homeToggle && homeThumb && homeIconBox) {
-          homeToggle.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-not-allowed rounded-full border-2 border-transparent bg-slate-200 opacity-60";
-          if (isPowerOn) {
-            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 translate-x-6 flex items-center justify-center text-[9px] font-bold text-indigo-400";
-            homeThumb.innerText = "ON";
-          } else {
-            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 translate-x-0 flex items-center justify-center text-[9px] font-bold text-slate-400";
-            homeThumb.innerText = "OFF";
-          }
-          homeIconBox.className = "w-12 h-12 rounded-2xl bg-slate-300 text-white flex items-center justify-center transition-colors";
-        }
       } else {
-        // State 3: Device IS ONLINE on Internet / Cloud / LAN
         if (noDeviceCard) noDeviceCard.classList.add('hidden');
         if (connectedCard) connectedCard.classList.remove('hidden');
-        if (banner) {
-          banner.className = "flex items-center justify-between px-4 py-2.5 bg-emerald-50/80 border border-emerald-200/60 rounded-2xl mb-5 transition-colors";
-          bannerDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-          bannerText.className = "text-xs font-semibold text-emerald-800";
-          bannerText.innerText = "Ease Appliances Online";
-          bannerBadge.className = "text-[11px] font-semibold text-emerald-700 bg-white px-2.5 py-0.5 rounded-full border border-emerald-200 shadow-2xs";
-          bannerBadge.innerText = selectedWifi ? selectedWifi : (assignedIp ? "Wi-Fi Online" : "Cloud Active");
-        }
-        if (bleHeader) bleHeader.className = isBleConnected ? "text-indigo-600" : "text-slate-400";
-
-        const nameEl = document.getElementById('connected-esp32-name');
-        if (nameEl) nameEl.innerText = bleDeviceName || "Ease Appliances";
-
-        const wifiEl = document.getElementById('connected-esp32-wifi-label');
-        if (wifiEl) wifiEl.innerText = selectedWifi || (assignedIp ? "Connected" : "Cloud Active");
-
-        const statusPill = document.getElementById('connected-status-pill');
-        if (statusPill) {
-          statusPill.className = "inline-flex items-center text-xs font-semibold text-emerald-600";
-          if (isBleConnected && assignedIp) {
-            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> BLE & Wi-Fi Online';
-          } else if (isBleConnected) {
-            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> BLE & Cloud Online';
-          } else {
-            statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Wi-Fi Online';
-          }
-        }
-
-        const wattsEl = document.getElementById('home-device-watts');
-        if (wattsEl) wattsEl.innerText = isPowerOn ? 'GPIO 2 (ON)' : 'GPIO 2 (OFF)';
-
-        const ipEl = document.getElementById('esp32-ip-display');
-        if (ipEl) {
-          ipEl.innerText = assignedIp ? `IP: ${assignedIp}` : 'Cloud Connected';
-        }
-
-        const homeWifiBtn = document.getElementById('home-card-wifi-btn');
-        if (homeWifiBtn) {
-          homeWifiBtn.innerText = "Change Wi-Fi";
-          homeWifiBtn.className = "text-xs font-semibold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors";
-        }
-
-        const homeToggle = document.getElementById('home-quick-toggle');
-        const homeThumb = document.getElementById('home-toggle-thumb');
-        const homeIconBox = document.getElementById('home-plug-icon-box');
-
-        if (homeToggle && homeThumb && homeIconBox) {
-          if (isPowerOn) {
-            homeToggle.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-indigo-600";
-            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-6 flex items-center justify-center text-[10px] font-bold text-indigo-600";
-            homeThumb.innerText = "ON";
-            homeIconBox.className = "w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 transition-colors";
-          } else {
-            homeToggle.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300";
-            homeThumb.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500";
-            homeThumb.innerText = "OFF";
-            homeIconBox.className = "w-12 h-12 rounded-2xl bg-slate-200 text-slate-500 flex items-center justify-center transition-colors";
-          }
-        }
       }
 
-      // Control Screen elements
-      const mainBtn = document.getElementById('main-power-btn');
-      const stateLabel = document.getElementById('main-power-state-label');
-      const stateSub = document.getElementById('main-power-state-sub');
-      const glow = document.getElementById('main-power-glow');
-      const controlWatts = document.getElementById('control-watts-val');
-      const controlWifiLabel = document.getElementById('control-network-label');
-      const controlWifiShort = document.getElementById('control-wifi-short');
-      const controlOfflineBanner = document.getElementById('control-offline-banner');
-      const controlHeaderPill = document.getElementById('control-header-status-pill');
-      const controlBleStatus = document.getElementById('control-ble-status');
-
-      if (!isDeviceOnline && hasConfiguredDevice) {
-        if (controlOfflineBanner) {
-          controlOfflineBanner.classList.remove('hidden');
-          if (isBleConnected) {
-            controlOfflineBanner.className = "mt-3 mb-1 px-3.5 py-2.5 bg-amber-50 border border-amber-200/90 rounded-2xl flex items-center justify-between shadow-2xs";
-            controlOfflineBanner.innerHTML = `
-              <div class="flex items-center space-x-2.5">
-                <span class="relative flex h-2.5 w-2.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-600"></span>
-                </span>
-                <div>
-                  <p class="text-xs font-bold text-amber-950">Bluetooth Only (No Internet)</p>
-                  <p class="text-[11px] text-amber-700">Connect Wi-Fi to enable power control</p>
-                </div>
-              </div>
-              <button onclick="navigateTo('wifi-setup')" class="text-[10px] font-bold text-indigo-700 bg-white border border-indigo-200 px-2.5 py-1 rounded-full shadow-2xs hover:bg-indigo-50">Setup Wi-Fi</button>
-            `;
-          } else {
-            controlOfflineBanner.className = "mt-3 mb-1 px-3.5 py-2.5 bg-rose-50 border border-rose-200/90 rounded-2xl flex items-center justify-between shadow-2xs";
-            controlOfflineBanner.innerHTML = `
-              <div class="flex items-center space-x-2.5">
-                <span class="relative flex h-2.5 w-2.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
-                </span>
-                <div>
-                  <p class="text-xs font-bold text-rose-950">Device Powered Off / Offline</p>
-                  <p class="text-[11px] text-rose-700">Check power connection to ESP32</p>
-                </div>
-              </div>
-              <span class="text-[10px] font-bold text-rose-700 bg-white border border-rose-200 px-2 py-0.5 rounded-full">Offline</span>
-            `;
-          }
-        }
-
-        if (controlHeaderPill) {
-          if (isBleConnected) {
-            controlHeaderPill.className = "inline-flex items-center text-[11px] text-amber-600 font-medium";
-            controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1 animate-pulse"></span> BLE Only (No Internet)';
-          } else {
-            controlHeaderPill.className = "inline-flex items-center text-[11px] text-rose-500 font-medium";
-            controlHeaderPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1"></span> Offline (No Power)';
-          }
-        }
-
-        if (controlWatts) controlWatts.innerText = isBleConnected ? 'No Internet' : 'Offline';
-        if (controlWifiLabel) controlWifiLabel.innerText = selectedWifi ? `${selectedWifi} (No Internet)` : (isBleConnected ? 'Wi-Fi Not Setup' : 'Offline');
-        if (controlWifiShort) controlWifiShort.innerText = isBleConnected ? 'No Wi-Fi' : 'Offline';
-        if (controlBleStatus) {
-          controlBleStatus.innerText = isBleConnected ? 'Active' : 'Offline';
-          controlBleStatus.className = isBleConnected ? 'text-xs font-bold text-indigo-600 mt-1' : 'text-xs font-bold text-slate-400 mt-1';
-        }
-
-        if (mainBtn && stateLabel && stateSub && glow) {
-          if (isBleConnected) {
-            mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-md bg-amber-50/70 text-amber-700 border-2 border-dashed border-amber-300 opacity-80 cursor-not-allowed";
-            stateLabel.innerText = "NO INTERNET";
-            stateSub.innerText = "Connect Wi-Fi to Control";
-          } else {
-            mainBtn.className = "relative group w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-md bg-slate-100 text-slate-400 border-2 border-dashed border-slate-300 opacity-80 cursor-not-allowed";
-            stateLabel.innerText = "OFFLINE";
-            stateSub.innerText = "Device Powered Off";
-          }
-          glow.className = "hidden";
-        }
-      }
-
-      // 4-Channel Relays Sync
+      // 4 Devices Channel Switches Sync
       const activeRelayCount = [appState.relays.r1, appState.relays.r2, appState.relays.r3, appState.relays.r4].filter(Boolean).length;
-
-      const homeActiveBadge = document.getElementById('home-channels-active-count');
-      if (homeActiveBadge) homeActiveBadge.innerText = `${activeRelayCount}/4 Active`;
-
-      const ctrlActiveSummary = document.getElementById('control-active-summary');
-      if (ctrlActiveSummary) ctrlActiveSummary.innerText = `${activeRelayCount} of 4 active`;
+      const devActiveSummary = document.getElementById('devices-active-summary');
+      if (devActiveSummary) devActiveSummary.innerText = `${activeRelayCount} of 4 active`;
 
       for (let ch = 1; ch <= 4; ch++) {
         const isChOn = !!appState.relays['r' + ch];
-
-        // 1. Home Screen Mini Tiles
-        const homeTile = document.getElementById(`home-ch-tile-${ch}`);
-        const homeBadge = document.getElementById(`home-ch-badge-${ch}`);
-        const homeIcon = document.getElementById(`home-ch-icon-${ch}`);
-
-        if (homeTile && homeBadge && homeIcon) {
-          if (!isDeviceOnline) {
-            homeTile.className = "border border-slate-200/60 rounded-2xl p-2.5 flex items-center justify-between cursor-not-allowed bg-slate-100 opacity-60";
-            homeBadge.className = "text-[10px] font-bold text-slate-400 bg-white border border-slate-200 px-1.5 py-0.5 rounded-lg";
-            homeBadge.innerText = "OFF";
-            homeIcon.className = "w-7 h-7 rounded-xl bg-slate-200 text-slate-400 flex items-center justify-center text-xs";
-          } else {
-            if (isChOn) {
-              homeTile.className = "border-2 border-indigo-600 bg-indigo-50/70 rounded-2xl p-2.5 flex items-center justify-between cursor-pointer transition-all shadow-2xs";
-              homeBadge.className = "text-[10px] font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded-lg shadow-2xs";
-              homeBadge.innerText = "ON";
-              homeIcon.className = "w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs shadow-xs";
-            } else {
-              homeTile.className = "border border-slate-200 bg-white rounded-2xl p-2.5 flex items-center justify-between cursor-pointer transition-all hover:bg-slate-50";
-              homeBadge.className = "text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-lg";
-              homeBadge.innerText = "OFF";
-              homeIcon.className = "w-7 h-7 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs";
-            }
-          }
-        }
-
-        // 2. Control Screen Large Cards
         const cardEl = document.getElementById(`ctrl-card-${ch}`);
         const iconBox = document.getElementById(`ctrl-icon-box-${ch}`);
         const badgeEl = document.getElementById(`ctrl-badge-${ch}`);
@@ -1423,7 +899,7 @@
         if (cardEl && iconBox && badgeEl && toggleBtn && thumbEl) {
           if (!isDeviceOnline) {
             cardEl.className = "bg-slate-50/80 border border-slate-200 rounded-3xl p-4 shadow-2xs opacity-60 flex items-center justify-between";
-            iconBox.className = "w-12 h-12 rounded-2xl bg-slate-200 text-slate-400 flex items-center justify-center text-xl";
+            iconBox.className = "w-11 h-11 rounded-2xl bg-slate-200 text-slate-400 flex items-center justify-center text-lg";
             badgeEl.className = "text-[10px] font-bold text-slate-400 bg-white border border-slate-200 px-2 py-0.5 rounded-full";
             badgeEl.innerText = "OFFLINE";
             toggleBtn.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-not-allowed rounded-full border-2 border-transparent bg-slate-200";
@@ -1432,17 +908,17 @@
           } else {
             if (isChOn) {
               cardEl.className = "bg-white border-2 border-indigo-600 rounded-3xl p-4 shadow-md shadow-indigo-500/10 flex items-center justify-between transition-all";
-              iconBox.className = "w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-md shadow-indigo-600/30";
+              iconBox.className = "w-11 h-11 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg shadow-md shadow-indigo-600/30";
               badgeEl.className = "text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full";
-              badgeEl.innerText = "ACTIVE (ON)";
+              badgeEl.innerText = "ON";
               toggleBtn.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-indigo-600";
               thumbEl.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-6 flex items-center justify-center text-[10px] font-bold text-indigo-600";
               thumbEl.innerText = "ON";
             } else {
               cardEl.className = "bg-white border border-slate-200 hover:border-slate-300 rounded-3xl p-4 shadow-sm flex items-center justify-between transition-all";
-              iconBox.className = "w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-xl";
+              iconBox.className = "w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg";
               badgeEl.className = "text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full";
-              badgeEl.innerText = "INACTIVE (OFF)";
+              badgeEl.innerText = "OFF";
               toggleBtn.className = "relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300";
               thumbEl.className = "pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500";
               thumbEl.innerText = "OFF";
@@ -1451,29 +927,31 @@
         }
       }
 
-      // Cloud Setup Tile Visibility: Hide if already setup, show ONLY if not setup
-      const isCloudConfigured = !!(appState.firebaseConfigured || localStorage.getItem('ease_firebase_url') || appState.firebaseHost);
-      const cloudTile = document.getElementById('tile-firebase-setup');
-      if (cloudTile) {
-        if (isCloudConfigured) {
-          cloudTile.classList.add('hidden');
+      // Settings screen indicators
+      const settingsNet = document.getElementById('settings-network-name');
+      if (settingsNet) {
+        settingsNet.innerText = selectedWifi || (assignedIp ? "Connected" : "Not Connected");
+      }
+      const settingsBadge = document.getElementById('settings-status-badge');
+      if (settingsBadge) {
+        if (!hasConfiguredDevice) {
+          settingsBadge.className = "inline-flex items-center text-xs font-semibold text-slate-400";
+          settingsBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>Not Connected';
+        } else if (isDeviceOnline) {
+          settingsBadge.className = "inline-flex items-center text-xs font-semibold text-emerald-600";
+          settingsBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>Online';
         } else {
-          cloudTile.classList.remove('hidden');
+          settingsBadge.className = "inline-flex items-center text-xs font-semibold text-rose-500";
+          settingsBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>Offline';
         }
       }
+    }
 
-      // Settings screen Cloud RTDB indicator
-      const settingsFbEl = document.getElementById('settings-firebase-url');
-      if (settingsFbEl) {
-        const url = appState.firebaseHost || localStorage.getItem('ease_firebase_url') || "";
-        if (url) {
-          settingsFbEl.innerText = url.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
-          settingsFbEl.className = "text-[11px] text-emerald-600 font-mono truncate max-w-[170px] block";
-        } else {
-          settingsFbEl.innerText = "Not configured";
-          settingsFbEl.className = "text-[11px] text-slate-400 font-mono truncate max-w-[170px] block";
-        }
-      }
+    async function syncDevice() {
+      showToast("Syncing device status...");
+      await checkDeviceStatusOnline();
+      syncUI();
+      showToast("Device synced successfully");
     }
 
     // Toggle individual relay channel (1, 2, 3, or 4)
@@ -1517,7 +995,7 @@
 
       const pinMap = { 1: 23, 2: 22, 3: 21, 4: 19 };
       const pin = pinMap[ch] || 23;
-      addActivityLog(`Appliance ${ch} turned ${isOn ? 'ON' : 'OFF'} (GPIO ${pin})`, isOn ? 'on' : 'off', 'App UI');
+      addActivityLog(`Appliance ${ch} turned ${isOn ? 'ON' : 'OFF'}`, isOn ? 'on' : 'off', 'App UI');
 
       // 1. Firebase RTDB update
       if (firebaseDb) {
@@ -2039,139 +1517,9 @@
       }
     }
 
-    // ==============================================================
-    // FIREBASE REALTIME DATABASE CONTROLLER
-    // ==============================================================
-    function openFirebaseModal() {
-      const modal = document.getElementById('modal-firebase');
-      if (modal) {
-        const urlInput = document.getElementById('firebase-url-input');
-        const authInput = document.getElementById('firebase-auth-input');
-        if (urlInput) urlInput.value = localStorage.getItem('ease_firebase_url') || "";
-        if (authInput) authInput.value = localStorage.getItem('ease_firebase_auth') || "";
-        modal.classList.remove('hidden');
-      }
-    }
-
-    function closeFirebaseModal() {
-      const modal = document.getElementById('modal-firebase');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    async function saveFirebaseConfig() {
-      const urlInput = document.getElementById('firebase-url-input');
-      const authInput = document.getElementById('firebase-auth-input');
-      const btnText = document.getElementById('save-firebase-btn-text');
-      let rawUrl = (urlInput ? urlInput.value.trim() : '');
-      let auth = (authInput ? authInput.value.trim() : '');
-
-      if (!rawUrl) {
-        showToast("Please enter a Firebase Database URL");
-        return;
-      }
-
-      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
-        rawUrl = 'https://' + rawUrl;
-      }
-
-      // Host for ESP32 HTTP requests
-      let host = rawUrl.replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
-
-      if (btnText) btnText.innerText = "Syncing with ESP32...";
-
-      try {
-        localStorage.setItem('ease_firebase_url', rawUrl);
-        localStorage.setItem('ease_firebase_auth', auth);
-
-        initFirebaseClient(rawUrl, auth);
-
-        const ip = appState.assignedIp || "192.168.0.183";
-        const resp = await fetch(`/api/esp32/firebase-config?ip=${encodeURIComponent(ip)}&host=${encodeURIComponent(host)}&auth=${encodeURIComponent(auth)}`);
-        const result = await resp.json();
-
-        if (result.success) {
-          appState.firebaseConfigured = true;
-          appState.firebaseHost = rawUrl;
-          showToast("Firebase RTDB synced to ESP32!");
-          addActivityLog(`Firebase configured (${host})`, 'config', 'Cloud Setup');
-          const cloudStatusEl = document.getElementById('firebase-cloud-status');
-          if (cloudStatusEl) cloudStatusEl.innerText = `Connected • Syncing (${host})`;
-        } else {
-          appState.firebaseConfigured = true;
-          appState.firebaseHost = rawUrl;
-          showToast("Saved in Web App! ESP32 sync pending");
-        }
-        syncUI();
-        closeFirebaseModal();
-      } catch (err) {
-        console.warn("Firebase config error:", err);
-        appState.firebaseConfigured = true;
-        appState.firebaseHost = rawUrl;
-        syncUI();
-        showToast("Saved in Web App! (ESP32 will sync on next poll)");
-        closeFirebaseModal();
-      } finally {
-        if (btnText) btnText.innerText = "Save & Sync with ESP32";
-      }
-    }
-
-    async function clearFirebaseConfig() {
-      if (!confirm("Clear Firebase configuration?")) return;
-      localStorage.removeItem('ease_firebase_url');
-      localStorage.removeItem('ease_firebase_auth');
-      const urlInput = document.getElementById('firebase-url-input');
-      const authInput = document.getElementById('firebase-auth-input');
-      if (urlInput) urlInput.value = "";
-      if (authInput) authInput.value = "";
-
-      appState.firebaseConfigured = false;
-      appState.firebaseHost = "";
-
-      const ip = appState.assignedIp || "192.168.0.183";
-      try {
-        await fetch(`/api/esp32/firebase-config?ip=${encodeURIComponent(ip)}&clear=1`);
-      } catch (e) {}
-
-      isFirebaseInited = false;
-      firebaseDb = null;
-      const cloudStatusEl = document.getElementById('firebase-cloud-status');
-      if (cloudStatusEl) cloudStatusEl.innerText = "Control from Phone / Anywhere";
-      addActivityLog("Firebase cloud configuration cleared", 'config', 'User');
-      syncUI();
-      closeFirebaseModal();
-      showToast("Firebase configuration cleared");
-    }
-
-    async function testFirebaseDirectWrite() {
-      const urlInput = document.getElementById('firebase-url-input');
-      const authInput = document.getElementById('firebase-auth-input');
-      let rawUrl = (urlInput ? urlInput.value.trim() : '') || localStorage.getItem('ease_firebase_url');
-      let auth = (authInput ? authInput.value.trim() : '') || localStorage.getItem('ease_firebase_auth');
-
-      if (!rawUrl) {
-        showToast("Enter Database URL first");
-        return;
-      }
-      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
-        rawUrl = 'https://' + rawUrl;
-      }
-
-      try {
-        initFirebaseClient(rawUrl, auth);
-        if (!firebaseDb) throw new Error("Firebase DB initialization failed");
-
-        await firebaseDb.ref('ease_ping').set({
-          timestamp: Date.now(),
-          iso: new Date().toISOString(),
-          client: "Ease Appliances App"
-        });
-
-        showToast("Cloud Ping Successful! (Read/Write OK)");
-        addActivityLog("Firebase Cloud ping test successful", 'sync', 'Firebase RTDB');
-      } catch (e) {
-        showToast("Cloud write test failed: " + e.message);
-      }
-    }
+    // Firebase Realtime Database
+    function openFirebaseModal() {}
+    function closeFirebaseModal() {}
 
     let firebaseServerOffset = 0;
 
@@ -2720,7 +2068,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.2')
+        navigator.serviceWorker.register('./sw.js?v=2.9.3')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
