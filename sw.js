@@ -1,5 +1,5 @@
-// Cache version 2.9.3 - Unified Single Screen Dashboard & Clean Status UI
-const CACHE_NAME = 'my-smart-plug-v2.9.3';
+// Cache version 2.9.4 - Added IoT splash screen, clean device controls & updated reset text
+const CACHE_NAME = 'my-smart-plug-v2.9.4';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',
