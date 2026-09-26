@@ -1,5 +1,5 @@
-// Cache version 2.9.4 - Added IoT splash screen, clean device controls & updated reset text
-const CACHE_NAME = 'my-smart-plug-v2.9.4';
+// Cache version 2.9.5 - Named appliances: Bed Room Light 1, Bed Room 2, Fan, Outdoor Light (Balcony)
+const CACHE_NAME = 'my-smart-plug-v2.9.5';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

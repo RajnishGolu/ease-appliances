@@ -276,36 +276,36 @@
         </svg>
 
         <!-- Orbiting / Floating Appliance Nodes -->
-        <!-- Node 1: Light (Top-Left) -->
+        <!-- Node 1: Bed Room Light 1 (Top-Left) -->
         <div class="absolute top-4 left-4 float-node-1 flex flex-col items-center">
           <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-indigo-500/40 backdrop-blur-md shadow-lg shadow-indigo-500/20 flex items-center justify-center text-xl text-amber-300">
             💡
           </div>
-          <span class="mt-1 text-[10px] font-semibold text-slate-300">Light</span>
+          <span class="mt-1 text-[10px] font-semibold text-slate-300">Bed Light 1</span>
         </div>
 
-        <!-- Node 2: Fan (Top-Right) -->
+        <!-- Node 2: Bed Room 2 (Top-Right) -->
         <div class="absolute top-4 right-4 float-node-2 flex flex-col items-center">
+          <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-indigo-500/40 backdrop-blur-md shadow-lg shadow-indigo-500/20 flex items-center justify-center text-xl text-indigo-300">
+            🛏️
+          </div>
+          <span class="mt-1 text-[10px] font-semibold text-slate-300">Bed Room 2</span>
+        </div>
+
+        <!-- Node 3: Fan (Bottom-Left) -->
+        <div class="absolute bottom-4 left-4 float-node-3 flex flex-col items-center">
           <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-indigo-500/40 backdrop-blur-md shadow-lg shadow-indigo-500/20 flex items-center justify-center text-xl text-sky-300">
             🌀
           </div>
           <span class="mt-1 text-[10px] font-semibold text-slate-300">Fan</span>
         </div>
 
-        <!-- Node 3: Socket / Plug (Bottom-Left) -->
-        <div class="absolute bottom-4 left-4 float-node-3 flex flex-col items-center">
-          <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-indigo-500/40 backdrop-blur-md shadow-lg shadow-indigo-500/20 flex items-center justify-center text-xl text-emerald-300">
-            🔌
-          </div>
-          <span class="mt-1 text-[10px] font-semibold text-slate-300">Socket</span>
-        </div>
-
-        <!-- Node 4: TV / Appliance (Bottom-Right) -->
+        <!-- Node 4: Outdoor Light / Balcony (Bottom-Right) -->
         <div class="absolute bottom-4 right-4 float-node-4 flex flex-col items-center">
-          <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-indigo-500/40 backdrop-blur-md shadow-lg shadow-indigo-500/20 flex items-center justify-center text-xl text-purple-300">
-            📺
+          <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-indigo-500/40 backdrop-blur-md shadow-lg shadow-indigo-500/20 flex items-center justify-center text-xl text-emerald-300">
+            💡
           </div>
-          <span class="mt-1 text-[10px] font-semibold text-slate-300">Living</span>
+          <span class="mt-1 text-[10px] font-semibold text-slate-300">Balcony</span>
         </div>
 
         <!-- Central IoT Smart Hub -->
@@ -405,52 +405,60 @@
 
         <!-- 4 Device Cards (Clean - No extra badge, toggle has state) -->
         <div class="space-y-2.5">
-          <!-- Device 1 -->
+          <!-- Device 1: Bed Room Light 1 -->
           <div id="ctrl-card-1" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
             <div class="flex items-center space-x-3.5">
               <div id="ctrl-icon-box-1" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
                 💡
               </div>
-              <h3 class="text-sm font-bold text-slate-900">Appliance 1</h3>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Bed Room Light 1</h3>
+              </div>
             </div>
             <button onclick="toggleChannelPower(1, event)" id="ctrl-toggle-1" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
               <span id="ctrl-thumb-1" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
             </button>
           </div>
 
-          <!-- Device 2 -->
+          <!-- Device 2: Bed Room 2 -->
           <div id="ctrl-card-2" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
             <div class="flex items-center space-x-3.5">
               <div id="ctrl-icon-box-2" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
-                🌀
+                🛏️
               </div>
-              <h3 class="text-sm font-bold text-slate-900">Appliance 2</h3>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Bed Room 2</h3>
+              </div>
             </div>
             <button onclick="toggleChannelPower(2, event)" id="ctrl-toggle-2" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
               <span id="ctrl-thumb-2" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
             </button>
           </div>
 
-          <!-- Device 3 -->
+          <!-- Device 3: Fan -->
           <div id="ctrl-card-3" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
             <div class="flex items-center space-x-3.5">
               <div id="ctrl-icon-box-3" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
-                🔌
+                🌀
               </div>
-              <h3 class="text-sm font-bold text-slate-900">Appliance 3</h3>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Fan</h3>
+              </div>
             </div>
             <button onclick="toggleChannelPower(3, event)" id="ctrl-toggle-3" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
               <span id="ctrl-thumb-3" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
             </button>
           </div>
 
-          <!-- Device 4 -->
+          <!-- Device 4: Outdoor Light (Balcony) -->
           <div id="ctrl-card-4" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
             <div class="flex items-center space-x-3.5">
               <div id="ctrl-icon-box-4" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
-                📺
+                💡
               </div>
-              <h3 class="text-sm font-bold text-slate-900">Appliance 4</h3>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Outdoor Light (Balcony)</h3>
+              </div>
             </div>
             <button onclick="toggleChannelPower(4, event)" id="ctrl-toggle-4" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
               <span id="ctrl-thumb-4" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 flex items-center justify-center text-[10px] font-bold text-slate-500">OFF</span>
@@ -1109,9 +1117,16 @@
       playTactileClick(isOn);
       syncUI();
 
+      const channelNames = {
+        1: "Bed Room Light 1",
+        2: "Bed Room 2",
+        3: "Fan",
+        4: "Outdoor Light (Balcony)"
+      };
+      const devName = channelNames[ch] || `Channel ${ch}`;
       const pinMap = { 1: 23, 2: 22, 3: 21, 4: 19 };
       const pin = pinMap[ch] || 23;
-      addActivityLog(`Appliance ${ch} turned ${isOn ? 'ON' : 'OFF'}`, isOn ? 'on' : 'off', 'App UI');
+      addActivityLog(`${devName} turned ${isOn ? 'ON' : 'OFF'}`, isOn ? 'on' : 'off', 'App UI');
 
       // 1. Firebase RTDB update
       if (firebaseDb) {
@@ -1121,6 +1136,7 @@
           firebaseDb.ref('ease_appliances/control').update(updatePayload);
           firebaseDb.ref('ease_history').push({
             channel: ch,
+            deviceName: devName,
             pin: pin,
             action: isOn ? "ON" : "OFF",
             source: "App UI",
@@ -1143,7 +1159,7 @@
           .catch(() => {});
       }
 
-      showToast(`Appliance ${ch} (D${pin}) turned ${isOn ? 'ON' : 'OFF'}`);
+      showToast(`${devName} turned ${isOn ? 'ON' : 'OFF'}`);
     }
 
     // Master Power Toggle (Turns all 4 channels ON or OFF)
@@ -2236,7 +2252,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.4')
+        navigator.serviceWorker.register('./sw.js?v=2.9.5')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
