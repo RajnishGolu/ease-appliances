@@ -1,5 +1,5 @@
-// Cache version 2.9.7 - Prominent pair device buttons, auto-reconnect flow, clean unpair state
-const CACHE_NAME = 'my-smart-plug-v2.9.7';
+// Cache version 2.9.8 - Android Web Bluetooth support & scan all devices fallback
+const CACHE_NAME = 'my-smart-plug-v2.9.8';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

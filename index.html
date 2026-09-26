@@ -387,9 +387,13 @@
           Connect your smart device to configure Wi-Fi and start controlling your appliances.
         </p>
 
-        <button onclick="scanAndConnectBle()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm">
+        <button onclick="scanAndConnectBle(false)" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold shadow-lg shadow-indigo-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           <span>Connect Device</span>
+        </button>
+
+        <button onclick="scanAndConnectBle(true)" class="mt-2.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer py-1">
+          Can't see Ease Appliances? Scan all devices
         </button>
       </div>
 
@@ -1329,7 +1333,7 @@
     // REAL WEB BLUETOOTH SCAN & CONNECT TO "EASE APPLIANCES"
     // (Used exclusively for Wi-Fi provisioning and pairing)
     // ==============================================================
-    async function scanAndConnectBle() {
+    async function scanAndConnectBle(showAll = false) {
       if (!navigator.bluetooth) {
         showToast("❌ Web Bluetooth not supported in this browser");
         alert("⚠️ Web Bluetooth is not supported in Safari or iOS browsers.\n\nTo scan and connect to your ESP32, please open this app in Google Chrome or Microsoft Edge on a Mac, Windows, or Android device.");
@@ -1337,16 +1341,23 @@
       }
 
       try {
-        showToast("Scanning for 'Ease Appliances'...");
+        showToast(showAll ? "Scanning all Bluetooth devices..." : "Scanning for 'Ease Appliances'...");
 
-        bleDevice = await navigator.bluetooth.requestDevice({
-          filters: [
-            { services: [SERVICE_UUID] },
-            { name: "Ease Appliances" },
-            { namePrefix: "Ease" }
-          ],
-          optionalServices: [SERVICE_UUID]
-        });
+        const scanOptions = showAll
+          ? {
+              acceptAllDevices: true,
+              optionalServices: [SERVICE_UUID]
+            }
+          : {
+              filters: [
+                { services: [SERVICE_UUID] },
+                { name: "Ease Appliances" },
+                { namePrefix: "Ease" }
+              ],
+              optionalServices: [SERVICE_UUID]
+            };
+
+        bleDevice = await navigator.bluetooth.requestDevice(scanOptions);
 
         showToast(`Connecting to ${bleDevice.name}...`);
         bleDevice.addEventListener('gattserverdisconnected', onGattDisconnected);
@@ -1439,7 +1450,14 @@
         appState.isBleConnected = false;
         syncUI();
         if (err.name === 'NotFoundError') {
-          showToast("❌ No device selected or ESP32 is powered off");
+          showToast("❌ No device selected or not found");
+          if (/Android/i.test(navigator.userAgent) && !showAll) {
+            setTimeout(() => {
+              if (confirm("📱 Ease Appliances not showing on Android?\n\n1. Disconnect Mac: The ESP32 Bluetooth can only connect to 1 device at a time. If your MacBook was paired, disconnect or turn off Mac Bluetooth first.\n\n2. Turn ON Phone Location (GPS): Android requires Location to be ON in quick settings to scan BLE.\n\n3. Tap OK to scan ALL nearby devices.")) {
+                scanAndConnectBle(true);
+              }
+            }, 300);
+          }
         } else {
           showToast("❌ Bluetooth error: " + err.message);
         }
@@ -2368,7 +2386,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.7')
+        navigator.serviceWorker.register('./sw.js?v=2.9.8')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
