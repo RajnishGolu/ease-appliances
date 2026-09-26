@@ -496,11 +496,11 @@ void loop() {
     static unsigned long lastControlPoll = 0;
     unsigned long now = millis();
 
-    // Heartbeat every 10 seconds, control poll every 3 seconds in between
-    if (now - lastHeartbeatPush >= 10000) {
+    // Heartbeat every 6 seconds, control poll every 2 seconds in between
+    if (now - lastHeartbeatPush >= 6000) {
       lastHeartbeatPush = now;
       syncToFirebase();
-    } else if (now - lastControlPoll >= 3000) {
+    } else if (now - lastControlPoll >= 2000) {
       lastControlPoll = now;
       pollFirebaseControl();
     }

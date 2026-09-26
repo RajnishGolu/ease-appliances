@@ -1851,6 +1851,16 @@
       }
     }
 
+    let firebaseServerOffset = 0;
+
+    function isHeartbeatFresh(lastSeenTimestamp) {
+      if (typeof lastSeenTimestamp !== 'number' || lastSeenTimestamp <= 0) return false;
+      const currentServerTime = Date.now() + firebaseServerOffset;
+      const ageMs = currentServerTime - lastSeenTimestamp;
+      // ESP32 reports heartbeat every 6s. Fresh if reported within 16s (allows up to 2 missed beats / latency).
+      return (ageMs >= -5000 && ageMs < 16000);
+    }
+
     function initFirebaseClient(rawUrl, auth) {
       if (!rawUrl || typeof firebase === 'undefined') return;
       if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
@@ -1882,7 +1892,6 @@
           }
         });
 
-        let firebaseServerOffset = 0;
         try {
           firebaseDb.ref('.info/serverTimeOffset').on('value', (snap) => {
             firebaseServerOffset = snap.val() || 0;
@@ -1903,20 +1912,7 @@
               localStorage.setItem('ease_ip', state.ip);
             }
 
-            const currentServerTime = Date.now() + firebaseServerOffset;
-            let isFresh = false;
-
-            // Robust 60-second heartbeat window + uptime detection (prevents network jitter and false offline flapping)
-            if (typeof state.last_seen === 'number') {
-              const ageMs = Math.abs(currentServerTime - state.last_seen);
-              if (ageMs < 60000) {
-                isFresh = true;
-              }
-            }
-            if (typeof state.uptime === 'number' && state.uptime !== appState.lastUptime) {
-              isFresh = true;
-              appState.lastUptime = state.uptime;
-            }
+            const isFresh = isHeartbeatFresh(state.last_seen);
 
             if (isFresh) {
               failedPollCount = 0;
@@ -1933,11 +1929,11 @@
               }
               syncUI();
             } else {
-              // Stale data in Firebase - ESP32 has stopped reporting or has no internet
-              handleDeviceOffline();
+              // Stale data in Firebase - ESP32 has stopped reporting or has no power
+              handleDeviceOffline("⚠️ Ease Appliances offline (Power disconnected)");
             }
           } else {
-            handleDeviceOffline();
+            handleDeviceOffline("⚠️ Ease Appliances offline (Power disconnected)");
           }
         });
 
@@ -1959,17 +1955,15 @@
 
     let failedPollCount = 0;
 
-    function handleDeviceOffline() {
-      const now = Date.now();
-      // Require 60 seconds of sustained silence before declaring offline
-      if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) > 60000) {
-        if (appState.isDeviceOnline) {
-          appState.isDeviceOnline = false;
-          addActivityLog("Ease Appliances lost internet / offline", "off", "Heartbeat");
-          showToast("⚠️ Ease Appliances offline (Internet / Power lost)");
-          syncUI();
-        }
+    function handleDeviceOffline(reason) {
+      const wasOnline = appState.isDeviceOnline;
+      appState.isDeviceOnline = false;
+      appState.lastHeartbeatTime = 0;
+      if (wasOnline) {
+        addActivityLog("Ease Appliances lost power / offline", "off", "Heartbeat");
+        showToast(reason || "⚠️ Ease Appliances offline (Internet / Power lost)");
       }
+      syncUI();
     }
 
     // Periodic check to verify ESP32 is online on LAN & Cloud Watchdog
@@ -2051,40 +2045,35 @@
       // 3. If LAN ping failed or running on static hosting (GitHub Pages), check Firebase heartbeat freshness
       if (!lanSuccess) {
         const now = Date.now();
-        if (appState.lastHeartbeatTime > 0 && (now - appState.lastHeartbeatTime) < 60000) {
+        const silenceDuration = appState.lastHeartbeatTime > 0 ? (now - appState.lastHeartbeatTime) : 999999;
+
+        if (silenceDuration < 16000) {
           failedPollCount = 0;
-          appState.isDeviceOnline = true;
-          syncUI();
+          if (!appState.isDeviceOnline) {
+            appState.isDeviceOnline = true;
+            syncUI();
+          }
         } else {
-          // Double-check via Firebase once before declaring offline (prevents mobile browser background WebSocket throttle)
-          if (firebaseDb && failedPollCount < 2) {
+          // Silence duration exceeded 16s! Check Firebase state to verify if ESP32 is truly offline
+          if (firebaseDb && failedPollCount < 1) {
             failedPollCount++;
             firebaseDb.ref('ease_appliances/state').once('value').then((snap) => {
               const st = snap.val();
-              if (st) {
-                const cur = Date.now() + firebaseServerOffset;
-                let fresh = false;
-                if (typeof st.last_seen === 'number' && Math.abs(cur - st.last_seen) < 60000) fresh = true;
-                if (typeof st.uptime === 'number' && st.uptime !== appState.lastUptime) {
-                  fresh = true;
-                  appState.lastUptime = st.uptime;
+              if (st && isHeartbeatFresh(st.last_seen)) {
+                failedPollCount = 0;
+                appState.lastHeartbeatTime = Date.now();
+                appState.isDeviceOnline = true;
+                if (typeof st.relay === 'boolean' && appState.isPowerOn !== st.relay) {
+                  appState.isPowerOn = st.relay;
+                  localStorage.setItem('ease_power', st.relay);
                 }
-                if (fresh) {
-                  failedPollCount = 0;
-                  appState.lastHeartbeatTime = Date.now();
-                  appState.isDeviceOnline = true;
-                  if (typeof st.relay === 'boolean' && appState.isPowerOn !== st.relay) {
-                    appState.isPowerOn = st.relay;
-                    localStorage.setItem('ease_power', st.relay);
-                  }
-                  syncUI();
-                  return;
-                }
+                syncUI();
+                return;
               }
-              handleDeviceOffline();
-            }).catch(() => handleDeviceOffline());
+              handleDeviceOffline("⚠️ Ease Appliances offline (Power disconnected)");
+            }).catch(() => handleDeviceOffline("⚠️ Ease Appliances offline (Power disconnected)"));
           } else {
-            handleDeviceOffline();
+            handleDeviceOffline("⚠️ Ease Appliances offline (Power disconnected)");
           }
         }
       }
@@ -2245,8 +2234,7 @@
             const snap = await firebaseDb.ref('ease_appliances/state').once('value');
             const state = snap.val();
             if (state && (state.online || state.ip)) {
-              const now = Date.now();
-              const isRecent = state.last_seen ? (Math.abs(now - state.last_seen) < 60000) : true;
+              const isRecent = isHeartbeatFresh(state.last_seen);
               if (isRecent && state.ip) {
                 clearInterval(setupPollInterval);
                 clearTimeout(setupWatchdogTimer);
@@ -2388,7 +2376,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.7.0')
+        navigator.serviceWorker.register('./sw.js?v=2.8.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
