@@ -1341,9 +1341,12 @@
       }
 
       try {
-        showToast(showAll ? "Scanning all Bluetooth devices..." : "Scanning for 'Ease Appliances'...");
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const useAllDevices = showAll || isAndroid;
 
-        const scanOptions = showAll
+        showToast(useAllDevices ? "Scanning Bluetooth devices..." : "Scanning for 'Ease Appliances'...");
+
+        const scanOptions = useAllDevices
           ? {
               acceptAllDevices: true,
               optionalServices: [SERVICE_UUID]
@@ -2386,7 +2389,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.9.8')
+        navigator.serviceWorker.register('./sw.js?v=2.9.9')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
