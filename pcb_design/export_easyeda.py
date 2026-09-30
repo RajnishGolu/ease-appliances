@@ -1,0 +1,71 @@
+import json
+import os
+
+OUTPUT_DIR = "/Users/rajnishmishra/.gemini/antigravity/scratch/my-smart-plug/pcb_design"
+
+easyeda_project = {
+    "head": {
+        "docType": "5",
+        "editorVersion": "6.5.22",
+        "c_para": {
+            "name": "Ease_Appliances_4CH_Smart_Controller_v1.0",
+            "author": "Ease Appliances",
+            "version": "1.0",
+            "description": "ESP32 4-Channel Relay Smart Controller with BL0942 Combined Energy Metering, Integrated AC-DC 5V Supply, USB-C Programming & Wall Switch Inputs"
+        }
+    },
+    "board": {
+        "width_mm": 120.0,
+        "height_mm": 70.0,
+        "layers": 2,
+        "copper_thickness_oz": 2.0,
+        "pcb_thickness_mm": 1.6,
+        "solder_mask_color": "Green",
+        "silkscreen_color": "White",
+        "surface_finish": "HASL with lead / ENIG"
+    },
+    "components": [
+        {"id": "U1", "name": "ESP32-WROOM-32E-N4", "package": "MODULE_ESP32-WROOM-32E", "lcsc": "C701341", "x": 62.0, "y": 52.0},
+        {"id": "U2", "name": "BL0942-SOP16 (Energy Meter)", "package": "SOP-16_150mil", "lcsc": "C2893544", "x": 45.0, "y": 35.0},
+        {"id": "R_SHUNT", "name": "1mR 1% 2W Shunt", "package": "R2512", "lcsc": "C129482", "x": 22.0, "y": 44.0},
+        {"id": "PS1", "name": "HLK-5M05 Isolated AC-DC 5V 1A", "package": "MODULE-TH_HLK-5M05", "lcsc": "C209800", "x": 28.0, "y": 52.0},
+        {"id": "U3", "name": "CH340C USB-UART", "package": "SOP-16_150mil", "lcsc": "C84681", "x": 20.0, "y": 20.0},
+        {"id": "U4", "name": "AMS1117-3.3V LDO", "package": "SOT-223", "lcsc": "C6186", "x": 48.0, "y": 55.0},
+        {"id": "K1", "name": "Relay 1 (10A 250VAC)", "package": "RELAY-TH_SRD-05VDC-SL-C", "lcsc": "C33965", "x": 38.0, "y": 36.0},
+        {"id": "K2", "name": "Relay 2 (10A 250VAC)", "package": "RELAY-TH_SRD-05VDC-SL-C", "lcsc": "C33965", "x": 60.0, "y": 36.0},
+        {"id": "K3", "name": "Relay 3 (10A 250VAC)", "package": "RELAY-TH_SRD-05VDC-SL-C", "lcsc": "C33965", "x": 82.0, "y": 36.0},
+        {"id": "K4", "name": "Relay 4 (10A 250VAC)", "package": "RELAY-TH_SRD-05VDC-SL-C", "lcsc": "C33965", "x": 104.0, "y": 36.0},
+        {"id": "J1", "name": "USB-C 16-Pin", "package": "USB-C-16P-SMD", "lcsc": "C283540", "x": 12.0, "y": 8.0}
+    ],
+    "netlist": {
+        "AC_LIVE_IN": ["TB_AC_IN.L", "F1.1"],
+        "AC_LIVE_FUSED": ["F1.2", "MOV1.1", "PS1.AC_L", "R_SHUNT.1", "R21.1"],
+        "AC_LIVE_LOAD_BUS": ["R_SHUNT.2", "K1.COM", "K2.COM", "K3.COM", "K4.COM"],
+        "AC_NEUTRAL": ["TB_AC_IN.N", "MOV1.2", "PS1.AC_N", "R25.2"],
+        "RELAY1_OUT": ["K1.NO", "TB_CH1.NO"],
+        "RELAY2_OUT": ["K2.NO", "TB_CH2.NO"],
+        "RELAY3_OUT": ["K3.NO", "TB_CH3.NO"],
+        "RELAY4_OUT": ["K4.NO", "TB_CH4.NO"],
+        "+5V": ["PS1.+5V", "K1.COIL+", "K2.COIL+", "K3.COIL+", "K4.COIL+", "U4.VIN", "U3.VCC"],
+        "+3.3V": ["U4.VOUT", "U1.3V3", "U2.VDD", "R11.1", "R12.1", "R13.1", "R14.1", "R15.1"],
+        "GND": ["PS1.GND", "U4.GND", "U1.GND", "U2.GND", "U3.GND", "J1.GND", "TB_SWITCHES.GND"],
+        "ESP_RELAY1": ["U1.GPIO23", "U5.IN"],
+        "ESP_RELAY2": ["U1.GPIO22", "U6.IN"],
+        "ESP_RELAY3": ["U1.GPIO21", "U7.IN"],
+        "ESP_RELAY4": ["U1.GPIO19", "U8.IN"],
+        "ESP_SWITCH1": ["U1.GPIO34", "TB_SWITCHES.S1"],
+        "ESP_SWITCH2": ["U1.GPIO35", "TB_SWITCHES.S2"],
+        "ESP_SWITCH3": ["U1.GPIO32", "TB_SWITCHES.S3"],
+        "ESP_SWITCH4": ["U1.GPIO33", "TB_SWITCHES.S4"],
+        "BL0942_TX_TO_ESP": ["U2.TX", "U1.GPIO16 (RX2)"],
+        "ESP_TO_BL0942_RX": ["U1.GPIO17 (TX2)", "U2.RX"],
+        "USB_TX": ["U3.TXD", "U1.U0RXD (GPIO3)"],
+        "USB_RX": ["U3.RXD", "U1.U0TXD (GPIO1)"]
+    }
+}
+
+out_file = os.path.join(OUTPUT_DIR, "Ease_Appliances_EasyEDA_Project.json")
+with open(out_file, "w", encoding="utf-8") as f:
+    json.dump(easyeda_project, f, indent=2)
+
+print("EasyEDA Project JSON saved to:", out_file)
