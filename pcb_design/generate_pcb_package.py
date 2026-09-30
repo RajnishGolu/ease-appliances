@@ -24,33 +24,32 @@ os.makedirs(ARTIFACT_DIR, exist_ok=True)
 # -------------------------------------------------------------
 BOM_DATA = [
     {"Comment": "ESP32-WROOM-32E-N4", "Designator": "U1", "Footprint": "MODULE_ESP32-WROOM-32E", "LCSC Part #": "C701341"},
-    {"Comment": "BL0942-SOP16", "Designator": "U2", "Footprint": "SOP-16_150mil", "LCSC Part #": "C2893544"},
+    {"Comment": "BL0942", "Designator": "U2", "Footprint": "SSOP-10-150mil", "LCSC Part #": "C2837510"},
     {"Comment": "CH340C", "Designator": "U3", "Footprint": "SOP-16_150mil", "LCSC Part #": "C84681"},
     {"Comment": "AMS1117-3.3", "Designator": "U4", "Footprint": "SOT-223", "LCSC Part #": "C6186"},
-    {"Comment": "PC817C", "Designator": "U5,U6,U7,U8", "Footprint": "SOP-4", "LCSC Part #": "C4998"},
-    {"Comment": "SRD-05VDC-SL-C", "Designator": "K1,K2,K3,K4", "Footprint": "RELAY-TH_SRD-05VDC-SL-C", "LCSC Part #": "C33965"},
-    {"Comment": "1mR 1% 2W", "Designator": "R_SHUNT", "Footprint": "R2512", "LCSC Part #": "C129482"},
+    {"Comment": "EL817S1", "Designator": "U5,U6,U7,U8", "Footprint": "SOP-4", "LCSC Part #": "C106900"},
+    {"Comment": "SRD-05VDC-SL-C", "Designator": "K1,K2,K3,K4", "Footprint": "RELAY-TH_SRD-05VDC-SL-C", "LCSC Part #": "C35449"},
+    {"Comment": "1mR 1% 3W", "Designator": "R_SHUNT", "Footprint": "R2512", "LCSC Part #": "C459678"},
     {"Comment": "1N4148W", "Designator": "D1,D2,D3,D4", "Footprint": "SOD-123", "LCSC Part #": "C81598"},
-    {"Comment": "SS8050 (NPN)", "Designator": "Q1,Q2,Q3,Q4", "Footprint": "SOT-23", "LCSC Part #": "C2146"},
-    {"Comment": "S8050 (NPN)", "Designator": "Q5,Q6", "Footprint": "SOT-23", "LCSC Part #": "C2146"},
-    {"Comment": "LED Green 0805", "Designator": "LED_R1,LED_R2,LED_R3,LED_R4", "Footprint": "LED0805", "LCSC Part #": "C72041"},
-    {"Comment": "LED Blue 0805", "Designator": "LED_WIFI", "Footprint": "LED0805", "LCSC Part #": "C72043"},
+    {"Comment": "SS8050 (NPN)", "Designator": "Q1,Q2,Q3,Q4,Q5,Q6", "Footprint": "SOT-23", "LCSC Part #": "C2146"},
+    {"Comment": "LED Green 0805", "Designator": "LED_R1,LED_R2,LED_R3,LED_R4", "Footprint": "LED0805", "LCSC Part #": "C2297"},
+    {"Comment": "LED Blue 0805", "Designator": "LED_WIFI", "Footprint": "LED0805", "LCSC Part #": "C2293"},
     {"Comment": "LED Red 0805", "Designator": "LED_PWR", "Footprint": "LED0805", "LCSC Part #": "C84256"},
     {"Comment": "1k 1% 0805", "Designator": "R1,R2,R3,R4,R5,R6,R7,R8,R9,R10", "Footprint": "R0805", "LCSC Part #": "C17513"},
     {"Comment": "10k 1% 0805", "Designator": "R11,R12,R13,R14,R15,R16,R17,R18", "Footprint": "R0805", "LCSC Part #": "C17414"},
-    {"Comment": "5.1k 1% 0805", "Designator": "R19,R20", "Footprint": "R0805", "LCSC Part #": "C23186"},
+    {"Comment": "5.1k 1% 0805", "Designator": "R19,R20", "Footprint": "R0805", "LCSC Part #": "C17772"},
     {"Comment": "390k 1% 1206", "Designator": "R21,R22,R23,R24,R25", "Footprint": "R1206", "LCSC Part #": "C17942"},
     {"Comment": "100nF (0.1uF) 50V 0805", "Designator": "C1,C2,C3,C4,C5,C6,C7,C8", "Footprint": "C0805", "LCSC Part #": "C49678"},
-    {"Comment": "10uF 25V 0805", "Designator": "C9,C10,C11,C12", "Footprint": "C0805", "LCSC Part #": "C15849"},
+    {"Comment": "10uF 25V 0805", "Designator": "C9,C10,C11,C12", "Footprint": "C0805", "LCSC Part #": "C15850"},
     {"Comment": "22uF 16V 1206", "Designator": "C13,C14", "Footprint": "C1206", "LCSC Part #": "C13585"},
     {"Comment": "TYPE-C-16P Female", "Designator": "J1", "Footprint": "USB-C-16P-SMD", "LCSC Part #": "C283540"},
     {"Comment": "Tactile Switch SMD 3x4", "Designator": "SW_EN,SW_BOOT", "Footprint": "SW-SMD_3X4MM", "LCSC Part #": "C318884"},
-    {"Comment": "HLK-5M05 Isolated 5V 1A", "Designator": "PS1", "Footprint": "MODULE-TH_HLK-5M05", "LCSC Part #": "C209800"},
+    {"Comment": "HLK-5M05 Isolated 5V 1A (DNP)", "Designator": "PS1", "Footprint": "MODULE-TH_HLK-5M05", "LCSC Part #": ""},
     {"Comment": "MOV 10D471K (Surge)", "Designator": "MOV1", "Footprint": "VAR_10D471K", "LCSC Part #": "C46830"},
     {"Comment": "Fuse 10A 250V Slow-Blow", "Designator": "F1", "Footprint": "FUSE-SMD-2410", "LCSC Part #": "C718228"},
     {"Comment": "Screw Terminal 2P 5.08mm", "Designator": "TB_AC_IN", "Footprint": "TB-5.08-2P", "LCSC Part #": "C8465"},
     {"Comment": "Screw Terminal 3P 5.08mm", "Designator": "TB_CH1,TB_CH2,TB_CH3,TB_CH4", "Footprint": "TB-5.08-3P", "LCSC Part #": "C8466"},
-    {"Comment": "Screw Terminal 5P 3.81mm", "Designator": "TB_SWITCHES", "Footprint": "TB-3.81-5P", "LCSC Part #": "C397063"}
+    {"Comment": "Screw Terminal 5P 5.08mm", "Designator": "TB_SWITCHES", "Footprint": "TB-5.08-5P", "LCSC Part #": "C2927513"}
 ]
 
 bom_path = os.path.join(OUTPUT_DIR, "BOM_Ease_Appliances_v1.0.csv")
@@ -329,17 +328,17 @@ for i in range(14):
     gts.flash_pad(esp_x + 9.0, py, "R", (1.9, 1.0))
     gtp.flash_pad(esp_x + 9.0, py, "R", (1.7, 0.8))
 
-# BL0942 SOP-16
+# BL0942 SSOP-10 (C2837510)
 bl_x, bl_y = 45.0, 35.0
-gto.draw_rect_outline(bl_x - 3.0, bl_y - 5.5, bl_x + 3.0, bl_y + 5.5, width=0.15)
-for i in range(8):
-    py = bl_y - 4.445 + (i * 1.27)
-    gtl.flash_pad(bl_x - 2.8, py, "R", (1.5, 0.65))
-    gtl.flash_pad(bl_x + 2.8, py, "R", (1.5, 0.65))
-    gts.flash_pad(bl_x - 2.8, py, "R", (1.6, 0.75))
-    gts.flash_pad(bl_x + 2.8, py, "R", (1.6, 0.75))
-    gtp.flash_pad(bl_x - 2.8, py, "R", (1.4, 0.6))
-    gtp.flash_pad(bl_x + 2.8, py, "R", (1.4, 0.6))
+gto.draw_rect_outline(bl_x - 2.5, bl_y - 3.5, bl_x + 2.5, bl_y + 3.5, width=0.15)
+for i in range(5):
+    py = bl_y - 2.0 + (i * 1.0)
+    gtl.flash_pad(bl_x - 2.4, py, "R", (1.4, 0.55))
+    gtl.flash_pad(bl_x + 2.4, py, "R", (1.4, 0.55))
+    gts.flash_pad(bl_x - 2.4, py, "R", (1.5, 0.65))
+    gts.flash_pad(bl_x + 2.4, py, "R", (1.5, 0.65))
+    gtp.flash_pad(bl_x - 2.4, py, "R", (1.3, 0.5))
+    gtp.flash_pad(bl_x + 2.4, py, "R", (1.3, 0.5))
 
 # CH340C SOP-16
 ch_x, ch_y = 20.0, 20.0
