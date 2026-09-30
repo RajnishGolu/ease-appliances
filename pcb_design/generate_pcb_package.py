@@ -44,7 +44,6 @@ BOM_DATA = [
     {"Comment": "22uF 16V 1206", "Designator": "C13,C14", "Footprint": "C1206", "LCSC Part #": "C13585"},
     {"Comment": "TYPE-C-16P Female", "Designator": "J1", "Footprint": "USB-C-16P-SMD", "LCSC Part #": "C283540"},
     {"Comment": "Tactile Switch SMD 3x4", "Designator": "SW_EN,SW_BOOT", "Footprint": "SW-SMD_3X4MM", "LCSC Part #": "C398055"},
-    {"Comment": "HLK-5M05 Isolated 5V 1A (DNP)", "Designator": "PS1", "Footprint": "MODULE-TH_HLK-5M05", "LCSC Part #": ""},
     {"Comment": "MOV 10D471K (Surge)", "Designator": "MOV1", "Footprint": "VAR_10D471K", "LCSC Part #": "C46830"},
     {"Comment": "Fuse 10A 250V Slow-Blow", "Designator": "F1", "Footprint": "FUSE-SMD-2410", "LCSC Part #": "C718228"},
     {"Comment": "Screw Terminal 2P 5.08mm", "Designator": "TB_AC_IN", "Footprint": "TB-5.08-2P", "LCSC Part #": "C8465"},
@@ -85,7 +84,6 @@ CPL_DATA = [
     {"Designator": "R_SHUNT", "Mid X": 22.0, "Mid Y": 44.0, "Rotation": 90.0, "Layer": "Top"},
     {"Designator": "F1", "Mid X": 21.0, "Mid Y": 58.0, "Rotation": 0.0, "Layer": "Top"},
     {"Designator": "MOV1", "Mid X": 12.0, "Mid Y": 46.0, "Rotation": 0.0, "Layer": "Top"},
-    {"Designator": "PS1", "Mid X": 28.0, "Mid Y": 52.0, "Rotation": 90.0, "Layer": "Top"},
 
     # Connectors
     {"Designator": "J1", "Mid X": 12.0, "Mid Y": 8.0, "Rotation": 180.0, "Layer": "Top"},
