@@ -23,11 +23,11 @@ os.makedirs(ARTIFACT_DIR, exist_ok=True)
 # 1. BILL OF MATERIALS (BOM) for JLCPCB SMT Assembly
 # -------------------------------------------------------------
 BOM_DATA = [
-    {"Comment": "ESP32-WROOM-32E-N4", "Designator": "U1", "Footprint": "MODULE_ESP32-WROOM-32E", "LCSC Part #": "C701341"},
+    {"Comment": "ESP32-WROOM-32D", "Designator": "U1", "Footprint": "MODULE_ESP32-WROOM-32E", "LCSC Part #": "C47783"},
     {"Comment": "BL0942", "Designator": "U2", "Footprint": "SSOP-10-150mil", "LCSC Part #": "C2837510"},
     {"Comment": "CH340C", "Designator": "U3", "Footprint": "SOP-16_150mil", "LCSC Part #": "C84681"},
     {"Comment": "AMS1117-3.3", "Designator": "U4", "Footprint": "SOT-223", "LCSC Part #": "C6186"},
-    {"Comment": "EL817S1", "Designator": "U5,U6,U7,U8", "Footprint": "SOP-4", "LCSC Part #": "C106900"},
+    {"Comment": "LTV-356T-C", "Designator": "U5,U6,U7,U8", "Footprint": "SOP-4", "LCSC Part #": "C115452"},
     {"Comment": "SRD-05VDC-SL-C", "Designator": "K1,K2,K3,K4", "Footprint": "RELAY-TH_SRD-05VDC-SL-C", "LCSC Part #": "C35449"},
     {"Comment": "1mR 1% 3W", "Designator": "R_SHUNT", "Footprint": "R2512", "LCSC Part #": "C459678"},
     {"Comment": "1N4148W", "Designator": "D1,D2,D3,D4", "Footprint": "SOD-123", "LCSC Part #": "C81598"},
@@ -43,7 +43,7 @@ BOM_DATA = [
     {"Comment": "10uF 25V 0805", "Designator": "C9,C10,C11,C12", "Footprint": "C0805", "LCSC Part #": "C15850"},
     {"Comment": "22uF 16V 1206", "Designator": "C13,C14", "Footprint": "C1206", "LCSC Part #": "C13585"},
     {"Comment": "TYPE-C-16P Female", "Designator": "J1", "Footprint": "USB-C-16P-SMD", "LCSC Part #": "C283540"},
-    {"Comment": "Tactile Switch SMD 3x4", "Designator": "SW_EN,SW_BOOT", "Footprint": "SW-SMD_3X4MM", "LCSC Part #": "C318884"},
+    {"Comment": "Tactile Switch SMD 3x4", "Designator": "SW_EN,SW_BOOT", "Footprint": "SW-SMD_3X4MM", "LCSC Part #": "C398055"},
     {"Comment": "HLK-5M05 Isolated 5V 1A (DNP)", "Designator": "PS1", "Footprint": "MODULE-TH_HLK-5M05", "LCSC Part #": ""},
     {"Comment": "MOV 10D471K (Surge)", "Designator": "MOV1", "Footprint": "VAR_10D471K", "LCSC Part #": "C46830"},
     {"Comment": "Fuse 10A 250V Slow-Blow", "Designator": "F1", "Footprint": "FUSE-SMD-2410", "LCSC Part #": "C718228"},
