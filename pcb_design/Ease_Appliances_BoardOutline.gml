@@ -1,6 +1,6 @@
 G04 *
 G04 Layer: Board Outline & Milling *
-G04 EasyEDA / JLCPCB Standard RS-274X Format *
+G04 Standard RS-274X Format for JLCPCB *
 %FSLAX46Y46*%
 %MOMM*%
 %LPD*%
