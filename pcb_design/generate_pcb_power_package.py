@@ -329,7 +329,7 @@ border_thin = Border(left=Side(style='thin', color='CBD5E1'),
                      top=Side(style='thin', color='CBD5E1'),
                      bottom=Side(style='thin', color='CBD5E1'))
 
-headers = ["Item #", "Reference Designator", "Qty/Board", "Total Qty (10x)", "Description / Value", "Package / Footprint", "Manufacturer", "Manufacturer Part Number (MPN)", "Mounting Type", "Sourcing"]
+headers = ["Item #", "Designator", "Qty/Board", "Total Qty (10x)", "Description / Value", "Package / Footprint", "Manufacturer", "Manufacturer Part Number (MPN)", "Mounting Type", "Sourcing"]
 ws.append(headers)
 
 for col_num, h in enumerate(headers, 1):
