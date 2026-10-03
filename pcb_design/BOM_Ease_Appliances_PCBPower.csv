@@ -1,0 +1,27 @@
+Item,Designator,Qty,Description,Package,Manufacturer,MPN,Type,Sourcing
+1,U1,1,2.4GHz Wi-Fi + BLE Microcontroller Module (4MB Flash),SMD-38 (18x25.5mm),Espressif Systems,ESP32-WROOM-32D,SMD,Turnkey
+2,U2,1,Single-Phase High-Accuracy Energy Metering IC (UART),SSOP-10 (150mil),Shanghai Belling,BL0942,SMD,Turnkey
+3,U3,1,USB to Serial UART Bridge Controller (Built-in Clock),SOP-16 (150mil),WCH (Jiangsu Qinheng),CH340C,SMD,Turnkey
+4,U4,1,3.3V 1A Low Dropout (LDO) Positive Voltage Regulator,SOT-223,Advanced Monolithic Systems,AMS1117-3.3,SMD,Turnkey
+5,"U5, U6, U7, U8",4,4-Pin Phototransistor Optocoupler (5000Vrms Isolation),SOP-4,Lite-On,LTV-356T-C,SMD,Turnkey
+6,"K1, K2, K3, K4",4,"5V DC SPDT Power Relay, 10A 250VAC / 30VDC",THT (19.2x15.5mm),Ningbo Songle Relay,SRD-05VDC-SL-C,Through-Hole,Turnkey
+7,R_SHUNT,1,1mΩ (0.001R) ±1% 3W Metal Alloy Current Sense Resistor,2512 SMD,TA-I Tech,RLP25FEGR001,SMD,Turnkey
+8,"D1, D2, D3, D4",4,100V 150mA High-Speed Switching Flyback Diode,SOD-123,Diodes Incorporated,1N4148W-7-F,SMD,Turnkey
+9,"Q1, Q2, Q3, Q4, Q5, Q6",6,NPN Bipolar General Purpose Transistor 40V 1.5A,SOT-23,Micro Commercial Co (MCC),SS8050-G,SMD,Turnkey
+10,"LED_R1, LED_R2, LED_R3, LED_R4",4,Green SMD Indicator LED (570nm),0805 SMD,Everlight Electronics,19-217/GHC-YR1S2/3T,SMD,Turnkey
+11,LED_WIFI,1,Blue SMD Indicator LED (470nm),0805 SMD,Everlight Electronics,19-217/BHC-AP1Q2/3T,SMD,Turnkey
+12,LED_PWR,1,Red SMD Indicator LED (625nm),0805 SMD,Everlight Electronics,19-217/R6C-AL1M2VY/3T,SMD,Turnkey
+13,"R1, R2, R3, R4, R5, R6, R7, R8, R9, R10",10,1kΩ ±1% 1/8W Thick Film Chip Resistor,0805 SMD,Yageo,RC0805FR-071KL,SMD,Turnkey
+14,"R11, R12, R13, R14, R15, R16, R17, R18",8,10kΩ ±1% 1/8W Thick Film Chip Resistor,0805 SMD,Yageo,RC0805FR-0710KL,SMD,Turnkey
+15,"R19, R20",2,5.1kΩ ±1% 1/8W Thick Film Chip Resistor,0805 SMD,Yageo,RC0805FR-075K1L,SMD,Turnkey
+16,"R21, R22, R23, R24, R25",5,390kΩ ±1% 1/4W Thick Film Chip Resistor,1206 SMD,Yageo,RC1206FR-07390KL,SMD,Turnkey
+17,"C1, C2, C3, C4, C5, C6, C7, C8",8,100nF (0.1µF) 50V X7R ±10% Ceramic Capacitor,0805 SMD,Samsung Electro-Mechanics,CL21B104KBCNNNC,SMD,Turnkey
+18,"C9, C10, C11, C12",4,10µF 25V X5R ±10% Ceramic Capacitor,0805 SMD,Samsung Electro-Mechanics,CL21A106KAYNNNE,SMD,Turnkey
+19,"C13, C14",2,22µF 16V X5R ±10% Ceramic Capacitor,1206 SMD,Samsung Electro-Mechanics,CL31A226KOCLNNC,SMD,Turnkey
+20,J1,1,USB Type-C 16-Pin Receptacle Female SMD Connector,USB-C-16P-SMD,Global Connector Technology (GCT),USB4110-GF-A,SMD,Turnkey
+21,"SW_EN, SW_BOOT",2,Miniature SPST Tactile Pushbutton Switch SMD,SW-SMD_3X4MM,C&K,PTS645SL43SMTR92LFS,SMD,Turnkey
+22,MOV1,1,Metal Oxide Varistor 470V 10mm Radial Surge Protector,Radial 10mm,Bourns,MOV-10D471K,Through-Hole,Turnkey
+23,F1,1,10A 250V Slow-Blow SMD Fuse,SMD 2410 (6125),Littelfuse,0451010.MRL,SMD,Turnkey
+24,TB_AC_IN,1,2-Pin 5.08mm Pitch Screw Terminal Block (300V 16A),TB-5.08-2P,Degson / Phoenix Contact,DG128-5.08-02P-14,Through-Hole,Turnkey
+25,"TB_CH1, TB_CH2, TB_CH3, TB_CH4",4,3-Pin 5.08mm Pitch Screw Terminal Block (300V 16A),TB-5.08-3P,Degson / Phoenix Contact,DG128-5.08-03P-14,Through-Hole,Turnkey
+26,TB_SWITCHES,1,5-Pin 5.08mm Pitch Screw Terminal Block (300V 16A),TB-5.08-5P,Degson / Phoenix Contact,DG128-5.08-05P-14,Through-Hole,Turnkey
