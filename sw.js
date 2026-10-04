@@ -1,5 +1,5 @@
-// Cache version 3.0.0 - Clean UI, minimal device controls, robust Android BLE
-const CACHE_NAME = 'my-smart-plug-v3.0.0';
+// Cache version 3.1.0 - Rename Bed Room Light 2, remove fake status bar and dynamic island
+const CACHE_NAME = 'my-smart-plug-v3.1.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

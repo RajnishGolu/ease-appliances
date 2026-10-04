@@ -91,6 +91,9 @@
         border-radius: 0;
         box-shadow: none;
       }
+      .view-screen {
+        padding-top: max(18px, env(safe-area-inset-top));
+      }
     }
 
     .view-screen {
@@ -107,7 +110,7 @@
       opacity: 0;
       transform: translateY(6px);
       transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-      padding-top: 48px;
+      padding-top: max(22px, env(safe-area-inset-top));
       padding-bottom: 24px;
     }
 
@@ -170,29 +173,6 @@
       animation: iotHubPulse 2.4s ease-in-out infinite;
     }
 
-    .dynamic-island {
-      width: 110px;
-      height: 28px;
-      background: #000000;
-      border-radius: 20px;
-      position: absolute;
-      top: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 10px;
-    }
-    .island-camera {
-      width: 10px;
-      height: 10px;
-      background: #111827;
-      border-radius: 50%;
-      border: 1px solid #1f2937;
-    }
-
     #feedback-toast {
       transform: translate(-50%, -100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
@@ -209,38 +189,8 @@
   <!-- MOBILE DEVICE FRAME (390 x 844 px) -->
   <div id="phone-shell">
 
-    <!-- Status Bar & Dynamic Island -->
-    <div class="absolute top-0 left-0 z-50 w-full h-11 pt-2.5 px-6 flex items-center justify-between pointer-events-none text-xs font-semibold tracking-tight text-slate-800">
-      <span id="current-time">9:41</span>
-      <div class="dynamic-island pointer-events-auto cursor-pointer" onclick="handlePwaInstallClick()" title="Install PWA">
-        <div id="island-install-badge" class="hidden text-[9px] font-bold text-emerald-400 mr-2 flex items-center">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-ping"></span>INSTALL
-        </div>
-        <div class="island-camera"></div>
-      </div>
-      <div class="flex items-center space-x-1.5 text-slate-800 pointer-events-auto">
-        <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-bold hover:bg-indigo-700 transition-all mr-1 shadow-sm">
-          + Install
-        </button>
-        <!-- Bluetooth Icon Status -->
-        <span id="header-ble-indicator" class="text-slate-400 transition-colors" title="Bluetooth Status">
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-            <path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
-          </svg>
-        </span>
-        <!-- Wi-Fi -->
-        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-          <path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.78 0 7.22 1.46 9.8 3.86L12 19.34 2.2 11.36C4.78 8.96 8.22 7.5 12 7.5z"/>
-        </svg>
-        <!-- Battery -->
-        <div class="w-5 h-2.5 border border-slate-700 rounded-sm p-0.5 flex items-center">
-          <div class="w-full h-full bg-slate-800 rounded-2xs"></div>
-        </div>
-      </div>
-    </div>
-
     <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="feedback-toast" class="absolute top-12 left-1/2 z-50 opacity-0 bg-slate-900/95 text-white px-4 py-2.5 rounded-full text-xs font-medium shadow-xl flex items-center space-x-2 backdrop-blur-md border border-white/10">
+    <div id="feedback-toast" class="absolute top-5 left-1/2 z-50 opacity-0 bg-slate-900/95 text-white px-4 py-2.5 rounded-full text-xs font-medium shadow-xl flex items-center space-x-2 backdrop-blur-md border border-white/10">
       <svg class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
       <span id="toast-message">Action successful</span>
     </div>
@@ -284,12 +234,12 @@
           <span class="mt-1 text-[10px] font-semibold text-slate-300">Bed Light 1</span>
         </div>
 
-        <!-- Node 2: Bed Room 2 (Top-Right) -->
+        <!-- Node 2: Bed Room Light 2 (Top-Right) -->
         <div class="absolute top-4 right-4 float-node-2 flex flex-col items-center">
           <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-indigo-500/40 backdrop-blur-md shadow-lg shadow-indigo-500/20 flex items-center justify-center text-xl text-indigo-300">
-            🛏️
+            💡
           </div>
-          <span class="mt-1 text-[10px] font-semibold text-slate-300">Bed Room 2</span>
+          <span class="mt-1 text-[10px] font-semibold text-slate-300">Bed Light 2</span>
         </div>
 
         <!-- Node 3: Fan (Bottom-Left) -->
@@ -364,6 +314,9 @@
           </div>
         </div>
         <div class="flex items-center space-x-2">
+          <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden px-2.5 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold transition-all shadow-sm">
+            + Install
+          </button>
           <button onclick="navigateTo('device-settings')" title="Device Settings" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors shadow-2xs">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </button>
@@ -420,14 +373,14 @@
             </button>
           </div>
 
-          <!-- Device 2: Bed Room 2 -->
+          <!-- Device 2: Bed Room Light 2 -->
           <div id="ctrl-card-2" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm transition-all flex items-center justify-between">
             <div class="flex items-center space-x-3.5">
               <div id="ctrl-icon-box-2" class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-lg transition-colors">
-                🛏️
+                💡
               </div>
               <div>
-                <h3 class="text-sm font-bold text-slate-900">Bed Room 2</h3>
+                <h3 class="text-sm font-bold text-slate-900">Bed Room Light 2</h3>
               </div>
             </div>
             <button onclick="toggleChannelPower(2, event)" id="ctrl-toggle-2" class="relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300">
@@ -1114,7 +1067,7 @@
 
       const channelNames = {
         1: "Bed Room Light 1",
-        2: "Bed Room 2",
+        2: "Bed Room Light 2",
         3: "Fan",
         4: "Outdoor Light (Balcony)"
       };
