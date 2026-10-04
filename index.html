@@ -1416,7 +1416,6 @@
       const noDeviceCard = document.getElementById('view-no-device-card');
       const connectedCard = document.getElementById('view-connected-device-card');
       const statusBadge = document.getElementById('single-status-badge');
-      const pulseIndicator = document.getElementById('header-pulse-indicator');
       const quickStrip = document.getElementById('header-quick-strip');
       const summaryText = document.getElementById('header-summary-text');
       const bleHeader = document.getElementById('header-ble-indicator');
@@ -2791,7 +2790,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.4.0')
+        navigator.serviceWorker.register('./sw.js?v=3.5.1')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
