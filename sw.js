@@ -1,5 +1,5 @@
-// Cache version 3.1.0 - Rename Bed Room Light 2, remove fake status bar and dynamic island
-const CACHE_NAME = 'my-smart-plug-v3.1.0';
+// Cache version 3.3.0 - Ultra low latency keep-alive control and anti-flicker sync
+const CACHE_NAME = 'my-smart-plug-v3.3.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

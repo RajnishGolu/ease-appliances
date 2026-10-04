@@ -52,6 +52,7 @@ bool internetConnected = false;
 String newSsid = "";
 String newPass = "";
 bool pendingWifiConnect = false;
+unsigned long lastHeartbeatPush = 0;
 
 void syncToFirebase();
 void setRelayChannel(int ch, bool state, bool pushToCloud = true);
@@ -96,187 +97,225 @@ void updateStatus(const String& statusMsg) {
 void syncToFirebase() {
   if (WiFi.status() != WL_CONNECTED || firebaseHost.length() < 8) return;
 
-  WiFiClientSecure client;
-  client.setInsecure();
-  client.setHandshakeTimeout(5);
-  HTTPClient https;
+  static WiFiClientSecure stateClient;
+  static HTTPClient stateHttp;
+  static bool stateConnected = false;
+  static String cachedStateUrl = "";
 
-  String url = firebaseHost;
-  if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    url = "https://" + url;
-  }
-  if (!url.endsWith("/")) url += "/";
-  url += "ease_appliances/state.json";
-  if (firebaseAuth.length() > 0) {
-    url += "?auth=" + firebaseAuth;
-  }
-
-  if (https.begin(client, url)) {
-    https.setTimeout(3500);
-    https.addHeader("Content-Type", "application/json");
-    JsonDocument doc;
-    doc["online"] = true;
-    doc["heartbeat"] = millis();
-    doc["last_seen"][".sv"] = "timestamp";
-    doc["relay"] = (relay1State || relay2State || relay3State || relay4State);
-
-    JsonObject relays = doc["relays"].to<JsonObject>();
-    relays["r1"] = relay1State;
-    relays["r2"] = relay2State;
-    relays["r3"] = relay3State;
-    relays["r4"] = relay4State;
-
-    doc["r1"] = relay1State;
-    doc["r2"] = relay2State;
-    doc["r3"] = relay3State;
-    doc["r4"] = relay4State;
-
-    doc["onCount"] = onCount;
-    doc["offCount"] = offCount;
-    doc["totalToggles"] = totalToggles;
-    doc["gpio"] = 23;
-    doc["ip"] = WiFi.localIP().toString();
-    doc["ssid"] = WiFi.SSID();
-    doc["uptime"] = millis() / 1000;
-    String payload;
-    serializeJson(doc, payload);
-
-    int code = https.PUT(payload);
-    Serial.printf("[FIREBASE] State synced! HTTP: %d | R1:%d R2:%d R3:%d R4:%d | Heap:%u\n",
-      code, relay1State, relay2State, relay3State, relay4State, ESP.getFreeHeap());
-    if (code == 200) {
-      internetConnected = true;
-    } else if (code <= 0) {
-      internetConnected = false;
+  if (cachedStateUrl.length() == 0 || cachedStateUrl.indexOf(firebaseHost) == -1) {
+    String url = firebaseHost;
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "https://" + url;
     }
-    https.end();
+    if (!url.endsWith("/")) url += "/";
+    url += "ease_appliances/state.json";
+    if (firebaseAuth.length() > 0) {
+      url += "?auth=" + firebaseAuth;
+    }
+    cachedStateUrl = url;
   }
+
+  if (!stateConnected || !stateClient.connected()) {
+    stateHttp.end();
+    stateClient.stop();
+    stateClient.setInsecure();
+    stateClient.setHandshakeTimeout(4);
+    stateHttp.setReuse(true);
+    stateHttp.setTimeout(2500);
+    if (!stateHttp.begin(stateClient, cachedStateUrl)) {
+      stateConnected = false;
+      return;
+    }
+    stateConnected = true;
+  }
+
+  stateHttp.addHeader("Content-Type", "application/json");
+  JsonDocument doc;
+  doc["online"] = true;
+  doc["heartbeat"] = millis();
+  doc["last_seen"][".sv"] = "timestamp";
+  doc["relay"] = (relay1State || relay2State || relay3State || relay4State);
+
+  JsonObject relays = doc["relays"].to<JsonObject>();
+  relays["r1"] = relay1State;
+  relays["r2"] = relay2State;
+  relays["r3"] = relay3State;
+  relays["r4"] = relay4State;
+
+  doc["r1"] = relay1State;
+  doc["r2"] = relay2State;
+  doc["r3"] = relay3State;
+  doc["r4"] = relay4State;
+
+  doc["onCount"] = onCount;
+  doc["offCount"] = offCount;
+  doc["totalToggles"] = totalToggles;
+  doc["gpio"] = 23;
+  doc["ip"] = WiFi.localIP().toString();
+  doc["ssid"] = WiFi.SSID();
+  doc["uptime"] = millis() / 1000;
+  String payload;
+  serializeJson(doc, payload);
+
+  int code = stateHttp.PUT(payload);
+  Serial.printf("[FIREBASE] State synced! HTTP: %d | R1:%d R2:%d R3:%d R4:%d | Heap:%u\n",
+    code, relay1State, relay2State, relay3State, relay4State, ESP.getFreeHeap());
+
+  if (code == 200) {
+    internetConnected = true;
+  } else {
+    if (code <= 0) internetConnected = false;
+    stateHttp.end();
+    stateClient.stop();
+    stateConnected = false;
+  }
+  lastHeartbeatPush = millis();
 }
 
 // Poll Firebase Realtime Database for remote control triggers
 void pollFirebaseControl() {
   if (WiFi.status() != WL_CONNECTED || firebaseHost.length() < 8) return;
 
-  WiFiClientSecure client;
-  client.setInsecure();
-  client.setHandshakeTimeout(5);
-  HTTPClient https;
+  static WiFiClientSecure controlClient;
+  static HTTPClient controlHttp;
+  static bool controlConnected = false;
+  static String cachedControlUrl = "";
 
-  String url = firebaseHost;
-  if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    url = "https://" + url;
+  if (cachedControlUrl.length() == 0 || cachedControlUrl.indexOf(firebaseHost) == -1) {
+    String url = firebaseHost;
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "https://" + url;
+    }
+    if (!url.endsWith("/")) url += "/";
+    url += "ease_appliances/control.json";
+    if (firebaseAuth.length() > 0) {
+      url += "?auth=" + firebaseAuth;
+    }
+    cachedControlUrl = url;
   }
-  if (!url.endsWith("/")) url += "/";
-  url += "ease_appliances/control.json";
-  if (firebaseAuth.length() > 0) {
-    url += "?auth=" + firebaseAuth;
+
+  if (!controlConnected || !controlClient.connected()) {
+    controlHttp.end();
+    controlClient.stop();
+    controlClient.setInsecure();
+    controlClient.setHandshakeTimeout(4);
+    controlHttp.setReuse(true);
+    controlHttp.setTimeout(2000);
+    if (!controlHttp.begin(controlClient, cachedControlUrl)) {
+      controlConnected = false;
+      return;
+    }
+    controlConnected = true;
   }
 
-  if (https.begin(client, url)) {
-    https.setTimeout(2500);
-    int code = https.GET();
-    if (code == 200) {
-      internetConnected = true;
-      String payload = https.getString();
-      JsonDocument doc;
-      DeserializationError err = deserializeJson(doc, payload);
-      if (!err && doc.is<JsonObject>()) {
-        // 0. Cloud unpair / factory reset trigger
-        if ((doc["unpair"].is<bool>() && doc["unpair"].as<bool>()) ||
-            (doc["reset"].is<bool>() && doc["reset"].as<bool>())) {
-          https.end();
-          unpairAndResetDevice();
-          return;
-        }
+  int code = controlHttp.GET();
+  if (code == 200) {
+    internetConnected = true;
+    String payload = controlHttp.getString();
+    JsonDocument doc;
+    DeserializationError err = deserializeJson(doc, payload);
+    if (!err && doc.is<JsonObject>()) {
+      // 0. Cloud unpair / factory reset trigger
+      if ((doc["unpair"].is<bool>() && doc["unpair"].as<bool>()) ||
+          (doc["reset"].is<bool>() && doc["reset"].as<bool>())) {
+        controlHttp.end();
+        controlClient.stop();
+        controlConnected = false;
+        unpairAndResetDevice();
+        return;
+      }
 
-        bool changedAny = false;
+      bool changedAny = false;
 
-        // 1. Direct r1, r2, r3, r4 keys
-        if (doc["r1"].is<bool>()) {
-          bool st = doc["r1"].as<bool>();
-          if (st != relay1State) { relay1State = st; changedAny = true; }
-        }
-        if (doc["r2"].is<bool>()) {
-          bool st = doc["r2"].as<bool>();
-          if (st != relay2State) { relay2State = st; changedAny = true; }
-        }
-        if (doc["r3"].is<bool>()) {
-          bool st = doc["r3"].as<bool>();
-          if (st != relay3State) { relay3State = st; changedAny = true; }
-        }
-        if (doc["r4"].is<bool>()) {
-          bool st = doc["r4"].as<bool>();
-          if (st != relay4State) { relay4State = st; changedAny = true; }
-        }
+      // 1. Direct r1, r2, r3, r4 keys
+      if (doc["r1"].is<bool>()) {
+        bool st = doc["r1"].as<bool>();
+        if (st != relay1State) { relay1State = st; changedAny = true; }
+      }
+      if (doc["r2"].is<bool>()) {
+        bool st = doc["r2"].as<bool>();
+        if (st != relay2State) { relay2State = st; changedAny = true; }
+      }
+      if (doc["r3"].is<bool>()) {
+        bool st = doc["r3"].as<bool>();
+        if (st != relay3State) { relay3State = st; changedAny = true; }
+      }
+      if (doc["r4"].is<bool>()) {
+        bool st = doc["r4"].as<bool>();
+        if (st != relay4State) { relay4State = st; changedAny = true; }
+      }
 
-        // 2. Nested relays object: { "relays": { "r1": true, ... } }
-        if (doc["relays"].is<JsonObject>()) {
-          JsonObject ro = doc["relays"].as<JsonObject>();
-          if (ro["r1"].is<bool>() && ro["r1"].as<bool>() != relay1State) { relay1State = ro["r1"].as<bool>(); changedAny = true; }
-          if (ro["r2"].is<bool>() && ro["r2"].as<bool>() != relay2State) { relay2State = ro["r2"].as<bool>(); changedAny = true; }
-          if (ro["r3"].is<bool>() && ro["r3"].as<bool>() != relay3State) { relay3State = ro["r3"].as<bool>(); changedAny = true; }
-          if (ro["r4"].is<bool>() && ro["r4"].as<bool>() != relay4State) { relay4State = ro["r4"].as<bool>(); changedAny = true; }
-        }
+      // 2. Nested relays object: { "relays": { "r1": true, ... } }
+      if (doc["relays"].is<JsonObject>()) {
+        JsonObject ro = doc["relays"].as<JsonObject>();
+        if (ro["r1"].is<bool>() && ro["r1"].as<bool>() != relay1State) { relay1State = ro["r1"].as<bool>(); changedAny = true; }
+        if (ro["r2"].is<bool>() && ro["r2"].as<bool>() != relay2State) { relay2State = ro["r2"].as<bool>(); changedAny = true; }
+        if (ro["r3"].is<bool>() && ro["r3"].as<bool>() != relay3State) { relay3State = ro["r3"].as<bool>(); changedAny = true; }
+        if (ro["r4"].is<bool>() && ro["r4"].as<bool>() != relay4State) { relay4State = ro["r4"].as<bool>(); changedAny = true; }
+      }
 
-        // 3. Channel + state format: { "channel": 1, "state": true }
-        if (doc["channel"].is<int>() && doc["state"].is<bool>()) {
-          int ch = doc["channel"].as<int>();
-          bool st = doc["state"].as<bool>();
-          if (ch == 1 && relay1State != st) { relay1State = st; changedAny = true; }
-          else if (ch == 2 && relay2State != st) { relay2State = st; changedAny = true; }
-          else if (ch == 3 && relay3State != st) { relay3State = st; changedAny = true; }
-          else if (ch == 4 && relay4State != st) { relay4State = st; changedAny = true; }
-          else if (ch == 0) {
-            relay1State = st; relay2State = st; relay3State = st; relay4State = st; changedAny = true;
-          }
-        }
-
-        // 4. Legacy single-relay fallback ONLY if NO multi-channel keys exist at all
-        bool hasChannelKeys = doc["r1"].is<bool>() || doc["r2"].is<bool>() ||
-                              doc["r3"].is<bool>() || doc["r4"].is<bool>() ||
-                              doc["relays"].is<JsonObject>() || doc["channel"].is<int>();
-        if (!hasChannelKeys && doc["relay"].is<bool>()) {
-          bool st = doc["relay"].as<bool>();
-          if (relay1State != st || relay2State != st || relay3State != st || relay4State != st) {
-            relay1State = st;
-            relay2State = st;
-            relay3State = st;
-            relay4State = st;
-            changedAny = true;
-          }
-        }
-
-        if (changedAny) {
-          applyRelayPins();
-          prefs.putBool("r1", relay1State);
-          prefs.putBool("r2", relay2State);
-          prefs.putBool("r3", relay3State);
-          prefs.putBool("r4", relay4State);
-          bool anyOn = (relay1State || relay2State || relay3State || relay4State);
-          if (anyOn) onCount++; else offCount++;
-          totalToggles = onCount + offCount;
-          prefs.putUInt("on_cnt", onCount);
-          prefs.putUInt("off_cnt", offCount);
-          prefs.putUInt("tot_tog", totalToggles);
-
-          Serial.printf("[FIREBASE] Remote control applied: R1:%d R2:%d R3:%d R4:%d\n",
-            relay1State, relay2State, relay3State, relay4State);
-
-          if (pRelayChar) {
-            char statusBuf[32];
-            snprintf(statusBuf, sizeof(statusBuf), "R1:%d,R2:%d,R3:%d,R4:%d", relay1State, relay2State, relay3State, relay4State);
-            pRelayChar->setValue(statusBuf);
-            if (deviceConnected) pRelayChar->notify();
-          }
-
-          syncToFirebase();
+      // 3. Channel + state format: { "channel": 1, "state": true }
+      if (doc["channel"].is<int>() && doc["state"].is<bool>()) {
+        int ch = doc["channel"].as<int>();
+        bool st = doc["state"].as<bool>();
+        if (ch == 1 && relay1State != st) { relay1State = st; changedAny = true; }
+        else if (ch == 2 && relay2State != st) { relay2State = st; changedAny = true; }
+        else if (ch == 3 && relay3State != st) { relay3State = st; changedAny = true; }
+        else if (ch == 4 && relay4State != st) { relay4State = st; changedAny = true; }
+        else if (ch == 0) {
+          relay1State = st; relay2State = st; relay3State = st; relay4State = st; changedAny = true;
         }
       }
-    } else if (code <= 0) {
+
+      // 4. Legacy single-relay fallback ONLY if NO multi-channel keys exist at all
+      bool hasChannelKeys = doc["r1"].is<bool>() || doc["r2"].is<bool>() ||
+                            doc["r3"].is<bool>() || doc["r4"].is<bool>() ||
+                            doc["relays"].is<JsonObject>() || doc["channel"].is<int>();
+      if (!hasChannelKeys && doc["relay"].is<bool>()) {
+        bool st = doc["relay"].as<bool>();
+        if (relay1State != st || relay2State != st || relay3State != st || relay4State != st) {
+          relay1State = st;
+          relay2State = st;
+          relay3State = st;
+          relay4State = st;
+          changedAny = true;
+        }
+      }
+
+      if (changedAny) {
+        applyRelayPins();
+        prefs.putBool("r1", relay1State);
+        prefs.putBool("r2", relay2State);
+        prefs.putBool("r3", relay3State);
+        prefs.putBool("r4", relay4State);
+        bool anyOn = (relay1State || relay2State || relay3State || relay4State);
+        if (anyOn) onCount++; else offCount++;
+        totalToggles = onCount + offCount;
+        prefs.putUInt("on_cnt", onCount);
+        prefs.putUInt("off_cnt", offCount);
+        prefs.putUInt("tot_tog", totalToggles);
+
+        Serial.printf("[FIREBASE] Remote control applied: R1:%d R2:%d R3:%d R4:%d\n",
+          relay1State, relay2State, relay3State, relay4State);
+
+        if (pRelayChar) {
+          char statusBuf[32];
+          snprintf(statusBuf, sizeof(statusBuf), "R1:%d,R2:%d,R3:%d,R4:%d", relay1State, relay2State, relay3State, relay4State);
+          pRelayChar->setValue(statusBuf);
+          if (deviceConnected) pRelayChar->notify();
+        }
+
+        syncToFirebase();
+      }
+    }
+  } else {
+    if (code <= 0) {
       internetConnected = false;
       Serial.printf("[FIREBASE] Poll failed! Code: %d | FreeHeap: %u\n", code, ESP.getFreeHeap());
     }
-    https.end();
+    controlHttp.end();
+    controlClient.stop();
+    controlConnected = false;
   }
 }
 
@@ -768,17 +807,19 @@ void loop() {
 
   // 4. Cloud Synchronizer & Remote Control Polling (when connected to Wi-Fi)
   if (WiFi.status() == WL_CONNECTED && firebaseHost.length() > 0) {
-    static unsigned long lastHeartbeatPush = 0;
     static unsigned long lastControlPoll = 0;
     unsigned long now = millis();
 
-    // Heartbeat every 6 seconds, control poll every 2 seconds in between
-    if (now - lastHeartbeatPush >= 6000) {
-      lastHeartbeatPush = now;
-      syncToFirebase();
-    } else if (now - lastControlPoll >= 2000) {
+    // Fast Keep-Alive control poll every 400ms for instantaneous physical response
+    if (now - lastControlPoll >= 400) {
       lastControlPoll = now;
       pollFirebaseControl();
+    }
+
+    // Heartbeat status sync to Firebase every 10 seconds
+    if (now - lastHeartbeatPush >= 10000) {
+      lastHeartbeatPush = now;
+      syncToFirebase();
     }
   }
 

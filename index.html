@@ -823,6 +823,7 @@
       totalToggles: parseInt(localStorage.getItem('ease_total_toggles') || '0', 10),
       firebaseHost: configuredFbUrl,
       firebaseConfigured: true,
+      pendingRelayLocks: {},
       activityLogs: JSON.parse(localStorage.getItem('ease_activity_logs') || '[]')
     };
 
@@ -911,6 +912,35 @@
         else if (hours < 18) greetingEl.innerText = "Good afternoon";
         else greetingEl.innerText = "Good evening";
       }
+    }
+
+    // Anti-Flicker Optimistic Relay State Synchronizer
+    function applySyncedRelayStates(relaysObj) {
+      if (!relaysObj) return;
+      const now = Date.now();
+      appState.pendingRelayLocks = appState.pendingRelayLocks || {};
+      ['r1', 'r2', 'r3', 'r4'].forEach(rKey => {
+        if (typeof relaysObj[rKey] === 'boolean') {
+          const lock = appState.pendingRelayLocks[rKey];
+          if (lock && now < lock.expiresAt) {
+            // Active lock: if cloud has caught up with user desired state, release the lock!
+            if (relaysObj[rKey] === lock.targetState) {
+              delete appState.pendingRelayLocks[rKey];
+              appState.relays[rKey] = relaysObj[rKey];
+            }
+            // Otherwise, keep user targetState and ignore stale cloud snapshot!
+          } else {
+            if (lock) delete appState.pendingRelayLocks[rKey];
+            appState.relays[rKey] = relaysObj[rKey];
+          }
+        }
+      });
+      appState.isPowerOn = (appState.relays.r1 || appState.relays.r2 || appState.relays.r3 || appState.relays.r4);
+      localStorage.setItem('ease_power', appState.isPowerOn);
+      localStorage.setItem('ease_r1', appState.relays.r1);
+      localStorage.setItem('ease_r2', appState.relays.r2);
+      localStorage.setItem('ease_r3', appState.relays.r3);
+      localStorage.setItem('ease_r4', appState.relays.r4);
     }
 
     // UI Synchronizer
@@ -1056,6 +1086,11 @@
 
       const key = 'r' + ch;
       appState.relays[key] = isOn;
+      appState.pendingRelayLocks = appState.pendingRelayLocks || {};
+      appState.pendingRelayLocks[key] = {
+        targetState: isOn,
+        expiresAt: Date.now() + 8000
+      };
       localStorage.setItem('ease_' + key, isOn);
 
       // Master power is true if ANY relay is active
@@ -1138,15 +1173,16 @@
       }
 
       appState.isPowerOn = isOn;
-      appState.relays.r1 = isOn;
-      appState.relays.r2 = isOn;
-      appState.relays.r3 = isOn;
-      appState.relays.r4 = isOn;
+      appState.pendingRelayLocks = appState.pendingRelayLocks || {};
+      ['r1', 'r2', 'r3', 'r4'].forEach(key => {
+        appState.relays[key] = isOn;
+        appState.pendingRelayLocks[key] = {
+          targetState: isOn,
+          expiresAt: Date.now() + 8000
+        };
+        localStorage.setItem('ease_' + key, isOn);
+      });
       localStorage.setItem('ease_power', isOn);
-      localStorage.setItem('ease_r1', isOn);
-      localStorage.setItem('ease_r2', isOn);
-      localStorage.setItem('ease_r3', isOn);
-      localStorage.setItem('ease_r4', isOn);
 
       playTactileClick(isOn);
       syncUI();
@@ -1659,8 +1695,8 @@
       if (typeof lastSeenTimestamp !== 'number' || lastSeenTimestamp <= 0) return false;
       const currentServerTime = Date.now() + firebaseServerOffset;
       const ageMs = currentServerTime - lastSeenTimestamp;
-      // ESP32 reports heartbeat every 6s. Fresh if reported within 16s (allows up to 2 missed beats / latency).
-      return (ageMs >= -5000 && ageMs < 16000);
+      // ESP32 reports heartbeat every 10s. Fresh if reported within 25s (allows up to 2.5 heartbeat intervals).
+      return (ageMs >= -5000 && ageMs < 25000);
     }
 
     function initFirebaseClient(rawUrl, auth) {
@@ -1729,16 +1765,7 @@
                 addActivityLog("Ease Appliances online (Cloud Sync)", "sync", "Firebase");
               }
               if (state.relays) {
-                if (typeof state.relays.r1 === 'boolean') appState.relays.r1 = state.relays.r1;
-                if (typeof state.relays.r2 === 'boolean') appState.relays.r2 = state.relays.r2;
-                if (typeof state.relays.r3 === 'boolean') appState.relays.r3 = state.relays.r3;
-                if (typeof state.relays.r4 === 'boolean') appState.relays.r4 = state.relays.r4;
-                appState.isPowerOn = (appState.relays.r1 || appState.relays.r2 || appState.relays.r3 || appState.relays.r4);
-                localStorage.setItem('ease_power', appState.isPowerOn);
-                localStorage.setItem('ease_r1', appState.relays.r1);
-                localStorage.setItem('ease_r2', appState.relays.r2);
-                localStorage.setItem('ease_r3', appState.relays.r3);
-                localStorage.setItem('ease_r4', appState.relays.r4);
+                applySyncedRelayStates(state.relays);
               } else if (typeof state.relay === 'boolean' && appState.isPowerOn !== state.relay) {
                 appState.isPowerOn = state.relay;
                 localStorage.setItem('ease_power', state.relay);
@@ -1870,7 +1897,7 @@
         const now = Date.now();
         const silenceDuration = appState.lastHeartbeatTime > 0 ? (now - appState.lastHeartbeatTime) : 999999;
 
-        if (silenceDuration < 16000) {
+        if (silenceDuration < 25000) {
           failedPollCount = 0;
           if (!appState.isDeviceOnline) {
             appState.isDeviceOnline = true;
@@ -1887,16 +1914,7 @@
                 appState.lastHeartbeatTime = Date.now();
                 appState.isDeviceOnline = true;
                 if (st.relays) {
-                  if (typeof st.relays.r1 === 'boolean') appState.relays.r1 = st.relays.r1;
-                  if (typeof st.relays.r2 === 'boolean') appState.relays.r2 = st.relays.r2;
-                  if (typeof st.relays.r3 === 'boolean') appState.relays.r3 = st.relays.r3;
-                  if (typeof st.relays.r4 === 'boolean') appState.relays.r4 = st.relays.r4;
-                  appState.isPowerOn = (appState.relays.r1 || appState.relays.r2 || appState.relays.r3 || appState.relays.r4);
-                  localStorage.setItem('ease_power', appState.isPowerOn);
-                  localStorage.setItem('ease_r1', appState.relays.r1);
-                  localStorage.setItem('ease_r2', appState.relays.r2);
-                  localStorage.setItem('ease_r3', appState.relays.r3);
-                  localStorage.setItem('ease_r4', appState.relays.r4);
+                  applySyncedRelayStates(st.relays);
                 } else if (typeof st.relay === 'boolean' && appState.isPowerOn !== st.relay) {
                   appState.isPowerOn = st.relay;
                   localStorage.setItem('ease_power', st.relay);
