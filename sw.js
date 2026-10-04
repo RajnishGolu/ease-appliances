@@ -1,5 +1,5 @@
-// Cache version 3.4.0 - Dark & Light mode, luxury animated toggles, editable appliance names, hero header
-const CACHE_NAME = 'my-smart-plug-v3.4.0';
+// Cache version 3.5.0 - Dynamic pulsing icon status, clean header, renamed APP activity logs, clean cards
+const CACHE_NAME = 'my-smart-plug-v3.5.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

@@ -487,44 +487,32 @@
       <!-- TOP HEADER BAR: High-End IoT Smart Dashboard -->
       <header class="mb-5 pt-1">
         <div class="flex items-center justify-between">
-          <!-- Left: Brand Logo + Identity + Status Pill -->
+          <!-- Left: Brand Logo with Live Status Blinking Light + Title -->
           <div class="flex items-center space-x-3">
-            <!-- Glowing Holographic Brand Avatar -->
+            <!-- Glowing Holographic Brand Avatar with Live Status Indicator Light (Green = Connected, Red = Offline) -->
             <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-sky-400 p-[1.5px] shadow-lg shadow-indigo-500/20 flex items-center justify-center flex-shrink-0 group">
               <div class="w-full h-full rounded-[14px] bg-slate-900/90 backdrop-blur-sm flex items-center justify-center text-indigo-300">
                 <svg class="w-6 h-6 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
               </div>
-              <span id="header-pulse-indicator" class="absolute -top-0.5 -right-0.5 flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+              <!-- Blinking Status Light: Green when connected, Red otherwise -->
+              <span id="header-pulse-indicator" class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                <span id="header-pulse-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span id="header-pulse-dot" class="relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-500 border-2 border-white dark:border-slate-900 shadow-[0_0_8px_#f43f5e]"></span>
               </span>
             </div>
 
-            <!-- Title & Status -->
+            <!-- Title (Clean - No PRO label, No text pill) -->
             <div>
-              <div class="flex items-center space-x-1.5">
-                <h1 class="text-xl font-extrabold tracking-tight theme-text-main">Ease Appliances</h1>
-                <span class="px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">PRO</span>
-              </div>
-              <!-- Dynamic Status Pill -->
-              <div id="single-status-badge" class="mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 transition-colors">
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>
-                <span id="single-status-text">Not Connected</span>
-              </div>
+              <h1 class="text-xl font-extrabold tracking-tight theme-text-main">Ease Appliances</h1>
             </div>
           </div>
 
-          <!-- Right Action Controls: Theme Switch, Install, Settings -->
+          <!-- Right Action Controls: Install (if available) & Settings Gear -->
           <div class="flex items-center space-x-2">
-            <!-- Theme Toggle Button (Sun / Moon) -->
-            <button id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all duration-300 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer border border-slate-200/50 dark:border-slate-700/50">
-              <svg class="w-5 h-5 text-slate-700 dark:text-amber-300 transform hover:-rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-            </button>
-
             <!-- PWA Install Button -->
-            <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden px-2.5 py-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-[11px] font-bold transition-all shadow-sm shadow-indigo-600/25 active:scale-95">
+            <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden px-2.5 py-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-[11px] font-bold transition-all shadow-sm shadow-indigo-600/25 active:scale-95 cursor-pointer">
               + Install
             </button>
 
@@ -600,7 +588,6 @@
                     ✏️
                   </button>
                 </div>
-                <p id="ctrl-subtext-1" class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Relay 1 • GPIO 23</p>
               </div>
             </div>
             <button onclick="toggleChannelPower(1, event)" id="ctrl-toggle-1" class="app-toggle-btn is-off">
@@ -623,7 +610,6 @@
                     ✏️
                   </button>
                 </div>
-                <p id="ctrl-subtext-2" class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Relay 2 • GPIO 22</p>
               </div>
             </div>
             <button onclick="toggleChannelPower(2, event)" id="ctrl-toggle-2" class="app-toggle-btn is-off">
@@ -646,7 +632,6 @@
                     ✏️
                   </button>
                 </div>
-                <p id="ctrl-subtext-3" class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Relay 3 • GPIO 21</p>
               </div>
             </div>
             <button onclick="toggleChannelPower(3, event)" id="ctrl-toggle-3" class="app-toggle-btn is-off">
@@ -669,7 +654,6 @@
                     ✏️
                   </button>
                 </div>
-                <p id="ctrl-subtext-4" class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Relay 4 • GPIO 19</p>
               </div>
             </div>
             <button onclick="toggleChannelPower(4, event)" id="ctrl-toggle-4" class="app-toggle-btn is-off">
@@ -1444,21 +1428,33 @@
       // 4 Devices Active Summary
       const activeRelayCount = [appState.relays.r1, appState.relays.r2, appState.relays.r3, appState.relays.r4].filter(Boolean).length;
 
-      // Status Indicator & Header Elements
+      // Live Status Indicator on App Icon (Green blinking when connected & online, Red blinking otherwise)
+      const pulseIndicator = document.getElementById('header-pulse-indicator');
+      const pulsePing = document.getElementById('header-pulse-ping');
+      const pulseDot = document.getElementById('header-pulse-dot');
+      if (pulseIndicator && pulsePing && pulseDot) {
+        pulseIndicator.classList.remove('hidden');
+        const isOnline = !!(hasConfiguredDevice && isDeviceOnline);
+        if (isOnline) {
+          pulsePing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
+          pulseDot.className = "relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-[0_0_8px_#10b981]";
+        } else {
+          pulsePing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75";
+          pulseDot.className = "relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-500 border-2 border-white dark:border-slate-900 shadow-[0_0_8px_#f43f5e]";
+        }
+      }
+
       if (statusBadge) {
         if (!hasConfiguredDevice) {
           statusBadge.className = "mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700/60 transition-colors";
           statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span><span id="single-status-text">Not Connected</span>';
-          if (pulseIndicator) pulseIndicator.classList.add('hidden');
         } else if (!isDeviceOnline) {
           statusBadge.className = "mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60 transition-colors";
           statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span><span id="single-status-text">Device Offline</span>';
-          if (pulseIndicator) pulseIndicator.classList.add('hidden');
         } else {
           const netName = selectedWifi || (assignedIp ? "Connected" : "Online");
           statusBadge.className = "mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 transition-colors";
           statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse shadow-[0_0_6px_#10b981]"></span><span id="single-status-text">Online • ${escapeHtml(netName)}</span>`;
-          if (pulseIndicator) pulseIndicator.classList.remove('hidden');
         }
       }
 
@@ -1607,7 +1603,7 @@
       const devName = getChannelName(ch);
       const pinMap = { 1: 23, 2: 22, 3: 21, 4: 19 };
       const pin = pinMap[ch] || 23;
-      addActivityLog(`${devName} turned ${isOn ? 'ON' : 'OFF'}`, isOn ? 'on' : 'off', 'App UI');
+      addActivityLog(`${devName} turned ${isOn ? 'ON' : 'OFF'}`, isOn ? 'on' : 'off', 'APP');
 
       // Increment live statistics counters accurately
       if (isOn) {
@@ -1642,7 +1638,7 @@
             deviceName: devName,
             pin: pin,
             action: isOn ? "ON" : "OFF",
-            source: "App UI",
+            source: "APP",
             timestamp: Date.now()
           });
         } catch (e) {
@@ -1685,7 +1681,7 @@
       playTactileClick(isOn);
       syncUI();
 
-      addActivityLog(isOn ? 'All 4 Appliances turned ON' : 'All 4 Appliances turned OFF', isOn ? 'on' : 'off', 'App UI');
+      addActivityLog(isOn ? 'All 4 Appliances turned ON' : 'All 4 Appliances turned OFF', isOn ? 'on' : 'off', 'APP');
 
       // Increment stats for all 4 channels
       if (isOn) {
@@ -1720,7 +1716,7 @@
           firebaseDb.ref('ease_history').push({
             channel: 0,
             action: isOn ? "ALL_ON" : "ALL_OFF",
-            source: "App UI",
+            source: "APP",
             timestamp: Date.now()
           });
         } catch (e) {
@@ -2062,7 +2058,7 @@
     // ==============================================================
     // LIVE ACTIVITY LOG & POWER ANALYTICS
     // ==============================================================
-    function addActivityLog(message, actionType = 'info', source = 'App') {
+    function addActivityLog(message, actionType = 'info', source = 'APP') {
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       const entry = {
@@ -2111,6 +2107,9 @@
           dotColor = 'bg-amber-500';
         }
 
+        const rawSource = (log.source || 'APP').trim();
+        const displaySource = (rawSource.toUpperCase() === 'APP UI' || rawSource === 'App') ? 'APP' : rawSource;
+
         html += `
           <div class="flex items-center justify-between text-[11px] py-1 border-b border-slate-100 last:border-b-0">
             <div class="flex items-center space-x-2 truncate pr-2">
@@ -2118,7 +2117,7 @@
               <span class="font-medium text-slate-700 truncate">${escapeHtml(log.message)}</span>
             </div>
             <div class="flex items-center space-x-1.5 flex-shrink-0">
-              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${tagColor}">${escapeHtml(log.source || 'App')}</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${tagColor}">${escapeHtml(displaySource)}</span>
               <span class="text-[10px] text-slate-400 font-mono">${escapeHtml(log.time)}</span>
             </div>
           </div>
@@ -2179,7 +2178,7 @@
         }
       } catch (e) {}
 
-      addActivityLog("Analytics counters reset to 0", "reset", "App UI");
+      addActivityLog("Analytics counters reset to 0", "reset", "APP");
       showToast("Counters reset to 0");
     }
 
