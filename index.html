@@ -7,7 +7,7 @@
   
   <!-- PWA Manifest & Meta Tags -->
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#6366F1">
+  <meta name="theme-color" content="#28bdbf">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Ease Appliances">
@@ -28,14 +28,30 @@
         extend: {
           colors: {
             brand: {
-              50: '#EEF2FF',
-              100: '#E0E7FF',
-              200: '#C7D2FE',
-              300: '#A5B4FC',
-              400: '#818CF8',
-              500: '#6366F1',
-              600: '#4F46E5',
-              700: '#4338CA',
+              50: '#eaf9f9',
+              100: '#ccf2f3',
+              200: '#9fe5e7',
+              300: '#64d4d6',
+              400: '#3ec5c7',
+              500: '#28bdbf',
+              600: '#1ea1a3',
+              700: '#1c7f82',
+              800: '#1c6668',
+              900: '#1b5456',
+              950: '#0b3638',
+            },
+            indigo: {
+              50: '#eaf9f9',
+              100: '#ccf2f3',
+              200: '#9fe5e7',
+              300: '#64d4d6',
+              400: '#3ec5c7',
+              500: '#28bdbf',
+              600: '#1ea1a3',
+              700: '#1c7f82',
+              800: '#1c6668',
+              900: '#1b5456',
+              950: '#0b3638',
             },
             surface: '#F8FAFC',
             card: '#FFFFFF',
@@ -63,7 +79,7 @@
       --text-muted: #64748B;
       --text-subtle: #94A3B8;
       --toggle-off-bg: #CBD5E1;
-      --card-active-glow: rgba(99, 102, 241, 0.16);
+      --card-active-glow: rgba(40, 189, 191, 0.16);
       --shell-outer-1: #1E293B;
       --shell-outer-2: #334155;
     }
@@ -78,7 +94,7 @@
       --text-muted: #94A3B8;
       --text-subtle: #64748B;
       --toggle-off-bg: #273349;
-      --card-active-glow: rgba(99, 102, 241, 0.35);
+      --card-active-glow: rgba(40, 189, 191, 0.35);
       --shell-outer-1: #060911;
       --shell-outer-2: #162032;
     }
@@ -236,9 +252,9 @@
     }
 
     .app-toggle-btn.is-on {
-      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
-      box-shadow: 0 4px 16px -2px rgba(79, 70, 229, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-      border-color: rgba(165, 180, 252, 0.4);
+      background: linear-gradient(135deg, #1ea1a3 0%, #28bdbf 50%, #42d4d6 100%);
+      box-shadow: 0 4px 16px -2px rgba(40, 189, 191, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      border-color: rgba(100, 212, 214, 0.4);
     }
 
     .app-toggle-btn.is-off {
@@ -288,15 +304,15 @@
     }
 
     .ctrl-device-card.card-on {
-      border-color: #6366f1 !important;
-      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.18), 0 0 0 1px rgba(99, 102, 241, 0.25) !important;
+      border-color: #28bdbf !important;
+      box-shadow: 0 10px 25px -5px rgba(40, 189, 191, 0.18), 0 0 0 1px rgba(40, 189, 191, 0.25) !important;
       transform: translateY(-1px);
     }
 
     .dark .ctrl-device-card.card-on {
-      background: linear-gradient(135deg, rgba(30, 27, 75, 0.5) 0%, rgba(21, 28, 44, 0.95) 100%) !important;
-      border-color: #6366f1 !important;
-      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.35), 0 0 0 1px rgba(99, 102, 241, 0.4) !important;
+      background: linear-gradient(135deg, rgba(11, 54, 56, 0.5) 0%, rgba(21, 28, 44, 0.95) 100%) !important;
+      border-color: #28bdbf !important;
+      box-shadow: 0 10px 25px -5px rgba(40, 189, 191, 0.35), 0 0 0 1px rgba(40, 189, 191, 0.4) !important;
     }
 
     /* Icon pulse when on */
@@ -305,8 +321,8 @@
     }
 
     @keyframes iconGlowPulse {
-      0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(99, 102, 241, 0.4)); }
-      100% { transform: scale(1.06); filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.7)); }
+      0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(40, 189, 191, 0.4)); }
+      100% { transform: scale(1.06); filter: drop-shadow(0 0 8px rgba(40, 189, 191, 0.7)); }
     }
 
     .radar-circle-1 { animation: radar 3s ease-out infinite; }
@@ -346,8 +362,8 @@
     .float-node-4 { animation: floatNode4 3.5s ease-in-out infinite 1.2s; }
 
     @keyframes iotHubPulse {
-      0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4), 0 0 40px rgba(99, 102, 241, 0.2); }
-      50% { box-shadow: 0 0 35px rgba(99, 102, 241, 0.75), 0 0 60px rgba(129, 140, 248, 0.45); }
+      0%, 100% { box-shadow: 0 0 20px rgba(40, 189, 191, 0.4), 0 0 40px rgba(40, 189, 191, 0.2); }
+      50% { box-shadow: 0 0 35px rgba(40, 189, 191, 0.75), 0 0 60px rgba(66, 212, 214, 0.45); }
     }
     .iot-hub-glow {
       animation: iotHubPulse 2.4s ease-in-out infinite;
@@ -399,10 +415,10 @@
 
         <!-- Interconnecting Connection Lines (SVG) -->
         <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 288 288">
-          <line x1="144" y1="144" x2="60" y2="60" stroke="#6366f1" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
-          <line x1="144" y1="144" x2="228" y2="60" stroke="#6366f1" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
-          <line x1="144" y1="144" x2="60" y2="228" stroke="#6366f1" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
-          <line x1="144" y1="144" x2="228" y2="228" stroke="#6366f1" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
+          <line x1="144" y1="144" x2="60" y2="60" stroke="#28bdbf" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
+          <line x1="144" y1="144" x2="228" y2="60" stroke="#28bdbf" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
+          <line x1="144" y1="144" x2="60" y2="228" stroke="#28bdbf" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
+          <line x1="144" y1="144" x2="228" y2="228" stroke="#28bdbf" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4" class="animate-pulse" />
         </svg>
 
         <!-- Orbiting / Floating Appliance Nodes -->
@@ -439,7 +455,7 @@
         </div>
 
         <!-- Central IoT Smart Hub -->
-        <div class="relative z-10 w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-700 via-indigo-600 to-sky-500 p-0.5 iot-hub-glow flex items-center justify-center">
+        <div class="relative z-10 w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-700 via-indigo-600 to-indigo-400 p-0.5 iot-hub-glow flex items-center justify-center">
           <div class="w-full h-full rounded-[22px] bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center">
             <svg class="w-9 h-9 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -454,7 +470,7 @@
 
       <!-- Bottom Info & Progress Section -->
       <div class="w-full text-center pb-4">
-        <h2 class="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-indigo-100 to-sky-200 bg-clip-text text-transparent">
+        <h2 class="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-indigo-100 to-indigo-200 bg-clip-text text-transparent">
           Ease Appliances
         </h2>
         <p class="text-xs text-indigo-300/80 mt-1 font-medium">Smart Home Automation Ecosystem</p>
@@ -470,7 +486,7 @@
 
         <!-- Progress Bar Track -->
         <div class="w-full bg-slate-800/80 rounded-full h-1.5 mt-3 overflow-hidden border border-white/5">
-          <div id="splash-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 rounded-full w-0 transition-all duration-300 ease-out"></div>
+          <div id="splash-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 via-indigo-400 to-emerald-400 rounded-full w-0 transition-all duration-300 ease-out"></div>
         </div>
 
         <!-- Skip / Tap to Enter Hint -->
@@ -490,7 +506,7 @@
           <!-- Left: Brand Logo with Live Status Blinking Light + Title -->
           <div class="flex items-center space-x-3">
             <!-- Glowing Holographic Brand Avatar with Live Status Indicator Light (Green = Connected, Red = Offline) -->
-            <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-sky-400 p-[1.5px] shadow-lg shadow-indigo-500/20 flex items-center justify-center flex-shrink-0 group">
+            <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-indigo-300 p-[1.5px] shadow-lg shadow-indigo-500/20 flex items-center justify-center flex-shrink-0 group">
               <div class="w-full h-full rounded-[14px] bg-slate-900/90 backdrop-blur-sm flex items-center justify-center text-indigo-300">
                 <svg class="w-6 h-6 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -810,8 +826,8 @@
         <div class="my-8 flex justify-center">
           <div class="relative w-28 h-28 flex items-center justify-center">
             <svg class="w-full h-full animate-spin-slow" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="42" stroke="#E0E7FF" stroke-width="8" fill="none"/>
-              <circle cx="50" cy="50" r="42" stroke="#4F46E5" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="190" stroke-linecap="round" fill="none"/>
+              <circle cx="50" cy="50" r="42" stroke="#ccf2f3" stroke-width="8" fill="none"/>
+              <circle cx="50" cy="50" r="42" stroke="#1ea1a3" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="190" stroke-linecap="round" fill="none"/>
             </svg>
             <div class="absolute inset-0 flex items-center justify-center text-indigo-600">
               <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1253,7 +1269,7 @@
         if (shell) shell.classList.remove('dark');
         if (btn) btn.innerHTML = moonIcon;
         if (settingsLabel) settingsLabel.innerText = "Light Mode (Active)";
-        if (metaTheme) metaTheme.setAttribute('content', '#6366F1');
+        if (metaTheme) metaTheme.setAttribute('content', '#28bdbf');
       }
     }
 
@@ -2790,7 +2806,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.5.1')
+        navigator.serviceWorker.register('./sw.js?v=3.6.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });

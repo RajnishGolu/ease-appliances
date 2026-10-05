@@ -1,5 +1,5 @@
-// Cache version 3.5.1 - Fix duplicate pulseIndicator identifier syntax error
-const CACHE_NAME = 'my-smart-plug-v3.5.1';
+// Cache version 3.6.0 - Turquoise brand theme #28bdbf update across all screens and assets
+const CACHE_NAME = 'my-smart-plug-v3.6.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',

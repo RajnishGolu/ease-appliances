@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4F46E5" />
-      <stop offset="50%" stop-color="#6366F1" />
-      <stop offset="100%" stop-color="#818CF8" />
+      <stop offset="0%" stop-color="#1EA1A3" />
+      <stop offset="50%" stop-color="#28BDBF" />
+      <stop offset="100%" stop-color="#42D4D6" />
     </linearGradient>
     <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
       <feGaussianBlur stdDeviation="12" result="blur" />
@@ -21,9 +21,9 @@
   <circle cx="256" cy="256" r="100" fill="#FFFFFF" filter="url(#glow)" />
   
   <!-- Plug Prongs / Design in Center -->
-  <rect x="220" y="215" width="16" height="42" rx="8" fill="#4F46E5" />
-  <rect x="276" y="215" width="16" height="42" rx="8" fill="#4F46E5" />
-  <circle cx="256" cy="290" r="10" fill="#6366F1" />
+  <rect x="220" y="215" width="16" height="42" rx="8" fill="#1EA1A3" />
+  <rect x="276" y="215" width="16" height="42" rx="8" fill="#1EA1A3" />
+  <circle cx="256" cy="290" r="10" fill="#28BDBF" />
   
   <!-- Power indicator LED glowing emerald -->
   <circle cx="256" cy="190" r="9" fill="#10B981" />

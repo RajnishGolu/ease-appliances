@@ -28,9 +28,9 @@ def create_png(width, height, r, g, b, filename):
                 raw_data.extend([255, 255, 255, 255])
             elif dist < width * 0.26 and abs(dx) < width * 0.05 and dy < 0:
                 # Plug prongs
-                raw_data.extend([79, 70, 229, 255])
+                raw_data.extend([30, 161, 163, 255])
             else:
-                # Indigo background
+                # #28bdbf teal/cyan background
                 gradient_factor = y / height
                 pr = int(r * (1 - 0.2 * gradient_factor))
                 pg = int(g * (1 - 0.2 * gradient_factor))
@@ -48,6 +48,6 @@ def create_png(width, height, r, g, b, filename):
     with open(filename, 'wb') as f:
         f.write(header + ihdr + idat + iend)
 
-create_png(192, 192, 99, 102, 241, './icons/icon-192.png')
-create_png(512, 512, 79, 70, 229, './icons/icon-512.png')
+create_png(192, 192, 40, 189, 191, './icons/icon-192.png')
+create_png(512, 512, 30, 161, 163, './icons/icon-512.png')
 print("Successfully created icon-192.png and icon-512.png")
