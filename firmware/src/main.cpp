@@ -6,6 +6,7 @@
 #include <Preferences.h>
 #include <NimBLEDevice.h>
 #include <ArduinoJson.h>
+#include "driver/gpio.h"
 
 #define DEVICE_NAME "Ease Appliances"
 
@@ -15,6 +16,23 @@
 #define RELAY3_PIN 21
 #define RELAY4_PIN 19
 #define TEST_LED_PIN 2
+
+// Hardware GPIO Pad Hold: Locks current physical pin voltages across software resets
+// Ensures zero flicker or clicking when recovering memory or restarting
+void lockRelayPinsBeforeRestart() {
+  gpio_hold_en((gpio_num_t)RELAY1_PIN);
+  gpio_hold_en((gpio_num_t)RELAY2_PIN);
+  gpio_hold_en((gpio_num_t)RELAY3_PIN);
+  gpio_hold_en((gpio_num_t)RELAY4_PIN);
+  gpio_deep_sleep_hold_en();
+}
+
+void unlockRelayPinsAfterBoot() {
+  gpio_hold_dis((gpio_num_t)RELAY1_PIN);
+  gpio_hold_dis((gpio_num_t)RELAY2_PIN);
+  gpio_hold_dis((gpio_num_t)RELAY3_PIN);
+  gpio_hold_dis((gpio_num_t)RELAY4_PIN);
+}
 
 // UUIDs
 #define SERVICE_UUID           "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
@@ -165,10 +183,11 @@ void syncToFirebase() {
     internetConnected = true;
   } else {
     if (code <= 0) internetConnected = false;
-    stateHttp.end();
-    stateClient.stop();
-    stateConnected = false;
   }
+  // Immediately release state client SSL buffers to keep heap clean
+  stateHttp.end();
+  stateClient.stop();
+  stateConnected = false;
   lastHeartbeatPush = millis();
 }
 
@@ -180,6 +199,27 @@ void pollFirebaseControl() {
   static HTTPClient controlHttp;
   static bool controlConnected = false;
   static String cachedControlUrl = "";
+  static unsigned long lastSessionReset = 0;
+  static int consecutiveErrors = 0;
+  unsigned long curMs = millis();
+
+  // 1. Periodically recycle keep-alive SSL connection every 25 seconds
+  // Prevents silent TCP drops by Google Firebase and avoids mbedTLS heap fragmentation
+  if (controlConnected && (curMs - lastSessionReset > 25000)) {
+    controlHttp.end();
+    controlClient.stop();
+    controlConnected = false;
+    lastSessionReset = curMs;
+  }
+
+  // 2. Memory & Crash Prevention Watchdog:
+  // If free heap falls below 35KB, lock pins and perform seamless zero-glitch restart
+  if (ESP.getFreeHeap() < 35000) {
+    Serial.printf("[WATCHDOG] Low Heap detected (%u bytes)! Locking relay pins and restarting...\n", ESP.getFreeHeap());
+    lockRelayPinsBeforeRestart();
+    delay(100);
+    ESP.restart();
+  }
 
   if (cachedControlUrl.length() == 0 || cachedControlUrl.indexOf(firebaseHost) == -1) {
     String url = firebaseHost;
@@ -198,18 +238,20 @@ void pollFirebaseControl() {
     controlHttp.end();
     controlClient.stop();
     controlClient.setInsecure();
-    controlClient.setHandshakeTimeout(4);
+    controlClient.setHandshakeTimeout(3);
     controlHttp.setReuse(true);
-    controlHttp.setTimeout(2000);
+    controlHttp.setTimeout(1200);
     if (!controlHttp.begin(controlClient, cachedControlUrl)) {
       controlConnected = false;
       return;
     }
     controlConnected = true;
+    lastSessionReset = curMs;
   }
 
   int code = controlHttp.GET();
   if (code == 200) {
+    consecutiveErrors = 0;
     internetConnected = true;
     String payload = controlHttp.getString();
     JsonDocument doc;
@@ -309,13 +351,22 @@ void pollFirebaseControl() {
       }
     }
   } else {
+    consecutiveErrors++;
     if (code <= 0) {
       internetConnected = false;
-      Serial.printf("[FIREBASE] Poll failed! Code: %d | FreeHeap: %u\n", code, ESP.getFreeHeap());
+      Serial.printf("[FIREBASE] Poll failed! Code: %d | Errors: %d | FreeHeap: %u\n", code, consecutiveErrors, ESP.getFreeHeap());
     }
     controlHttp.end();
     controlClient.stop();
     controlConnected = false;
+
+    // Auto-recover Wi-Fi connection if polling drops repeatedly
+    if (consecutiveErrors >= 15) {
+      Serial.printf("[WATCHDOG] Firebase polling dropped (%d consecutive errors). Reconnecting Wi-Fi...\n", consecutiveErrors);
+      WiFi.disconnect();
+      WiFi.reconnect();
+      consecutiveErrors = 0;
+    }
   }
 }
 
@@ -674,6 +725,23 @@ class RelayCallbacks: public NimBLECharacteristicCallbacks {
 };
 
 void setup() {
+  // 1. Immediately read saved states and drive pins before anything else
+  prefs.begin("ease_app", false);
+  relay1State = prefs.getBool("r1", false);
+  relay2State = prefs.getBool("r2", false);
+  relay3State = prefs.getBool("r3", false);
+  relay4State = prefs.getBool("r4", false);
+
+  pinMode(RELAY1_PIN, OUTPUT);
+  pinMode(RELAY2_PIN, OUTPUT);
+  pinMode(RELAY3_PIN, OUTPUT);
+  pinMode(RELAY4_PIN, OUTPUT);
+  pinMode(TEST_LED_PIN, OUTPUT);
+  applyRelayPins();
+
+  // Release any hardware pad hold from previous reset
+  unlockRelayPinsAfterBoot();
+
   Serial.begin(115200);
   delay(1000);
   Serial.println("\n=================================");
@@ -681,8 +749,6 @@ void setup() {
   Serial.println("  Lightweight NimBLE + Cloud Engine");
   Serial.println("=================================");
 
-  // Initialize NVS storage
-  prefs.begin("ease_app", false);
   String savedSsid = prefs.getString("ssid", "");
   String savedPass = prefs.getString("pass", "");
   firebaseHost = prefs.getString("fb_host", DEFAULT_FIREBASE_HOST);
@@ -693,22 +759,6 @@ void setup() {
   onCount = prefs.getUInt("on_cnt", 0);
   offCount = prefs.getUInt("off_cnt", 0);
   totalToggles = prefs.getUInt("tot_tog", onCount + offCount);
-
-  // Restore saved relay states (default false / OFF)
-  relay1State = prefs.getBool("r1", false);
-  relay2State = prefs.getBool("r2", false);
-  relay3State = prefs.getBool("r3", false);
-  relay4State = prefs.getBool("r4", false);
-
-  // Initialize 4 Relay GPIO Pins & Onboard Test LED
-  pinMode(RELAY1_PIN, OUTPUT);
-  pinMode(RELAY2_PIN, OUTPUT);
-  pinMode(RELAY3_PIN, OUTPUT);
-  pinMode(RELAY4_PIN, OUTPUT);
-  pinMode(TEST_LED_PIN, OUTPUT);
-
-  // Apply pin states (Active LOW: LOW = ON, HIGH = OFF)
-  applyRelayPins();
 
   // Initialize NimBLE
   NimBLEDevice::init(DEVICE_NAME);
