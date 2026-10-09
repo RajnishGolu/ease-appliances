@@ -183,11 +183,10 @@ void syncToFirebase() {
     internetConnected = true;
   } else {
     if (code <= 0) internetConnected = false;
+    stateHttp.end();
+    stateClient.stop();
+    stateConnected = false;
   }
-  // Immediately release state client SSL buffers to keep heap clean
-  stateHttp.end();
-  stateClient.stop();
-  stateConnected = false;
   lastHeartbeatPush = millis();
 }
 
@@ -199,20 +198,9 @@ void pollFirebaseControl() {
   static HTTPClient controlHttp;
   static bool controlConnected = false;
   static String cachedControlUrl = "";
-  static unsigned long lastSessionReset = 0;
   static int consecutiveErrors = 0;
-  unsigned long curMs = millis();
 
-  // 1. Periodically recycle keep-alive SSL connection every 25 seconds
-  // Prevents silent TCP drops by Google Firebase and avoids mbedTLS heap fragmentation
-  if (controlConnected && (curMs - lastSessionReset > 25000)) {
-    controlHttp.end();
-    controlClient.stop();
-    controlConnected = false;
-    lastSessionReset = curMs;
-  }
-
-  // 2. Memory & Crash Prevention Watchdog:
+  // Memory & Crash Prevention Watchdog:
   // If free heap falls below 35KB, lock pins and perform seamless zero-glitch restart
   if (ESP.getFreeHeap() < 35000) {
     Serial.printf("[WATCHDOG] Low Heap detected (%u bytes)! Locking relay pins and restarting...\n", ESP.getFreeHeap());
@@ -238,15 +226,14 @@ void pollFirebaseControl() {
     controlHttp.end();
     controlClient.stop();
     controlClient.setInsecure();
-    controlClient.setHandshakeTimeout(3);
+    controlClient.setHandshakeTimeout(4);
     controlHttp.setReuse(true);
-    controlHttp.setTimeout(1200);
+    controlHttp.setTimeout(2500);
     if (!controlHttp.begin(controlClient, cachedControlUrl)) {
       controlConnected = false;
       return;
     }
     controlConnected = true;
-    lastSessionReset = curMs;
   }
 
   int code = controlHttp.GET();
@@ -860,8 +847,8 @@ void loop() {
     static unsigned long lastControlPoll = 0;
     unsigned long now = millis();
 
-    // Fast Keep-Alive control poll every 400ms for instantaneous physical response
-    if (now - lastControlPoll >= 400) {
+    // Fast Keep-Alive control poll every 300ms for instantaneous sub-second response
+    if (now - lastControlPoll >= 300) {
       lastControlPoll = now;
       pollFirebaseControl();
     }
