@@ -1020,27 +1020,6 @@
             Toggle
           </button>
         </div>
-
-        <!-- Voice Assistant Integration Card (Dynamically shown on iOS or Android, hidden on Desktop/Laptop) -->
-        <div id="settings-voice-card" class="hidden mt-4 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-4 shadow-2xs transition-all">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div id="voice-assistant-icon" class="w-8 h-8 rounded-xl flex items-center justify-center text-base shadow-xs">
-                <!-- Dynamically populated via JS -->
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <span id="voice-assistant-title" class="text-sm font-semibold text-slate-800 dark:text-white block">Voice Control</span>
-                  <span id="voice-assistant-badge" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">Not Configured</span>
-                </div>
-                <span id="voice-assistant-desc" class="text-[11px] text-slate-400">Control lights & fans with voice</span>
-              </div>
-            </div>
-            <div id="voice-assistant-actions" class="flex items-center space-x-1.5">
-              <!-- Dynamically rendered: Setup or Configure / Reset -->
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="pt-4">
@@ -1093,64 +1072,6 @@
           </button>
           <button type="button" onclick="saveRename()" class="flex-1 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">
             Save Name ✨
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- VOICE ASSISTANT SETUP MODAL -->
-    <div id="voice-setup-modal" class="hidden absolute inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 transition-all">
-      <div class="w-full max-w-sm rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2.5">
-            <span class="text-2xl" id="voice-modal-header-icon">🎙️</span>
-            <div>
-              <h3 class="text-base font-bold text-slate-900 dark:text-white" id="voice-modal-title">Voice Assistant Setup</h3>
-              <p id="voice-modal-subtitle" class="text-xs text-slate-400">Configure hands-free voice control</p>
-            </div>
-          </div>
-          <button type="button" onclick="closeVoiceSetupModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center font-bold cursor-pointer">✕</button>
-        </div>
-
-        <!-- Status & Activation Banner -->
-        <div id="voice-modal-status-box" class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-between">
-          <div>
-            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-200 block" id="voice-modal-status-text">Voice Integration: Inactive</span>
-            <span class="text-[11px] text-indigo-600 dark:text-indigo-400" id="voice-modal-status-sub">Enable shortcuts to activate voice triggers</span>
-          </div>
-          <button id="voice-modal-enable-btn" onclick="toggleVoiceActivation()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
-            Enable
-          </button>
-        </div>
-
-        <!-- Voice Commands List with 1-Click Copy / Shortcut Links -->
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Voice Triggers & Quick URLs</label>
-            <span class="text-[10px] text-slate-400">Tap to copy link</span>
-          </div>
-          <div id="voice-commands-list" class="space-y-2">
-            <!-- Dynamically populated via JS -->
-          </div>
-        </div>
-
-        <!-- Setup Instructions Card -->
-        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 space-y-2">
-          <div class="font-bold text-slate-800 dark:text-white flex items-center space-x-1.5" id="voice-instructions-title">
-            <span>ℹ️ Setup Instructions</span>
-          </div>
-          <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-500 dark:text-slate-400" id="voice-instructions-steps">
-            <!-- Dynamically populated via JS -->
-          </ol>
-        </div>
-
-        <!-- Modal Footer Actions -->
-        <div class="pt-2 flex items-center space-x-2">
-          <button type="button" onclick="testVoiceCommand(1)" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-2xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center space-x-1">
-            <span>⚡ Test Relay 1</span>
-          </button>
-          <button type="button" onclick="closeVoiceSetupModal()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-bold transition-colors shadow-xs cursor-pointer">
-            Done
           </button>
         </div>
       </div>
@@ -1263,9 +1184,6 @@
       if (viewId === 'wifi-setup') {
         loadRealWifiNetworks(false);
         updateWifiSetupView();
-      }
-      if (viewId === 'device-settings') {
-        initVoiceAssistantSettings();
       }
       syncUI();
     }
@@ -2153,284 +2071,6 @@
     }
 
     // ==============================================================
-    // VOICE ASSISTANT INTEGRATION (SIRI SHORTCUTS & GOOGLE ASSISTANT)
-    // ==============================================================
-    
-    // Platform detector: returns 'ios', 'android', or 'desktop'
-    function getVoicePlatform() {
-      const urlOverride = new URLSearchParams(window.location.search).get('voice_platform');
-      if (urlOverride === 'ios' || urlOverride === 'android' || urlOverride === 'desktop') {
-        return urlOverride;
-      }
-      const ua = navigator.userAgent || navigator.vendor || window.opera || '';
-      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      const isAndroid = /android/i.test(ua);
-      if (isIOS) return 'ios';
-      if (isAndroid) return 'android';
-      return 'desktop';
-    }
-
-    // Initialize the Settings card based on detected platform
-    function initVoiceAssistantSettings() {
-      const card = document.getElementById('settings-voice-card');
-      if (!card) return;
-
-      const platform = getVoicePlatform();
-
-      // If user is on Laptop / Desktop / PC browser, hide completely as requested
-      if (platform === 'desktop') {
-        card.classList.add('hidden');
-        return;
-      }
-
-      // Show card on iOS or Android
-      card.classList.remove('hidden');
-
-      const isVoiceEnabled = localStorage.getItem('ease_voice_enabled') === 'true';
-      const iconEl = document.getElementById('voice-assistant-icon');
-      const titleEl = document.getElementById('voice-assistant-title');
-      const badgeEl = document.getElementById('voice-assistant-badge');
-      const descEl = document.getElementById('voice-assistant-desc');
-      const actionsEl = document.getElementById('voice-assistant-actions');
-
-      if (platform === 'ios') {
-        // Siri Shortcuts styling
-        if (iconEl) {
-          iconEl.className = "w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-xs cursor-pointer";
-          iconEl.style.background = "radial-gradient(circle at 30% 30%, #ec4899, #8b5cf6, #3b82f6)";
-          iconEl.innerHTML = '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>';
-        }
-        if (titleEl) titleEl.innerText = "Siri Shortcuts";
-        if (descEl) descEl.innerText = isVoiceEnabled ? "Hey Siri triggers active" : "Add to Apple Shortcuts";
-      } else {
-        // Google Assistant styling
-        if (iconEl) {
-          iconEl.className = "w-8 h-8 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs cursor-pointer";
-          iconEl.style.background = "";
-          iconEl.innerHTML = '<div class="flex items-center space-x-0.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span><span class="w-2 h-2 rounded-full bg-red-500"></span><span class="w-2 h-2 rounded-full bg-yellow-400"></span><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span></div>';
-        }
-        if (titleEl) titleEl.innerText = "Google Assistant";
-        if (descEl) descEl.innerText = isVoiceEnabled ? "Hey Google routines active" : "Voice control with Google";
-      }
-
-      // Render Badge & Actions based on configured state
-      if (isVoiceEnabled) {
-        if (badgeEl) {
-          badgeEl.className = "inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50";
-          badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>Active';
-        }
-        if (actionsEl) {
-          actionsEl.innerHTML = `
-            <button onclick="openVoiceSetupModal()" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer">
-              Configure
-            </button>
-            <button onclick="resetVoiceIntegration()" title="Reset voice integration" class="px-2 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-bold text-rose-600 dark:text-rose-400 transition-colors cursor-pointer">
-              Reset
-            </button>
-          `;
-        }
-      } else {
-        if (badgeEl) {
-          badgeEl.className = "px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500";
-          badgeEl.innerText = "Not Configured";
-        }
-        if (actionsEl) {
-          actionsEl.innerHTML = `
-            <button onclick="openVoiceSetupModal()" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-xs font-bold text-indigo-600 dark:text-indigo-400 transition-colors cursor-pointer">
-              Setup
-            </button>
-          `;
-        }
-      }
-    }
-
-    function openVoiceSetupModal() {
-      const modal = document.getElementById('voice-setup-modal');
-      if (!modal) return;
-
-      const platform = getVoicePlatform();
-      const isVoiceEnabled = localStorage.getItem('ease_voice_enabled') === 'true';
-
-      const headerIcon = document.getElementById('voice-modal-header-icon');
-      const titleEl = document.getElementById('voice-modal-title');
-      const subEl = document.getElementById('voice-modal-subtitle');
-      const statusText = document.getElementById('voice-modal-status-text');
-      const statusSub = document.getElementById('voice-modal-status-sub');
-      const enableBtn = document.getElementById('voice-modal-enable-btn');
-      const listEl = document.getElementById('voice-commands-list');
-      const stepsEl = document.getElementById('voice-instructions-steps');
-
-      const isIOS = (platform === 'ios');
-
-      if (headerIcon) headerIcon.innerText = isIOS ? "🪄" : "🗣️";
-      if (titleEl) titleEl.innerText = isIOS ? "Siri Shortcuts Setup" : "Google Assistant Setup";
-      if (subEl) subEl.innerText = isIOS ? "Hands-free Apple Shortcuts for iOS" : "Voice control with Google Routines";
-
-      // Status banner
-      if (isVoiceEnabled) {
-        if (statusText) statusText.innerText = isIOS ? "Siri Integration: Active" : "Google Assistant: Active";
-        if (statusSub) statusSub.innerText = "Shortcuts and quick URLs are configured and ready";
-        if (enableBtn) {
-          enableBtn.innerText = "Disable";
-          enableBtn.className = "px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all cursor-pointer";
-        }
-      } else {
-        if (statusText) statusText.innerText = isIOS ? "Siri Integration: Not Enabled" : "Google Assistant: Not Enabled";
-        if (statusSub) statusSub.innerText = "Activate to enable 1-tap voice triggering";
-        if (enableBtn) {
-          enableBtn.innerText = "Activate Now";
-          enableBtn.className = "px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer";
-        }
-      }
-
-      // Populate voice commands
-      const baseUrl = window.location.origin + window.location.pathname;
-      let commandsHtml = "";
-
-      for (let ch = 1; ch <= 4; ch++) {
-        const name = getChannelName(ch);
-        const triggerPhrase = isIOS ? `Hey Siri, Toggle ${name}` : `Hey Google, Toggle ${name}`;
-        const actionUrl = `${baseUrl}?action=r${ch}_toggle`;
-
-        commandsHtml += `
-          <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
-            <div class="min-w-0 pr-2">
-              <span class="text-xs font-bold text-slate-800 dark:text-white block truncate">"${triggerPhrase}"</span>
-              <span class="text-[10px] text-slate-400 block font-mono truncate">${actionUrl}</span>
-            </div>
-            <button onclick="copyVoiceLink('${actionUrl}', '${triggerPhrase}')" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 shrink-0 transition-colors shadow-2xs cursor-pointer">
-              Copy URL
-            </button>
-          </div>
-        `;
-      }
-
-      // Master toggle command
-      const allOffPhrase = isIOS ? "Hey Siri, Turn Off All Appliances" : "Hey Google, Turn Off All Appliances";
-      const allOffUrl = `${baseUrl}?action=all_off`;
-      commandsHtml += `
-        <div class="p-2.5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-900/50 flex items-center justify-between">
-          <div class="min-w-0 pr-2">
-            <span class="text-xs font-bold text-amber-900 dark:text-amber-200 block truncate">"${allOffPhrase}"</span>
-            <span class="text-[10px] text-amber-600 dark:text-amber-400 block font-mono truncate">${allOffUrl}</span>
-          </div>
-          <button onclick="copyVoiceLink('${allOffUrl}', '${allOffPhrase}')" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-700 shrink-0 transition-colors shadow-2xs cursor-pointer">
-            Copy URL
-          </button>
-        </div>
-      `;
-
-      if (listEl) listEl.innerHTML = commandsHtml;
-
-      // Instructions
-      if (stepsEl) {
-        if (isIOS) {
-          stepsEl.innerHTML = `
-            <li>Open the <b>Shortcuts</b> app on your iPhone or iPad.</li>
-            <li>Tap <b>+</b> (New Shortcut), name it e.g. <i>"Toggle Bed Room Light"</i>.</li>
-            <li>Add the <b>Open URL</b> action and paste the copied URL above.</li>
-            <li>Now simply say <i>"Hey Siri, Toggle Bed Room Light"</i> anytime hands-free!</li>
-          `;
-        } else {
-          stepsEl.innerHTML = `
-            <li>Open Google Assistant or <b>Google Home</b> app on your Android.</li>
-            <li>Go to <b>Settings &gt; Routines</b> and tap <b>New Routine</b>.</li>
-            <li>Add voice starter: e.g. <i>"Toggle Bed Room Light"</i>.</li>
-            <li>Add action: <b>Open Web Link</b> and paste the copied trigger URL.</li>
-            <li>Say <i>"Hey Google, Toggle Bed Room Light"</i> anytime!</li>
-          `;
-        }
-      }
-
-      modal.classList.remove('hidden');
-    }
-
-    function closeVoiceSetupModal() {
-      const modal = document.getElementById('voice-setup-modal');
-      if (modal) modal.classList.add('hidden');
-      initVoiceAssistantSettings();
-    }
-
-    function toggleVoiceActivation() {
-      const current = localStorage.getItem('ease_voice_enabled') === 'true';
-      const target = !current;
-      localStorage.setItem('ease_voice_enabled', target ? 'true' : 'false');
-      showToast(target ? "✨ Voice Assistant Activated!" : "Voice Assistant Deactivated.");
-      openVoiceSetupModal(); // Refresh modal state
-      initVoiceAssistantSettings(); // Refresh settings card
-    }
-
-    function resetVoiceIntegration() {
-      if (!confirm("Are you sure you want to reset Voice Assistant settings?\n\nThis will deactivate voice shortcuts until re-configured.")) {
-        return;
-      }
-      localStorage.removeItem('ease_voice_enabled');
-      showToast("Voice assistant integration reset.");
-      initVoiceAssistantSettings();
-    }
-
-    function copyVoiceLink(url, label) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(() => {
-          showToast(`📋 Copied URL for: ${label}`);
-        }).catch(() => {
-          prompt("Copy this URL for your voice trigger:", url);
-        });
-      } else {
-        prompt("Copy this URL for your voice trigger:", url);
-      }
-    }
-
-    async function testVoiceCommand(ch) {
-      showToast(`🎤 Testing voice command for Channel ${ch}...`);
-      await toggleChannelPower(ch);
-    }
-
-    // URL Voice Action Handler (handles ?action=r1_toggle or ?action=all_off on launch)
-    function handleVoiceUrlAction() {
-      const params = new URLSearchParams(window.location.search);
-      const action = params.get('action');
-      if (!action) return;
-
-      // Clean the query string without reloading the page
-      window.history.replaceState({}, document.title, window.location.pathname);
-
-      // Execute after cloud state is hydrated
-      setTimeout(async () => {
-        let feedback = "";
-        if (action === "all_on") {
-          await setPowerState(true);
-          feedback = "All 4 Appliances Turned ON";
-        } else if (action === "all_off") {
-          await setPowerState(false);
-          feedback = "All 4 Appliances Turned OFF";
-        } else if (action.startsWith("r")) {
-          const ch = parseInt(action[1]);
-          const op = action.substring(3); // 'on', 'off', 'toggle'
-          if (ch >= 1 && ch <= 4) {
-            const devName = getChannelName(ch);
-            const key = 'r' + ch;
-            if (op === "on") {
-              await setChannelState(ch, true);
-              feedback = `${devName} Turned ON`;
-            } else if (op === "off") {
-              await setChannelState(ch, false);
-              feedback = `${devName} Turned OFF`;
-            } else if (op === "toggle") {
-              const cur = appState.relays[key];
-              await setChannelState(ch, !cur);
-              feedback = `${devName} Toggled ${!cur ? 'ON' : 'OFF'}`;
-            }
-          }
-        }
-
-        if (feedback) {
-          showToast(`🎤 Voice Action: ${feedback}`, 4500);
-        }
-      }, 700);
-    }
-
-    // ==============================================================
     // LIVE ACTIVITY LOG & POWER ANALYTICS
     // ==============================================================
     function addActivityLog(message, actionType = 'info', source = 'APP') {
@@ -3166,7 +2806,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.8.0')
+        navigator.serviceWorker.register('./sw.js?v=3.9.0')
           .then((reg) => reg.update())
           .catch((err) => console.log('SW registration error:', err));
       });
@@ -3187,8 +2827,6 @@
       loadRealWifiNetworks(false);
       checkDeviceStatusOnline();
       setInterval(checkDeviceStatusOnline, 4000);
-      initVoiceAssistantSettings();
-      handleVoiceUrlAction();
     });
   </script>
 </body>
