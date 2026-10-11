@@ -1,5 +1,5 @@
-// Cache version 3.7.0 - Unpair reliability & anti-freeze watchdog updates
-const CACHE_NAME = 'my-smart-plug-v3.7.0';
+// Cache version 3.8.0 - Siri Shortcuts & Google Assistant voice integration
+const CACHE_NAME = 'my-smart-plug-v3.8.0';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',
