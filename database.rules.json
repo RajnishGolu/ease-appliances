@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "ease_appliances": {
+      ".read": true,
+      ".write": true
+    },
+    "ease_stats": {
+      ".read": true,
+      ".write": true
+    },
+    "ease_history": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
