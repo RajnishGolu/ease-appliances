@@ -183,10 +183,11 @@ void syncToFirebase() {
     internetConnected = true;
   } else {
     if (code <= 0) internetConnected = false;
-    stateHttp.end();
-    stateClient.stop();
-    stateConnected = false;
   }
+  // Immediately release state client SSL buffers to keep heap clean and prevent dual-SSL collisions
+  stateHttp.end();
+  stateClient.stop();
+  stateConnected = false;
   lastHeartbeatPush = millis();
 }
 
@@ -198,9 +199,20 @@ void pollFirebaseControl() {
   static HTTPClient controlHttp;
   static bool controlConnected = false;
   static String cachedControlUrl = "";
+  static unsigned long lastSessionReset = 0;
   static int consecutiveErrors = 0;
+  unsigned long curMs = millis();
 
-  // Memory & Crash Prevention Watchdog:
+  // 1. Periodically recycle keep-alive SSL connection every 20 seconds
+  // Prevents silent TCP drops by Google Firebase edge proxies and eliminates 2.5s socket hangs
+  if (controlConnected && (curMs - lastSessionReset > 20000)) {
+    controlHttp.end();
+    controlClient.stop();
+    controlConnected = false;
+    lastSessionReset = curMs;
+  }
+
+  // 2. Memory & Crash Prevention Watchdog:
   // If free heap falls below 35KB, lock pins and perform seamless zero-glitch restart
   if (ESP.getFreeHeap() < 35000) {
     Serial.printf("[WATCHDOG] Low Heap detected (%u bytes)! Locking relay pins and restarting...\n", ESP.getFreeHeap());
@@ -226,14 +238,16 @@ void pollFirebaseControl() {
     controlHttp.end();
     controlClient.stop();
     controlClient.setInsecure();
-    controlClient.setHandshakeTimeout(4);
+    controlClient.setHandshakeTimeout(3);
     controlHttp.setReuse(true);
-    controlHttp.setTimeout(2500);
+    // Low timeout (600ms): if Google proxy dropped socket, fail fast and recover without freezing relay
+    controlHttp.setTimeout(600);
     if (!controlHttp.begin(controlClient, cachedControlUrl)) {
       controlConnected = false;
       return;
     }
     controlConnected = true;
+    lastSessionReset = curMs;
   }
 
   int code = controlHttp.GET();
