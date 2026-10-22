@@ -1,5 +1,5 @@
-// Cache version 3.9.0 - Voice assistant deferred to native mobile app phase
-const CACHE_NAME = 'my-smart-plug-v3.9.0';
+// Cache version 3.9.1 - Resilient 45s heartbeat watchdog tolerance
+const CACHE_NAME = 'my-smart-plug-v3.9.1';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icons/icon-192.png',
